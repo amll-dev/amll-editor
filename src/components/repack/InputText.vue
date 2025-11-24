@@ -42,7 +42,7 @@ const handleBlur = () => {
   }
 }
 const handleKeydown = (e: KeyboardEvent) => {
-  if (e.key === 'Enter') inputEl.value?.blur()
+  if (!modifiers.escapeEnter && e.key === 'Enter') inputEl.value?.blur()
 }
 watch(model, (val) => {
   if (!focused.value || !modifiers.lazy) innerModel.value = val

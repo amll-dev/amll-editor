@@ -79,13 +79,7 @@
           />
         </div>
         <div class="valuecontent">
-          <AutoComplete
-            class="meta-values-autocomplete"
-            v-model="field.values"
-            multiple
-            fluid
-            :typeahead="false"
-          />
+          <MultiInputText v-model="field.values" />
         </div>
       </div>
     </div>
@@ -117,6 +111,7 @@ import { computed, onMounted, shallowRef, useTemplateRef } from 'vue'
 import { amllMetaTemplate, lrcMetaTemplate, type MetadataTemplate } from './templates'
 import { AutoComplete, Button, Divider, IftaLabel, InputText, Message, Select } from 'primevue'
 import { useCoreStore } from '@/stores/core'
+import MultiInputText from '@/components/repack/MultiInputText.vue'
 
 const metadataTemplates: Readonly<MetadataTemplate>[] = [amllMetaTemplate, lrcMetaTemplate]
 const currentTemplate = shallowRef<Readonly<MetadataTemplate> | undefined>(metadataTemplates[0])
@@ -225,7 +220,7 @@ function search({ query }: { query: string }) {
   display: grid;
   justify-items: stretch;
   align-items: stretch;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto minmax(0, 1fr);
   grid-template-rows: auto auto;
   gap: 0.25rem 0.3rem;
   padding: 0.75rem 0;
@@ -235,6 +230,10 @@ function search({ query }: { query: string }) {
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+  .valuelabel {
+    align-items: flex-start;
+    margin-top: 0.3rem;
   }
   --p-inputtext-padding-y: 0.4rem;
   --p-inputtext-padding-x: 0.5rem;
