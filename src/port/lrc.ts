@@ -33,7 +33,6 @@ export function parseLRC(lrc: string): Persist {
       const key = tag!
       if (!metadata[key]) metadata[key] = []
       metadata[key]!.push(value!.trim())
-      console.log('Metadata', key, value)
       return
     }
     const timeStamps: number[] = []

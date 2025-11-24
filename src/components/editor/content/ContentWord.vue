@@ -269,7 +269,6 @@ const hooks: WordComponentActions = {
       console.warn('Input element not found')
       return
     }
-    console.log('Focusing input at position:', position)
     if (position === undefined || Number.isNaN(position)) inputEl.value.select()
     else if (position < 0) {
       const length = props.word.word.length

@@ -11,7 +11,12 @@
           triggerUpdate()
         }
       "
-      @dblclick="item.showInput = true"
+      @dblclick="
+        () => {
+          item.showInput = true
+          focusItemInput(index)
+        }
+      "
       :class="{ inputshown: item.showInput }"
     >
       <div class="inner">
@@ -19,6 +24,7 @@
         <InputText
           v-if="item.showInput"
           class="iteminput"
+          :data-item-index="index"
           v-model.escapeEnter="item.value"
           @blur="
             () => {
@@ -57,7 +63,7 @@
 
 <script setup lang="ts">
 import { nanoid } from 'nanoid'
-import { computed, ref, useTemplateRef, watch } from 'vue'
+import { computed, nextTick, ref, useTemplateRef, watch } from 'vue'
 import InputText from './InputText.vue'
 
 const [modelList] = defineModel<string[]>({ required: true })
@@ -140,6 +146,20 @@ function handleParentMouseDown(event: MouseEvent) {
       inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length)
     })
   }
+}
+function focusItemInput(index: number) {
+  let maxAttempts = 10
+  const action = () => {
+    const itemInput = document.querySelector(
+      `.r-multiinputtext-item .iteminput[data-item-index="${index}"]`,
+    ) as HTMLInputElement | null
+    if (itemInput) {
+      itemInput.focus()
+      itemInput.setSelectionRange(0, itemInput.value.length)
+      return true
+    } else if (maxAttempts--) requestAnimationFrame(action)
+  }
+  nextTick(() => action())
 }
 </script>
 

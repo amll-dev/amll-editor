@@ -35,7 +35,6 @@ export function parseTTML(ttmlString: string): Persist {
   // Metadata
   const agentToDuet = new Map<string, boolean>()
   const metadataNode = tagSelect('head', 'metadata')
-  // console.log(metadataNode)
   const metadata: Record<MetadataKey, string[]> = {}
   for (const child of Array.from(metadataNode?.childNodes ?? [])) {
     if (child.nodeType !== 1) continue
