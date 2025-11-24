@@ -1,8 +1,8 @@
 <template>
   <div class="line-order-input">
     <div class="line-order-input-state-info">
-      行顺序设置 <br />
-      当前循环节共 {{ cycleLength }} 行
+      <div class="title">行顺序设置</div>
+      <div class="count">当前循环节共 {{ cycleLength }} 行</div>
     </div>
     <hr class="line-order-hr" />
     <VueDraggable v-model="listItems" :animation="200">
@@ -129,9 +129,14 @@ defineExpose({
   overflow-y: auto;
 }
 .line-order-input-state-info {
-  opacity: 0.8;
-  font-size: 0.8rem;
+  opacity: 0.9;
   margin-left: 0.1rem;
+  .title {
+    font-weight: bold;
+  }
+  .count {
+    font-size: 0.9rem;
+  }
 }
 .line-order-item {
   padding: 0.5rem;

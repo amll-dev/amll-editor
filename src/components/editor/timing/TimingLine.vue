@@ -7,7 +7,7 @@
         (preferenceStore.alwaysIgnoreBackground && props.line.background),
       selected: runtimeStore.selectedLines.has(props.line),
     }"
-    @mousedown="handleMouseDown"
+    @mousedown.stop="handleMouseDown"
   >
     <div class="tline-head">
       <div class="tline-head-btns">

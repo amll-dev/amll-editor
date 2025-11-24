@@ -1,21 +1,31 @@
 <template>
   <div class="splittext-panel">
     <div class="group">
-      <div class="subtitle">断词引擎</div>
-      <Select
-        v-model="selectedEngine"
-        :options="engines"
-        optionLabel="name"
-        placeholder="选择断词引擎"
-        checkmark
-        fluid
-      />
-      <div class="description">
-        {{ selectedEngine?.description || '未提供说明。' }}
+      <IftaLabel>
+        <Select
+          v-model="selectedEngine"
+          inputId="splitEngine"
+          :options="engines"
+          optionLabel="name"
+          placeholder="选择断词引擎"
+          checkmark
+          fluid
+        />
+        <label for="splitEngine">断词引擎</label>
+      </IftaLabel>
+      <div
+        class="description"
+        v-if="selectedEngine?.description"
+        :class="{ collapsed: descriptionCollapsed }"
+      >
+        <span class="description-text">{{ selectedEngine.description }}</span>
+        <span class="description-button" @click="descriptionCollapsed = !descriptionCollapsed">
+          {{ descriptionCollapsed ? '展开' : '收起' }}
+        </span>
       </div>
     </div>
     <div class="group" style="height: 0; flex: 1">
-      <div class="subtitle">自定义西文音节切分</div>
+      <div class="subtitle">自定义规则</div>
       <div class="kvgrid" style="width: fit-content">
         <Checkbox v-model="caseSensitive" binary inputId="caseSensitive" size="small" />
         <label for="caseSensitive">区分大小写</label>
@@ -52,7 +62,7 @@
       </div>
     </div>
     <div class="action">
-      <div class="warn">批量断词会导致现有词语信息（包含时间戳）丢失。</div>
+      <div class="warn">批量断词会导致现有词信息（包含时间戳）丢失。</div>
       <Button
         label="应用到选定行"
         icon="pi pi-angle-right"
@@ -84,7 +94,7 @@
 <script setup lang="ts">
 import { useCoreStore, type LyricLine } from '@/stores/core'
 import { useRuntimeStore } from '@/stores/runtime'
-import { Button, Checkbox, Select } from 'primevue'
+import { Button, Checkbox, IftaLabel, Select } from 'primevue'
 import { reactive, ref } from 'vue'
 import SplitTextRewriteEditor from './SplitTextRewriteEditor.vue'
 import InputText from '@/components/repack/InputText.vue'
@@ -134,6 +144,7 @@ const selectedEngine = ref<Engine | null>(engines[0] || null)
 const customRewrites = reactive<Rewrite[]>([])
 const caseSensitive = ref(false)
 const working = ref(false)
+const descriptionCollapsed = ref(true)
 const runtimeStore = useRuntimeStore()
 const coreStore = useCoreStore()
 
@@ -232,6 +243,28 @@ function handleDrop() {
   .description {
     font-size: 0.9rem;
     opacity: 0.8;
+    &.collapsed {
+      display: flex;
+      justify-content: space-between;
+      .description-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 0;
+        flex: 1;
+      }
+    }
+  }
+  .description-button {
+    display: inline-block;
+    cursor: pointer;
+    color: var(--p-primary-color);
+    &:hover {
+      color: color-mix(in srgb, var(--p-primary-color) 80%, white 30%);
+    }
+    &:active {
+      opacity: 0.5;
+    }
   }
   .group {
     display: flex;

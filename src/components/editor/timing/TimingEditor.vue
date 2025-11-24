@@ -1,5 +1,5 @@
 <template>
-  <div class="editor timing" selection-root>
+  <div class="editor timing" selection-root @mousedown="handleMouseDown">
     <VList
       :data="coreStore.lyricLines"
       class="editor-scroller"
@@ -221,6 +221,11 @@ useGlobalKeyboard('playCurrWord', () => {
   const word = runtimeStore.getFirstSelectedWord()
   if (word && word.startTime) staticStore.audio.seek(word.startTime)
 })
+
+function handleMouseDown(e: MouseEvent) {
+  if (e.button !== 0) return
+  runtimeStore.clearSelection()
+}
 </script>
 
 <style lang="scss">
