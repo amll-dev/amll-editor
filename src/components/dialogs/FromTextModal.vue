@@ -14,15 +14,15 @@
       <div class="checkboxes">
         <div class="check-item">
           <Checkbox v-model="originalChecked" inputId="original" name="original" binary disabled />
-          <label for="original"> 原文 </label>
+          <label class="check-item-label" for="original"> 原文 </label>
         </div>
         <div class="check-item">
           <Checkbox v-model="translationChecked" inputId="translation" name="translation" binary />
-          <label for="translation"> 翻译 </label>
+          <label class="check-item-label" for="translation"> 翻译 </label>
         </div>
         <div class="check-item">
           <Checkbox v-model="romanChecked" inputId="roman" name="roman" binary />
-          <label for="roman"> 音译 </label>
+          <label class="check-item-label" for="roman"> 音译 </label>
         </div>
       </div>
     </div>
@@ -177,7 +177,7 @@ function applyProcessToInputs(process: (text: string) => string) {
   }
 }
 function handleRemoveTimestamps() {
-  const timestampRegex = /^\[\d{1,2}:\d{1,2}(?:\.\d{1,3})?\] */
+  const timestampRegex = /^\[\d{1,2}:\d{1,2}(?:(?:\.|\:)\d{1,3})?\] */
   applyProcessToInputs((text: string) =>
     text
       .split(/\r?\n/)
@@ -234,7 +234,9 @@ function handleNormalizeSpaces() {
   .check-item {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+  }
+  .check-item-label {
+    padding-left: 0.5rem;
   }
   .textfields {
     height: 0;
