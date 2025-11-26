@@ -81,6 +81,18 @@
         severity="secondary"
         @click="handleNormalizeSpaces"
       />
+      <Button
+        label="首字母大写"
+        icon="pi pi-arrow-up"
+        severity="secondary"
+        @click="handleCapitalizeFirstLetter"
+      />
+      <Button
+        label="去除尾标点"
+        icon="pi pi-delete-left"
+        severity="secondary"
+        @click="handleRemoveTrailingPunctuation"
+      />
       <div style="flex: 1"></div>
       <Button label="取消" icon="pi pi-times" severity="secondary" @click="visible = false" />
       <Button label="导入" icon="pi pi-arrow-right" @click="handleImportAction" />
@@ -178,9 +190,11 @@ function applyProcessToInputs(process: (text: string) => string) {
 }
 function handleRemoveTimestamps() {
   const timestampRegex = /^\[\d{1,2}:\d{1,2}(?:(?:\.|\:)\d{1,3})?\] */
+  const metadataLineRegex = /^[\[{].*[\]}]$/
   applyProcessToInputs((text: string) =>
     text
       .split(/\r?\n/)
+      .filter((line) => !metadataLineRegex.test(line.trim()))
       .map((line) => line.replace(timestampRegex, ''))
       .join('\n'),
   )
@@ -190,6 +204,24 @@ function handleNormalizeSpaces() {
     text
       .split(/\r?\n/)
       .map((line) => line.replace(/\s+/g, ' ').trim())
+      .map((line) => line.replace(/([,.:])(?=\S)/g, '$1 '))
+      .join('\n')
+      .trim(),
+  )
+}
+function handleCapitalizeFirstLetter() {
+  applyProcessToInputs((text: string) =>
+    text
+      .split(/\r?\n/)
+      .map((line) => line.replace(/(^\s*\w)|(\.\s*\w)/g, (match) => match.toUpperCase()))
+      .join('\n'),
+  )
+}
+function handleRemoveTrailingPunctuation() {
+  applyProcessToInputs((text: string) =>
+    text
+      .split(/\r?\n/)
+      .map((line) => line.replace(/[\p{P}\p{S}]+$/u, '').trimEnd())
       .join('\n'),
   )
 }
