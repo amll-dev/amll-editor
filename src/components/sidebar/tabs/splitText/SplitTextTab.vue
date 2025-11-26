@@ -62,7 +62,7 @@
       </div>
     </div>
     <div class="action">
-      <div class="warn">批量断词会导致现有词信息（包含时间戳）丢失。</div>
+      <div class="warn">现有词属性将丢失，时间戳将按实义字符线性插值。</div>
       <Button
         label="应用到选定行"
         icon="pi pi-angle-right"
@@ -92,7 +92,7 @@
 </template>
 
 <script setup lang="ts">
-import { useCoreStore, type LyricLine } from '@/stores/core'
+import { useCoreStore, type LyricLine, type LyricWord } from '@/stores/core'
 import { useRuntimeStore } from '@/stores/runtime'
 import { Button, Checkbox, IftaLabel, Select } from 'primevue'
 import { reactive, ref } from 'vue'
@@ -176,11 +176,83 @@ async function applyToLines(lines: LyricLine[]) {
     customRewrites.filter(({ target }) => target.trim()),
     caseSensitive.value,
   )
-  lines.forEach((line, i) => {
-    const newWords = results[i]!
-    line.words = newWords.map((word) =>
-      coreStore.newWord(typeof word === 'string' ? { word } : word),
+
+  /**
+   * Filter out spaces and punctuations, calculate time per character
+   *  T h i s i s a n e x  a  m  p  l  e
+   * 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+   * |           |           |           |
+   */
+  const filterRegex = /[\s\p{P}]+/gu
+  lines.forEach((line, lineIndex) => {
+    const newPartialWords = results[lineIndex]!.map((word) =>
+      typeof word === 'string' ? { word } : word,
     )
+    let currOldPos = 0
+    type XY = [number, number]
+    const oldPosTime: XY[] = line.words.flatMap((w) => {
+      const text = w.word.replace(filterRegex, '')
+      return [
+        [currOldPos, w.startTime],
+        [(currOldPos += text.length), w.endTime],
+      ] as XY[]
+    })
+    /**
+     * oldPosTime like:
+     * [start1, time11]
+     * [end1, time12]   <-
+     * [start2, time21] <- end1 & start2 are the same, handle in averaging
+     * [end2, time22]
+     * ...
+     * [endN, timeN2]
+     */
+    const maxOldPos = currOldPos
+    const newMaxPos = newPartialWords
+      .map((w) => w.word.replace(filterRegex, '').length)
+      .reduce((a, b) => a + b, 0)
+    if (!maxOldPos || !newMaxPos) {
+      // All filtered out, just reset timings
+      line.words = newPartialWords.map((word) => coreStore.newWord(word))
+      return
+    }
+    const averagedPosTime: XY[] = []
+    let accumulatedItemCount = 0
+    for (const [currX, currY] of oldPosTime) {
+      const lastPoint = averagedPosTime.at(-1)
+      const [lastX, lastY] = lastPoint ?? [-1, -1]
+      if (!lastPoint || lastX !== currX) {
+        averagedPosTime.push([currX, currY])
+        accumulatedItemCount = 1
+      } else {
+        lastPoint[1] = (lastY * accumulatedItemCount + currY) / ++accumulatedItemCount
+        // handle multiple same positions: last end == curr begin
+        // 0-length words will cause more than 2 points at same position
+      }
+    }
+    averagedPosTime.forEach((point) => (point[0] = point[0] / maxOldPos)) // Normalize X to [0,1]
+
+    let currNewPos = 0
+    let apIndex = 0
+    function getTimeAtRatio(ratio: number) {
+      if (ratio < 0 || ratio > 1 || ratio < averagedPosTime[apIndex]![0])
+        throw new Error('Ratio out of bounds')
+      while (apIndex < averagedPosTime.length - 1 && averagedPosTime[apIndex + 1]![0] < ratio) {
+        apIndex++
+      }
+      const [x1, y1] = averagedPosTime[apIndex]!
+      const [x2, y2] = averagedPosTime[apIndex + 1]!
+      if (x1 === x2) return Math.round((y1 + y2) / 2)
+      const t = (ratio - x1) / (x2 - x1)
+      return Math.round(y1 + (y2 - y1) * t)
+    }
+    line.words = newPartialWords.map((word) => {
+      const charCount = word.word.replace(filterRegex, '').length
+      const startRatio = currNewPos / newMaxPos
+      const startTime = getTimeAtRatio(startRatio)
+      const endRatio = (currNewPos += charCount) / newMaxPos
+      const endTime = getTimeAtRatio(endRatio)
+      return coreStore.newWord({ ...word, startTime, endTime })
+    })
   })
   working.value = false
 }

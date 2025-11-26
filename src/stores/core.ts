@@ -85,8 +85,7 @@ export const useCoreStore = defineStore('core', () => {
     for (const line of lyricLines) {
       const filtered = line.words.filter((word) => !wordSet.has(word))
       if (filtered.length === line.words.length) continue
-      line.words.length = 0
-      line.words.push(...filtered)
+      line.words = filtered
     }
     const runtimeStore = useRuntimeStore()
     wordSet.forEach((word) => runtimeStore.removeWordFromSelectionWithoutApply(word))
@@ -95,8 +94,7 @@ export const useCoreStore = defineStore('core', () => {
     const wordSet = new Set(words)
     const filtered = line.words.filter((word) => !wordSet.has(word))
     if (filtered.length === line.words.length) return
-    line.words.length = 0
-    line.words.push(...filtered)
+    line.words = filtered
   }
 })
 export const coreCreate = { newLine, newWord }
