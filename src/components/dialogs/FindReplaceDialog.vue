@@ -283,6 +283,32 @@ interface MatchResult {
   wordIndex?: number
 }
 
+const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+function compileRegexPattern(input: string): RegExp | null {
+  let pattern = useRegex.value ? input : escapeRegex(input)
+  if (matchWholeWord.value) pattern = `\\b${pattern}\\b`
+  if (matchFullField.value) pattern = `^${pattern}$`
+  const flags = matchCase.value ? 'g' : 'gi'
+  try {
+    return new RegExp(pattern, flags)
+  } catch {
+    return null
+  }
+}
+const compiledPattern = computed<RegExp | null>(() => {
+  if (findInput.value === '') return null
+  return compileRegexPattern(findInput.value)
+})
+const findInputInvalid = computed(() => {
+  if (useRegex.value && findInput.value !== '' && !compiledPattern.value) return true
+  return false
+})
+
+function checkMatch(candidate: LyricLine | LyricWord) {
+  if ('words' in candidate) {
+    // LyricLine
+  }
+}
 </script>
 
 <style lang="scss">
