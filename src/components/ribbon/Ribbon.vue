@@ -1,5 +1,5 @@
 <template>
-  <Card class="ribbon">
+  <Card class="ribbon" id="ribbon" @wheel="handleWheel">
     <template #content>
       <ContentProcessGroup />
       <LineAttrGroup />
@@ -21,6 +21,17 @@ import PerformanceGroup from './groups/PerformanceGroup.vue'
 import TimeShiftGroup from './groups/TimeShiftGroup.vue'
 import ViewGroup from './groups/ViewGroup.vue'
 import WordAttrGroup from './groups/WordAttrGroup.vue'
+import { onMounted, ref } from 'vue'
+
+function handleWheel(e: WheelEvent) {
+  if (!ribbonEl.value) return
+  ribbonEl.value.scrollLeft += e.deltaY
+}
+
+const ribbonEl = ref<HTMLElement | null>(null)
+onMounted(() => {
+  ribbonEl.value = document.querySelector('#ribbon .p-card-body')
+})
 </script>
 
 <style lang="scss">
