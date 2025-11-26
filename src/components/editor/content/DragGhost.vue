@@ -45,7 +45,7 @@ const dragIcon = computed(() => {
   border-radius: 0.3rem;
   display: flex;
   align-items: center;
-  z-index: 3;
+  z-index: 9999;
 
   font-size: 1.2rem;
   background-color: var(--p-primary-color);

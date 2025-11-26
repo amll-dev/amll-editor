@@ -43,7 +43,9 @@
       </div>
     </VList>
     <ContextMenu ref="menu" :model="menuItems" />
-    <DragGhost v-if="runtimeStore.isDragging" />
+    <Teleport to="body">
+      <DragGhost v-if="runtimeStore.isDragging" />
+    </Teleport>
   </div>
 </template>
 
