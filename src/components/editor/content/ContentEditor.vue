@@ -263,6 +263,12 @@ const menuItems = shallowRef<MenuItem[]>(blankMenuItems)
 const handleContext =
   (src: 'line' | 'word' | 'lineInsert' | 'blank') =>
   (e: MouseEvent, lineIndex?: number, wordIndex?: number) => {
+    if (
+      e.target instanceof HTMLElement &&
+      e.target.closest('input[type="text"], textarea, [contenteditable="true"]')
+    ) {
+      return
+    }
     contextLineIndex = lineIndex
     contextWordIndex = wordIndex
     menuItems.value = menuItemsMap[src]

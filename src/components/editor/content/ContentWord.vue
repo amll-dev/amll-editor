@@ -8,7 +8,7 @@
     }"
     @mousedown.stop
     @click.stop
-    @contextmenu="handleContext"
+    @contextmenu.stop="handleContext"
     @dragstart.stop
   >
     <div class="lword-drag-ghost" ref="dragGhostEl"></div>

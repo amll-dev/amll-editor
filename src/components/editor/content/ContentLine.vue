@@ -9,7 +9,7 @@
     @click="handleClick"
     @dragstart="handleDragStart"
     @dragend="handleDragEnd"
-    @contextmenu="handleContext"
+    @contextmenu.stop="handleContext"
   >
     <div class="cline-drag-ghost" ref="dragGhostEl"></div>
     <div class="cline-head" draggable="true">
