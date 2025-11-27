@@ -33,6 +33,7 @@ const props = defineProps<{
   extensions?: Extension[]
   showLineNumbers?: boolean
   highlightPattern?: { cycleLength: number; map: Record<number, string> }
+  readonly?: boolean
 }>()
 
 function highlightCurrentLine() {
@@ -181,6 +182,7 @@ function dropCursor(): Extension {
 const shellEl = useTemplateRef('shellEl')
 const editorInstance = shallowRef<EditorView | null>(null)
 const highlightCompartment = new Compartment()
+const editableCompartment = new Compartment()
 onMounted(() => {
   if (!shellEl.value) return
   editorInstance.value = new EditorView({
@@ -208,6 +210,7 @@ onMounted(() => {
       }),
       props.showLineNumbers ? lineNumbers() : null,
       highlightCompartment.of([]),
+      editableCompartment.of(EditorView.editable.of(!props.readonly)),
       ...(props.extensions || []),
     ].filter((e) => !!e),
   })
@@ -249,6 +252,15 @@ watch(currentLine, (newVal) => {
     scrollIntoView: true,
   })
 })
+watch(
+  () => props.readonly,
+  (val) => {
+    if (!editorInstance.value) return
+    editorInstance.value.dispatch({
+      effects: editableCompartment.reconfigure(EditorView.editable.of(!val)),
+    })
+  },
+)
 
 function createCycleHighlightExtension(pattern: {
   cycleLength: number
@@ -304,6 +316,7 @@ watch(
 
 <style lang="scss">
 .r-codemirror-shell {
+  --cm-font-family: var(--font-monospace);
   background-color: var(--p-form-field-background);
   border: 1px solid var(--p-form-field-border-color);
   border-radius: var(--p-form-field-border-radius);
@@ -319,7 +332,7 @@ watch(
     padding-bottom: 5rem;
   }
   .cm-scroller {
-    font-family: var(--font-monospace);
+    font-family: var(--cm-font-family);
     font-size: 1rem;
   }
   .cm-current-line-highlight {

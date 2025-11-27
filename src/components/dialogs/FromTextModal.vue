@@ -13,7 +13,13 @@
       </div>
       <div class="checkboxes">
         <div class="check-item">
-          <Checkbox v-model="originalChecked" inputId="original" name="original" binary disabled />
+          <Checkbox
+            v-model="originalChecked"
+            inputId="original"
+            name="original"
+            binary
+            :disabled="currentMode === interleaved"
+          />
           <label class="check-item-label" for="original"> 原文 </label>
         </div>
         <div class="check-item">
@@ -24,6 +30,7 @@
           <Checkbox v-model="romanChecked" inputId="roman" name="roman" binary />
           <label class="check-item-label" for="roman"> 音译 </label>
         </div>
+        <div class="no-item-checked-warning" v-if="noItemChecked">至少提供一项</div>
       </div>
     </div>
     <div class="textfields">
@@ -36,7 +43,9 @@
         />
       </KeepAlive>
       <div class="textfield-shell">
-        <div class="textfield-label" v-if="currentMode === separate">原文</div>
+        <div class="textfield-label" v-if="currentMode === separate">
+          原文<span class="useoriginaltip" v-if="!originalChecked">（保留现有行）</span>
+        </div>
         <CodeMirror
           :key="1"
           class="textfield"
@@ -45,6 +54,7 @@
           v-model:current-line="cmCurrentLine"
           :highlightPattern="highlightPattern"
           showLineNumbers
+          :readonly="!originalChecked"
         />
       </div>
       <div class="textfield-shell" v-if="currentMode === separate && translationChecked">
@@ -95,18 +105,24 @@
       />
       <div style="flex: 1"></div>
       <Button label="取消" icon="pi pi-times" severity="secondary" @click="visible = false" />
-      <Button label="导入" icon="pi pi-arrow-right" @click="handleImportAction" />
+      <Button
+        label="导入"
+        icon="pi pi-arrow-right"
+        @click="handleImportAction"
+        :disabled="noItemChecked"
+      />
     </div>
   </Dialog>
 </template>
 
 <script setup lang="ts">
 import { Button, Checkbox, Dialog, Select } from 'primevue'
-import { computed, ref, shallowRef, useTemplateRef, type ShallowRef } from 'vue'
+import { computed, ref, shallowRef, useTemplateRef, watch, type ShallowRef } from 'vue'
 import CodeMirror from '@/components/repack/CodeMirror.vue'
 import { importPersist } from '@/port'
 import { parseInterleavedPlainText, parseSeparatePlainText } from '@/port/paintext'
 import LineOrderInput from './LineOrderInput.vue'
+import { useCoreStore } from '@/stores/core'
 
 const [visible] = defineModel<boolean>({ required: true })
 const originalInput = ref<string>('')
@@ -138,31 +154,65 @@ interface ModeSelectItem {
   name: string
   description: string
 }
-const interleaved: ModeSelectItem = {
-  name: '交错行',
-  description: '歌词原文与翻译、音译行混合交错排列。每连续的数行为一组。',
-} as const
 const separate: ModeSelectItem = {
   name: '分别输入',
   description: '歌词原文、翻译、音译分别在不同的文本框中输入。相同位置的行为一组。',
 } as const
+const interleaved: ModeSelectItem = {
+  name: '交错行',
+  description: '歌词原文与翻译、音译行混合交错排列。每连续的数行为一组。',
+} as const
 
 const modeSelectItems = [separate, interleaved]
 const currentMode = shallowRef<ModeSelectItem>(separate)
+watch(
+  currentMode,
+  () => {
+    if (currentMode.value === interleaved) {
+      // in interleaved mode, original must be enabled
+      originalChecked.value = true
+    }
+  },
+  { immediate: true },
+)
 
 const originalChecked = ref(true)
 const translationChecked = ref(false)
 const romanChecked = ref(false)
 
+const coreStore = useCoreStore()
+watch([originalChecked, visible], () => {
+  if (!originalChecked.value && visible.value)
+    originalInput.value = coreStore.lyricLines
+      .map((l) => l.words.map((w) => w.word).join(''))
+      .join('\n')
+})
+const noItemChecked = computed(
+  () => !originalChecked.value && !translationChecked.value && !romanChecked.value,
+)
+
 function handleImportAction() {
   if (currentMode.value === separate) {
-    importPersist(
-      parseSeparatePlainText(
-        originalInput.value,
-        translationChecked.value ? translationInput.value : undefined,
-        romanChecked.value ? romanInput.value : undefined,
-      ),
-    )
+    const toTextArr = (str: string) => {
+      return str.split(/\r?\n/).map((t) => t.trim())
+    }
+    if (!originalChecked.value) {
+      const translations = translationChecked.value ? toTextArr(translationInput.value) : []
+      const romans = romanChecked.value ? toTextArr(romanInput.value) : []
+      coreStore.lyricLines.forEach((line, index) => {
+        const translation = translations[index]
+        const roman = romans[index]
+        if (translation !== undefined) line.translation = translation
+        if (roman !== undefined) line.romanization = roman
+      })
+    } else
+      importPersist(
+        parseSeparatePlainText(
+          originalInput.value,
+          translationChecked.value ? translationInput.value : undefined,
+          romanChecked.value ? romanInput.value : undefined,
+        ),
+      )
   } else if (currentMode.value === interleaved) {
     const loi = lineOrderInput.value
     if (!loi) return
@@ -182,7 +232,7 @@ function handleImportAction() {
 }
 
 function applyProcessToInputs(process: (text: string) => string) {
-  originalInput.value = process(originalInput.value)
+  if (originalChecked.value) originalInput.value = process(originalInput.value)
   if (currentMode.value === separate) {
     if (translationChecked.value) translationInput.value = process(translationInput.value)
     if (romanChecked.value) romanInput.value = process(romanInput.value)
@@ -248,7 +298,7 @@ function handleRemoveTrailingPunctuation() {
     gap: 0.8rem;
   }
   .description {
-    font-size: 0.875rem;
+    font-size: 0.9rem;
     opacity: 0.8;
   }
   .select-field {
@@ -270,6 +320,9 @@ function handleRemoveTrailingPunctuation() {
   .check-item-label {
     padding-left: 0.5rem;
   }
+  .no-item-checked-warning {
+    color: var(--p-button-text-danger-color);
+  }
   .textfields {
     height: 0;
     flex: 1;
@@ -287,6 +340,9 @@ function handleRemoveTrailingPunctuation() {
   .textfield-label {
     opacity: 0.9;
     padding-left: 0.5rem;
+    .useoriginaltip {
+      color: var(--p-button-text-warn-color);
+    }
   }
   .textfield {
     height: 0;
