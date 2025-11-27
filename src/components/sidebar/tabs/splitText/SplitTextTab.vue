@@ -187,13 +187,21 @@ async function applyToLines(lines: LyricLine[]) {
    */
   const filterRegex = /[\s\p{P}]+/gu
   lines.forEach((line, lineIndex) => {
-    const newPartialWords = results[lineIndex]!.map((word) =>
-      typeof word === 'string' ? { word } : word,
-    )
+    const result = results[lineIndex]!
+    if (result.length === line.words.length) {
+      const getText = (w: (typeof result)[number]) => (typeof w === 'string' ? w : w.word)
+      const allTheSame = line.words.every(({ word }, i) => word === getText(result[i]!))
+      if (allTheSame) return // No change
+    }
+    const newPartialWords = result.map((word) => (typeof word === 'string' ? { word } : word))
     let currOldPos = 0
     type XY = [number, number]
     const oldPosTime: XY[] = line.words.flatMap((w) => {
       const text = w.word.replace(filterRegex, '')
+      if (text.length === 0) {
+        // Skip filtered-out words
+        return []
+      }
       return [
         [currOldPos, w.startTime],
         [(currOldPos += text.length), w.endTime],
