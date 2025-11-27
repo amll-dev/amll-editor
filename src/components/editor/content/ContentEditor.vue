@@ -53,7 +53,7 @@
 import { useCoreStore, type LyricLine } from '@/stores/core'
 import Line from './ContentLine.vue'
 // import LineLazyShell from './LineLazyShell.vue'
-import { useRuntimeStore } from '@/stores/runtime'
+import { useRuntimeStore, View } from '@/stores/runtime'
 import Word from './ContentWord.vue'
 import { Button, ContextMenu } from 'primevue'
 import { nextTick, onMounted, onUnmounted, shallowRef, useTemplateRef } from 'vue'
@@ -62,7 +62,7 @@ import WordInsertIndicator from './WordInsertIndicator.vue'
 import LineInsertIndicator from './LineInsertIndicator.vue'
 import DragGhost from './DragGhost.vue'
 import type { MenuItem } from 'primevue/menuitem'
-import { useStaticStore } from '@/stores/static'
+import { useStaticStore, type EditorComponentActions } from '@/stores/static'
 import { VList } from 'virtua/vue'
 import { useGlobalKeyboard } from '@/utils/hotkey'
 import type { ScrollToIndexOpts } from 'virtua/unstable_core'
@@ -305,6 +305,19 @@ onMounted(() => {
   onUnmounted(() => {
     if (staticStore.scrollToHook === scrollToHook) staticStore.scrollToHook = null
   })
+})
+
+const editorHook: EditorComponentActions = {
+  view: View.Content,
+  scrollTo: (...args) => {
+    vscroll.value?.scrollToIndex(...args)
+  },
+}
+onMounted(() => {
+  staticStore.editorHook = editorHook
+})
+onUnmounted(() => {
+  if (staticStore.editorHook === editorHook) staticStore.editorHook = null
 })
 </script>
 

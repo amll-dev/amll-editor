@@ -1,10 +1,12 @@
 import { useAudioCtrl } from '@/utils/audio'
 import type { LyricLine, LyricWord } from './core'
 import type { ScrollToIndexOpts } from 'virtua/unstable_core'
+import type { View } from './runtime'
 
 const staticStore = {
   lineHooks: new Map<string, LineComponentActions>(),
   wordHooks: new Map<string, WordComponentActions>(),
+  editorHook: null as null | EditorComponentActions,
   closeContext: null as null | (() => void),
   audio: useAudioCtrl(),
   lastTouchedLine: null as LyricLine | null,
@@ -18,13 +20,18 @@ const staticStore = {
 export const useStaticStore = () => staticStore
 
 export interface LineComponentActions {
-  scrollTo: () => void
-  setHighlight: (highlight: boolean) => void
+  focusRomanInput: (position?: number) => void
+  focusTranslationInput: (position?: number) => void
+  hightLightRoman: () => void
+  hightLightTranslation: () => void
 }
 export interface WordComponentActions {
-  scrollTo: () => void
-  setHighlight: (highlight: boolean) => void
   focusInput: (position?: number) => void
+  hightLightInput: () => void
+}
+export interface EditorComponentActions {
+  view: View
+  scrollTo: ScrollTo
 }
 
 function touchLineWord(line: LyricLine, word: LyricWord) {

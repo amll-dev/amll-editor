@@ -54,7 +54,7 @@
       <div class="cline-content">
         <slot></slot>
       </div>
-      <div class="cline-secondary">
+      <div class="cline-secondary" ref="secondaryInputShellEl">
         <template v-for="f in orderedFields" :key="f.key">
           <FloatLabel variant="on">
             <InputText
@@ -64,6 +64,7 @@
               @mousedown.stop
               @click.stop
               @dragstart.stop
+              :data-line-field-key="f.key"
             />
             <label>{{ f.label }}</label>
           </FloatLabel>
@@ -79,9 +80,9 @@ import { useRuntimeStore } from '@/stores/runtime'
 import { forceOutsideBlur, sortIndex } from '@/utils/selection'
 import { Button, ContextMenu, FloatLabel } from 'primevue'
 import type { MenuItem } from 'primevue/menuitem'
-import { computed, ref, useTemplateRef } from 'vue'
+import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
 import InputText from '@/components/repack/InputText.vue'
-import { useStaticStore } from '@/stores/static'
+import { useStaticStore, type LineComponentActions } from '@/stores/static'
 import { usePreferenceStore } from '@/stores/preference'
 
 const props = defineProps<{
@@ -164,7 +165,7 @@ function handleContext(e: MouseEvent) {
 
 const secondaryFields = [
   {
-    key: 'translated',
+    key: 'translation',
     label: '行翻译',
     model: 'translation',
   },
@@ -177,6 +178,57 @@ const secondaryFields = [
 const orderedFields = computed(() =>
   configStore.swapTranslateRoman ? [...secondaryFields].reverse() : secondaryFields,
 )
+
+const secondaryInputShellEl = useTemplateRef('secondaryInputShellEl')
+const lineHooks: LineComponentActions = {
+  focusRomanInput: (position) => handleSecondaryInputFocus('roman', position),
+  focusTranslationInput: (position) => handleSecondaryInputFocus('translation', position),
+  hightLightRoman: () => handleSecondaryInputHighlight('roman'),
+  hightLightTranslation: () => handleSecondaryInputHighlight('translation'),
+}
+function handleSecondaryInputFocus(fieldKey: string, position?: number) {
+  const inputEl = secondaryInputShellEl.value?.querySelector(
+    `input[data-line-field-key="${fieldKey}"]`,
+  ) as HTMLInputElement | null
+  if (!inputEl) return
+  inputEl.focus()
+  if (position === undefined || Number.isNaN(position)) inputEl.select()
+  else if (position < 0) {
+    const length = inputEl.value.length
+    const cursor = length + position + 1
+    inputEl.setSelectionRange(cursor, cursor)
+  } else inputEl.setSelectionRange(position, position)
+}
+const elementTimeouts = new WeakMap<HTMLElement, number>()
+function handleSecondaryInputHighlight(fieldKey: string) {
+  document.querySelectorAll('.p-inputtext[data-highlight]').forEach((el) => {
+    delete (el as HTMLInputElement).dataset.highlight
+  })
+  const inputEl = secondaryInputShellEl.value?.querySelector(
+    `.p-inputtext[data-line-field-key="${fieldKey}"]`,
+  ) as HTMLInputElement | null
+  if (!inputEl) return
+  delete inputEl.dataset.highlight
+  void inputEl.offsetHeight
+  inputEl.dataset.highlight = ''
+  void inputEl.offsetHeight
+  if (elementTimeouts.has(inputEl)) {
+    const oldTimeoutId = elementTimeouts.get(inputEl)!
+    clearTimeout(oldTimeoutId)
+  }
+  const timeoutId = setTimeout(() => {
+    delete inputEl.dataset.highlight
+    elementTimeouts.delete(inputEl)
+  }, 2000)
+  elementTimeouts.set(inputEl, timeoutId)
+}
+onMounted(() => {
+  staticStore.lineHooks.set(props.line.id, lineHooks)
+})
+onUnmounted(() => {
+  if (staticStore.lineHooks.get(props.line.id) === lineHooks)
+    staticStore.lineHooks.delete(props.line.id)
+})
 </script>
 
 <style lang="scss">

@@ -29,9 +29,9 @@ import { VList } from 'virtua/vue'
 import Line from './TimingLine.vue'
 import Word from './TimingWord.vue'
 import { onMounted, onUnmounted, useTemplateRef } from 'vue'
-import { useRuntimeStore } from '@/stores/runtime'
+import { useRuntimeStore, View } from '@/stores/runtime'
 import { useGlobalKeyboard } from '@/utils/hotkey'
-import { useStaticStore } from '@/stores/static'
+import { useStaticStore, type EditorComponentActions } from '@/stores/static'
 import { usePreferenceStore } from '@/stores/preference'
 import type { ScrollToIndexOpts } from 'virtua/unstable_core'
 
@@ -236,6 +236,19 @@ function handleMouseDown(e: MouseEvent) {
   if (e.button !== 0) return
   runtimeStore.clearSelection()
 }
+
+const editorHook: EditorComponentActions = {
+  view: View.Timing,
+  scrollTo: (...args) => {
+    vscroll.value?.scrollToIndex(...args)
+  },
+}
+onMounted(() => {
+  staticStore.editorHook = editorHook
+})
+onUnmounted(() => {
+  if (staticStore.editorHook === editorHook) staticStore.editorHook = null
+})
 </script>
 
 <style lang="scss">

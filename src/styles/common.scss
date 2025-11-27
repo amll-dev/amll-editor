@@ -101,6 +101,13 @@ input {
   }
 }
 
+.p-toast-message-icon:empty {
+  display: none;
+}
+.p-toast.p-toast-top-right {
+  top: 4.5rem !important;
+}
+
 @keyframes fade {
   from {
     opacity: 0;
@@ -236,4 +243,27 @@ hr {
 .v-popper--theme-tooltip .v-popper__arrow-outer {
   border-color: #000c;
   display: none;
+}
+
+.p-inputtext {
+  --hlt-animation-bg: color-mix(in srgb, var(--p-primary-color), transparent 50%);
+  --hlt-animation-color: var(--p-primary-color);
+  &[data-highlight] {
+    @keyframes inputHighlight {
+      from {
+        background-color: var(--hlt-animation-bg);
+        border-color: var(--hlt-animation-color);
+      }
+    }
+    @keyframes inputLabelHighlight {
+      from {
+        color: var(--hlt-animation-color);
+        background: transparent;
+      }
+    }
+    animation: inputHighlight 2s;
+    & + label {
+      animation: inputLabelHighlight 2s;
+    }
+  }
 }

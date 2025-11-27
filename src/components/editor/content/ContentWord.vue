@@ -1,7 +1,6 @@
 <template>
   <div
     class="lword"
-    ref="wordTop"
     :class="{
       selected: isSelected,
       removing: isSelected && runtimeStore.isDragging && !runtimeStore.isDraggingCopy,
@@ -257,12 +256,8 @@ function handleCompositionEnd(_e: CompositionEvent) {
 }
 
 // Register hooks
-const wordTop = useTemplateRef('wordTop')
+let highlightTimeout: number | undefined = undefined
 const hooks: WordComponentActions = {
-  scrollTo: () => wordTop.value?.scrollIntoView({ behavior: 'smooth', block: 'center' }),
-  setHighlight: (_highlight: boolean) => {
-    // to do
-  },
   focusInput: (position = undefined) => {
     focused.value = true
     if (!inputEl.value) {
@@ -275,6 +270,21 @@ const hooks: WordComponentActions = {
       const cursor = length + position + 1
       inputEl.value.setSelectionRange(cursor, cursor)
     } else inputEl.value.setSelectionRange(position, position)
+  },
+  hightLightInput: () => {
+    if (!inputEl.value) return
+    document.querySelectorAll('.p-inputtext[data-highlight]').forEach((el) => {
+      delete (el as HTMLInputElement).dataset.highlight
+    })
+    const el = inputEl.value
+    if (highlightTimeout !== undefined) clearTimeout(highlightTimeout)
+    delete el.dataset.highlight
+    void el.offsetHeight
+    el.dataset.highlight = ''
+    highlightTimeout = window.setTimeout(() => {
+      delete el.dataset.highlight
+      highlightTimeout = undefined
+    }, 2000)
   },
 }
 onMounted(() => {
