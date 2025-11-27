@@ -497,23 +497,21 @@ function rangedJumpPos(
   }
 }
 function focusPosInEditor(pos: DocPos) {
-  if (!runtimeStore.isContentView) runtimeStore.currentView = View.Content
-  tryRaf(() => {
-    if (!staticStore.editorHook || staticStore.editorHook.view !== View.Content) return
-    staticStore.editorHook.scrollTo(pos.lineIndex, { align: 'nearest' })
-    return true
-  })
+  let shouldSwitchToContent = false
   if (pos.field === 'word') {
     const line = coreStore.lyricLines[pos.lineIndex]!
     const word = line.words[pos.wordIndex]!
     runtimeStore.selectLineWord(line, word)
-    tryRaf(() => {
-      const hook = staticStore.wordHooks.get(word.id)
-      if (!hook) return
-      hook.hightLightInput()
-      return true
-    })
+    if (!word.word.trim()) shouldSwitchToContent = true
+    if (runtimeStore.isContentView || shouldSwitchToContent)
+      tryRaf(() => {
+        const hook = staticStore.wordHooks.get(word.id)
+        if (!hook) return
+        hook.hightLightInput()
+        return true
+      })
   } else if (pos.field === 'translation' || pos.field === 'roman') {
+    shouldSwitchToContent = true
     const line = coreStore.lyricLines[pos.lineIndex]!
     runtimeStore.selectLine(line)
     tryRaf(() => {
@@ -524,6 +522,19 @@ function focusPosInEditor(pos: DocPos) {
       return true
     })
   }
+  if (shouldSwitchToContent) {
+    if (!runtimeStore.isContentView) runtimeStore.currentView = View.Content
+    tryRaf(() => {
+      if (!staticStore.editorHook || staticStore.editorHook.view !== View.Content) return
+      staticStore.editorHook.scrollTo(pos.lineIndex, { align: 'nearest' })
+      return true
+    })
+  } else
+    tryRaf(() => {
+      if (!staticStore.editorHook) return
+      staticStore.editorHook.scrollTo(pos.lineIndex, { align: 'nearest' })
+      return true
+    })
 }
 function isPosMatch(pos: DocPos, pattern: RegExp): boolean {
   const line = coreStore.lyricLines[pos.lineIndex]!
