@@ -14,6 +14,7 @@ import '@/styles/fonts/index.scss'
 
 import FocusTrap from 'primevue/focustrap'
 import KeyFilter from 'primevue/keyfilter'
+import ToastService from 'primevue/toastservice';
 
 const app = createApp(App)
 
@@ -48,5 +49,6 @@ app.use(FloatingVue, {
 
 app.directive('focustrap', FocusTrap)
 app.directive('keyfilter', KeyFilter)
+app.use(ToastService);
 
 app.mount('#app')

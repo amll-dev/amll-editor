@@ -14,6 +14,7 @@
     </main>
   </template>
   <Player />
+  <Toast />
 </template>
 
 <script setup lang="ts">
@@ -29,6 +30,7 @@ import Sidebar from './components/sidebar/Sidebar.vue'
 import { usePreferenceStore } from './stores/preference'
 import { emitGlobalKeyboard, matchHotkeyInMap, parseKeyEvent } from './utils/hotkey'
 import { useCoreStore } from './stores/core'
+import { Toast } from 'primevue'
 editHistory.init()
 
 const preferenceStore = usePreferenceStore()
@@ -93,15 +95,21 @@ onUnmounted(() => {
 :root {
   font-size: 14px;
 }
-#app {
-  margin: 0;
-  padding: 0.5rem 0;
+body {
   position: fixed;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
-
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+#app {
+  flex: 1;
+  height: 0;
+  margin: 0;
+  padding: 0.5rem 0;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;

@@ -45,11 +45,12 @@
           <IftaLabel>
             <InputText
               id="findInput"
-              v-model="findInput"
+              v-model.escapeEnter="findInput"
               fluid
               :placeholder="showOptions ? '留空仅匹配属性' : undefined"
               :invalid="findInputInvalid"
               ref="findInputComponent"
+              @keydown="handleFindInputKeydown"
             />
             <label for="findInput">查找内容</label>
           </IftaLabel>
@@ -70,9 +71,10 @@
           <IftaLabel>
             <InputText
               id="replaceInput"
-              v-model="replaceInput"
+              v-model.escapeEnter="replaceInput"
               fluid
               :placeholder="showOptions ? '留空仅替换属性' : undefined"
+              @keydown="handleReplaceInputKeydown"
             />
             <label for="replaceInput">替换为</label>
           </IftaLabel>
@@ -167,7 +169,7 @@
 
 <script setup lang="ts">
 import { useCoreStore, type LyricLine, type LyricWord } from '@/stores/core'
-import { useRuntimeStore } from '@/stores/runtime'
+import { useRuntimeStore, View } from '@/stores/runtime'
 import { useStaticStore } from '@/stores/static'
 import {
   Button,
@@ -178,16 +180,19 @@ import {
   RadioButton,
   ToggleSwitch,
 } from 'primevue'
-import { computed, nextTick, ref, useTemplateRef, watch } from 'vue'
+import { computed, nextTick, ref, shallowRef, useTemplateRef, watch } from 'vue'
 import InputText from '../repack/InputText.vue'
 import { useGlobalKeyboard } from '@/utils/hotkey'
 import { usePreferenceStore } from '@/stores/preference'
+import { tryRaf } from '@/utils/tryRaf'
+import { useToast } from 'primevue/usetoast'
 
 const [visible] = defineModel<boolean>({ required: true })
 
 const coreStore = useCoreStore()
 const runtimeStore = useRuntimeStore()
 const staticStore = useStaticStore()
+const toast = useToast()
 
 const showReplace = ref(false)
 const showOptions = ref(false)
@@ -218,11 +223,6 @@ watch(showOptions, (newVal) => {
     matchFullField.value = false
   }
 })
-
-function handleFindNext() {}
-function handleFindPrev() {}
-function handleReplace() {}
-function handleReplaceAll() {}
 
 useGlobalKeyboard('find', () => {
   if (visible.value && !showReplace.value) {
@@ -309,6 +309,8 @@ type DocPos = {
       wordIndex: number
     }
 )
+type Jumper = (pos: DocPos | null) => DocPos | null
+
 function getCurrPos(): DocPos | null {
   const currLine = runtimeStore.getFirstSelectedLine()
   if (!currLine) return null
@@ -325,12 +327,20 @@ function getCurrPos(): DocPos | null {
   const focusedEl = document.activeElement as HTMLElement | null
   if (!focusedEl) return null
   const lineFieldKey = focusedEl.dataset.lineFieldKey as 'translation' | 'roman' | undefined
-  if (!lineFieldKey) return null
-  return {
-    lineIndex,
-    field: lineFieldKey,
-  }
+  if (lineFieldKey)
+    return {
+      lineIndex,
+      field: lineFieldKey,
+    }
+  return { lineIndex, field: 'word', wordIndex: -1 }
 }
+const currPos = shallowRef<DocPos | null>(null)
+watch(
+  [() => runtimeStore.selectedLines, () => runtimeStore.selectedWords],
+  () => (currPos.value = getCurrPos()),
+  { immediate: true },
+)
+
 const preferenceStore = usePreferenceStore()
 const getFirstPos = () => getNextPos({ lineIndex: 0, field: 'word', wordIndex: -1 })
 function getNextPos(nullablePos: DocPos | null): DocPos | null {
@@ -342,8 +352,8 @@ function getNextPos(nullablePos: DocPos | null): DocPos | null {
   // false: word -> roman -> translation
   const firstField = swapTranslateRoman ? 'roman' : 'translation'
   function nextField(field: 'translation' | 'roman'): 'translation' | 'roman' | undefined {
-    if (!swapTranslateRoman && field === 'roman') return 'translation'
-    else if (swapTranslateRoman && field === 'translation') return 'roman'
+    if (!swapTranslateRoman && field === 'translation') return 'roman'
+    else if (swapTranslateRoman && field === 'roman') return 'translation'
   }
   const currLine = coreStore.lyricLines[pos.lineIndex]!
   if (pos.field === 'word') {
@@ -367,7 +377,7 @@ function getNextPos(nullablePos: DocPos | null): DocPos | null {
       field: nextFieldKey,
     }
   const nextLineIndex = pos.lineIndex + 1
-  if (nextLineIndex < coreStore.lyricLines.length) return null
+  if (nextLineIndex >= coreStore.lyricLines.length) return null
   if (coreStore.lyricLines[nextLineIndex]!.words.length)
     return {
       lineIndex: nextLineIndex,
@@ -388,8 +398,8 @@ function getPrevPos(nullablePos: DocPos | null): DocPos | null {
   // false: word -> roman -> translation
   const lastField = swapTranslateRoman ? 'translation' : 'roman'
   function prevField(field: 'translation' | 'roman'): 'translation' | 'roman' | undefined {
-    if (!swapTranslateRoman && field === 'translation') return 'roman'
-    else if (swapTranslateRoman && field === 'roman') return 'translation'
+    if (!swapTranslateRoman && field === 'roman') return 'translation'
+    else if (swapTranslateRoman && field === 'translation') return 'roman'
   }
   if (pos.field === 'word') {
     const prevWordIndex = pos.wordIndex - 1
@@ -414,15 +424,15 @@ function getPrevPos(nullablePos: DocPos | null): DocPos | null {
       lineIndex: pos.lineIndex,
       field: prevFieldKey,
     }
+  const currLine = coreStore.lyricLines[pos.lineIndex]!
+  if (currLine.words.length)
+    return {
+      lineIndex: pos.lineIndex,
+      field: 'word',
+      wordIndex: currLine.words.length - 1,
+    }
   const prevLineIndex = pos.lineIndex - 1
   if (prevLineIndex < 0) return null
-  const prevLine = coreStore.lyricLines[prevLineIndex]!
-  if (prevLine.words.length)
-    return {
-      lineIndex: prevLineIndex,
-      field: 'word',
-      wordIndex: prevLine.words.length - 1,
-    }
   return {
     lineIndex: prevLineIndex,
     field: lastField,
@@ -442,17 +452,155 @@ function checkPosInRange(pos: DocPos): boolean {
   if (pos.field === 'roman' && !findInRoman.value) return false
   return true
 }
-function rangedJumpPos(fromPos: DocPos | null, jumper: (pos: DocPos | null) => DocPos | null) {
+function rangedJumpPos(
+  fromPos: DocPos | null,
+  jumper: Jumper,
+  forceDisableWrap = false,
+): DocPos | null {
   if (!fromPos) return jumper(null)
   let pos: DocPos | null = fromPos
   while (true) {
     const nextPos = jumper(pos)
     if (!nextPos) {
-      if (wrapSearch.value) return jumper(null)
+      if (wrapSearch.value && !forceDisableWrap) return jumper(null)
       return null
     }
     if (checkPosInRange(nextPos)) return nextPos
     pos = nextPos
+  }
+}
+function focusPosInEditor(pos: DocPos) {
+  if (!runtimeStore.isContentView) runtimeStore.currentView = View.Content
+  tryRaf(() => {
+    if (!staticStore.editorHook || staticStore.editorHook.view !== View.Content) return
+    staticStore.editorHook.scrollTo(pos.lineIndex, { align: 'center' })
+    return true
+  })
+  if (pos.field === 'word') {
+    const line = coreStore.lyricLines[pos.lineIndex]!
+    const word = line.words[pos.wordIndex]!
+    runtimeStore.selectLineWord(line, word)
+    tryRaf(() => {
+      const hook = staticStore.wordHooks.get(word.id)
+      if (!hook) return
+      hook.hightLightInput()
+      return true
+    })
+  } else if (pos.field === 'translation' || pos.field === 'roman') {
+    const line = coreStore.lyricLines[pos.lineIndex]!
+    runtimeStore.selectLine(line)
+    tryRaf(() => {
+      const hook = staticStore.lineHooks.get(line.id)
+      if (!hook) return
+      if (pos.field === 'translation') hook.hightLightTranslation()
+      else hook.hightLightRoman()
+      return true
+    })
+  }
+}
+function isPosMatch(pos: DocPos, pattern: RegExp): boolean {
+  const line = coreStore.lyricLines[pos.lineIndex]!
+  let textToMatch = ''
+  if (pos.field === 'word') {
+    if (pos.wordIndex < 0) return false
+    const word = line.words[pos.wordIndex]!
+    textToMatch = word.word
+  } else if (pos.field === 'translation') {
+    textToMatch = line.translation
+  } else if (pos.field === 'roman') {
+    textToMatch = line.romanization
+  }
+  console.log('Matching text:', textToMatch, 'with pattern:', pattern)
+  const result = textToMatch.search(pattern) !== -1
+  console.log('Match result:', result)
+  return result
+}
+function replacePosText(pos: DocPos, pattern: RegExp, replaceText: string) {
+  const line = coreStore.lyricLines[pos.lineIndex]!
+  if (pos.field === 'word' && findInWords.value) {
+    const word = line.words[pos.wordIndex]!
+    word.word = word.word.replace(pattern, replaceText)
+  } else if (pos.field === 'translation' && findInTranslations.value) {
+    line.translation = line.translation.replace(pattern, replaceText)
+  } else if (pos.field === 'roman' && findInRoman.value) {
+    line.romanization = line.romanization.replace(pattern, replaceText)
+  }
+}
+function arePosEqual(a: DocPos | null, b: DocPos | null): boolean {
+  if (a === b) return true
+  if (!a || !b) return false
+  if (a.lineIndex !== b.lineIndex) return false
+  if (a.field !== b.field) return false
+  if (a.field === 'word' && b.field === 'word' && a.wordIndex !== b.wordIndex) return false
+  return true
+}
+function handleFind(jumper: Jumper, noAlert = false) {
+  const startingPos = currPos.value ? rangedJumpPos(currPos.value, jumper) : getFirstPos()
+  console.log('Starting Pos:', startingPos)
+  const pattern = compiledPattern.value
+  let firstFlag = true
+  if (!pattern) return
+  for (
+    let pos = startingPos;
+    pos && (firstFlag || !arePosEqual(pos, startingPos)); // avoid infinite loop when no match
+    pos = rangedJumpPos(pos, jumper)
+  ) {
+    firstFlag = false
+    if (!isPosMatch(pos, pattern)) continue
+    focusPosInEditor(pos)
+    currPos.value = pos
+    return
+  }
+  runtimeStore.clearSelection()
+  console.log('No match found')
+  if (!noAlert)
+    toast.add({
+      severity: 'warn',
+      summary: '找不到结果',
+      detail: wrapSearch.value
+        ? '全文搜索完毕，未找到匹配项。'
+        : '已到达文档末端，无匹配项。\n启用循环搜索可从头开始继续搜索。',
+      life: 3000,
+    })
+}
+function handleFindNext() {
+  handleFind(getNextPos)
+}
+function handleFindPrev() {
+  handleFind(getPrevPos)
+}
+function handleReplace() {
+  console.log('Current Pos:', currPos.value)
+  const pattern = compiledPattern.value
+  const replacement = replaceInput.value
+  if (!pattern) return
+  if (currPos.value && isPosMatch(currPos.value, pattern)) {
+    console.log('Replacing at current position')
+    replacePosText(currPos.value, pattern, replacement)
+    handleFind(getNextPos, true)
+  } else handleFind(getNextPos)
+}
+function handleReplaceAll() {
+  const pattern = compiledPattern.value
+  if (!pattern) return
+  for (let pos = getFirstPos(); pos; pos = rangedJumpPos(pos, getNextPos, true)) {
+    if (!isPosMatch(pos, pattern)) continue
+    replacePosText(pos, pattern, replaceInput.value)
+  }
+}
+function handleFindInputKeydown(e: KeyboardEvent) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault()
+    handleFindNext()
+  } else if (e.key === 'Enter' && e.shiftKey) {
+    e.preventDefault()
+    handleFindPrev()
+  }
+}
+function handleReplaceInputKeydown(e: KeyboardEvent) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault()
+    handleReplace()
   }
 }
 </script>
