@@ -81,7 +81,7 @@ const runtimeStore = useRuntimeStore()
 const viewOptions = [
   { name: '内容', value: View.Content },
   { name: '时轴', value: View.Timing },
-  { name: '预览', value: View.Preview, disabled: true },
+  { name: '预览', value: View.Preview },
 ]
 const stateToView = () => viewOptions.find((v) => v.value === runtimeStore.currentView)!
 const viewHandler = ref<(typeof viewOptions)[number] | null>(stateToView())

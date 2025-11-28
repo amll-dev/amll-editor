@@ -1,7 +1,9 @@
 <template>
   <Titlebar />
   <template v-if="runtimeStore.isPreviewView">
-    <main></main>
+    <main>
+      <Preview class="editor" />
+    </main>
   </template>
   <template v-else>
     <Ribbon />
@@ -22,6 +24,7 @@ import Titlebar from './components/titlebar/Titlebar.vue'
 import Ribbon from './components/ribbon/Ribbon.vue'
 import ContentEditor from './components/editor/content/ContentEditor.vue'
 import TimingEditor from './components/editor/timing/TimingEditor.vue'
+import Preview from './components/editor/preview/Preview.vue'
 import Player from './components/audio/Player.vue'
 import { useRuntimeStore, View } from './stores/runtime'
 import editHistory from './stores/editHistory'
@@ -34,7 +37,6 @@ import {
   parseKeyEvent,
   shouldEscapeInInput,
 } from './utils/hotkey'
-import { useCoreStore } from './stores/core'
 import { Toast } from 'primevue'
 editHistory.init()
 
