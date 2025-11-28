@@ -3,21 +3,24 @@ import { useCoreStore, type LyricLine, type LyricWord, type Metadata } from './c
 import { useRuntimeStore, type View } from './runtime'
 import cloneDeep from 'lodash-es/cloneDeep'
 import { useStaticStore } from './static'
+import { tryRaf } from '@/utils/tryRaf'
 const staticStore = useStaticStore()
 
+interface SnapShotRuntime {
+  currentView: View
+  selectedLineIds: string[]
+  selectedWordIds: string[]
+  lastTouchedLineId: string | undefined
+  lastTouchedWordId: string | undefined
+}
 interface Snapshot {
   timestamp: number
   core: {
     metadata: Metadata
     lyricLines: LyricLine[]
   }
-  runtime: {
-    currentView: View
-    selectedLineIds: string[]
-    selectedWordIds: string[]
-    lastTouchedLineId: string | undefined
-    lastTouchedWordId: string | undefined
-  }
+  firstRuntime: SnapShotRuntime
+  lastRuntime?: SnapShotRuntime
 }
 
 const snapshotList = new Map<number, Snapshot>()
@@ -40,33 +43,60 @@ function init() {
   snapshotList.clear()
   take()
   const coreStore = useCoreStore()
-  shutdownHook = watch(
-    coreStore,
+  const runtimeStore = useRuntimeStore()
+  let isTakingSnapshot = false
+  const coreStoreWatcher = watch(
+    [() => coreStore.lyricLines, () => coreStore.metadata],
     () => {
-      if (!stopRecording) nextTick(() => take())
+      if (stopRecording) return
+      isTakingSnapshot = true
+      nextTick(() => {
+        take()
+        isTakingSnapshot = false
+      })
     },
     { deep: true },
   )
+  const runtimeStoreWatcher = watch(
+    [
+      () => runtimeStore.currentView,
+      () => runtimeStore.selectedLines,
+      () => runtimeStore.selectedWords,
+    ],
+    () => {
+      if (stopRecording || isTakingSnapshot) return
+      const currentSnapshot = snapshotList.get(state.current)
+      if (!currentSnapshot) return
+      currentSnapshot.lastRuntime = takeRuntime()
+    },
+    { deep: true },
+  )
+  shutdownHook = () => {
+    coreStoreWatcher()
+    runtimeStoreWatcher()
+  }
 }
 
-function take() {
+function takeRuntime(): SnapShotRuntime {
   const runtimeStore = useRuntimeStore()
+  return {
+    currentView: toRaw(runtimeStore.currentView),
+    selectedLineIds: [...runtimeStore.selectedLines].map((l) => l.id),
+    selectedWordIds: [...runtimeStore.selectedWords].map((w) => w.id),
+    lastTouchedLineId: staticStore.lastTouchedLine?.id,
+    lastTouchedWordId: staticStore.lastTouchedWord?.id,
+  }
+}
+function take() {
   const coreStore = useCoreStore()
-
-  const snapshot: Snapshot = cloneDeep({
+  const snapshot: Snapshot = {
     timestamp: Date.now(),
-    core: {
+    core: cloneDeep({
       metadata: toRaw(coreStore.metadata),
       lyricLines: toRaw(coreStore.lyricLines),
-    },
-    runtime: {
-      currentView: toRaw(runtimeStore.currentView),
-      selectedLineIds: [...runtimeStore.selectedLines].map((l) => l.id),
-      selectedWordIds: [...runtimeStore.selectedWords].map((w) => w.id),
-      lastTouchedLineId: staticStore.lastTouchedLine?.id,
-      lastTouchedWordId: staticStore.lastTouchedWord?.id,
-    },
-  })
+    }),
+    firstRuntime: takeRuntime(),
+  }
   snapshotList.set(++state.current, snapshot)
   if (state.current < state.head)
     for (let i = state.head; i > state.current; --i) snapshotList.delete(i)
@@ -74,43 +104,68 @@ function take() {
   if (snapshotList.size > maxLength) snapshotList.delete(state.tail++)
 }
 
-function wayback(snapshot: Snapshot) {
+function wayback(snapshot: Readonly<Snapshot>, isRedo = false) {
+  snapshot = cloneDeep(snapshot)
+  // cloneDeep: avoid snapshot objects linking back into coreStore reactive objects.
+  // If not cloned, restoring would cause snapshot to share references with the editor,
+  // and any later edits would corrupt historical snapshots.
+
+  const snapshotRuntime = isRedo
+    ? snapshot.firstRuntime
+    : (snapshot.lastRuntime ?? snapshot.firstRuntime)
+  const snapshotCore = snapshot.core
   stopRecording = true
   const runtimeStore = useRuntimeStore()
   const coreStore = useCoreStore()
   coreStore.metadata.length = 0
-  snapshot.core.metadata.forEach(({ key, values }) => coreStore.metadata.push({ key, values }))
-  coreStore.lyricLines.splice(0, coreStore.lyricLines.length, ...snapshot.core.lyricLines)
-  runtimeStore.currentView = snapshot.runtime.currentView
+  snapshotCore.metadata.forEach(({ key, values }) => coreStore.metadata.push({ key, values }))
+  coreStore.lyricLines.splice(0, coreStore.lyricLines.length, ...snapshotCore.lyricLines)
+  runtimeStore.currentView = snapshotRuntime.currentView
   const selectedLines: LyricLine[] = []
   const selectedWords: LyricWord[] = []
   let lastTouchedLine: LyricLine | null = null
   let lastTouchedWord: LyricWord | null = null
-  for (const line of coreStore.lyricLines) {
-    if (snapshot.runtime.selectedLineIds.includes(line.id)) selectedLines.push(line)
-    if (snapshot.runtime.lastTouchedLineId === line.id) lastTouchedLine = line
+  let firstLineIndex: number | undefined = undefined
+  for (const [index, line] of coreStore.lyricLines.entries()) {
+    // Use coreStore.lyricLines instead of snapshotCore.lyricLines:
+    // the former is proxified, !== the latter
+    if (snapshotRuntime.selectedLineIds.includes(line.id)) {
+      selectedLines.push(line)
+      firstLineIndex ??= index
+    }
+    if (snapshotRuntime.lastTouchedLineId === line.id) lastTouchedLine = line
     for (const word of line.words) {
-      if (snapshot.runtime.selectedWordIds.includes(word.id)) selectedWords.push(word)
-      if (snapshot.runtime.lastTouchedWordId === word.id) lastTouchedWord = word
+      if (snapshotRuntime.selectedWordIds.includes(word.id)) selectedWords.push(word)
+      if (snapshotRuntime.lastTouchedWordId === word.id) lastTouchedWord = word
     }
   }
   if (selectedWords.length) runtimeStore.selectWord(...selectedWords)
   else runtimeStore.selectLine(...selectedLines)
   staticStore.lastTouchedLine = lastTouchedLine
   staticStore.lastTouchedWord = lastTouchedWord
+  if (firstLineIndex !== undefined)
+    tryRaf(() => {
+      const hook = staticStore.editorHook
+      if (hook?.view === snapshotRuntime.currentView) {
+        hook.scrollTo(firstLineIndex, { align: 'nearest' })
+        return true
+      }
+    })
   setTimeout(() => (stopRecording = false), 0)
 }
 
 function undo() {
   if (!undoable.value) return null
-  const snapshot = cloneDeep(snapshotList.get(--state.current)!)
+  const snapshot = snapshotList.get(--state.current)
+  if (!snapshot) throw new Error('Snapshot not found during undo')
   wayback(snapshot)
 }
 
 function redo() {
   if (!redoable.value) return null
-  const snapshot = cloneDeep(snapshotList.get(++state.current)!)
-  wayback(snapshot)
+  const snapshot = snapshotList.get(++state.current)
+  if (!snapshot) throw new Error('Snapshot not found during redo')
+  wayback(snapshot, true)
 }
 
 function clear() {
