@@ -76,7 +76,7 @@ input {
 }
 
 .p-slider-handle {
-  box-shadow: 0 0 0 2px inset var(--p-slider-handle-background);
+  box-shadow: 0 0 0 2px inset var(--p-slider-handle-background) !important;
   background-color: var(--p-slider-handle-content-background) !important;
   &::before {
     content: unset !important;
