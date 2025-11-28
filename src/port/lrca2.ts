@@ -66,10 +66,10 @@ export function parseLRCa2(lrc: string): Persist {
       const startTime = lineItems[index - 1] ?? lineStartTime
       const endTime = lineItems[index + 1] ?? startTime
       if (typeof startTime !== 'number' || typeof endTime !== 'number') return
-      if (item.startsWith(' ') && words.at(-1)?.word.trim())
-        words.push(coreCreate.newWord({ word: ' ' }))
-      words.push(coreCreate.newWord({ word: item.trim(), startTime, endTime }))
-      if (item.endsWith(' ')) words.push(coreCreate.newWord({ word: ' ' }))
+      if (item.startsWith(' ') && words.at(-1)?.text.trim())
+        words.push(coreCreate.newWord({ text: ' ' }))
+      words.push(coreCreate.newWord({ text: item.trim(), startTime, endTime }))
+      if (item.endsWith(' ')) words.push(coreCreate.newWord({ text: ' ' }))
     })
     const lineEndTime = words.at(-1)?.endTime ?? lineStartTime
     lyricLines.push(
@@ -90,16 +90,16 @@ export function stringifyLRCa2(data: Persist): string {
   return data.lyricLines
     .map((line) => {
       if (line.words.length === 0) return `[${ms2str(line.startTime)}]`
-      const normalizedWords: { word: string; startTime: number; endTime: number }[] = []
+      const normalizedWords: { text: string; startTime: number; endTime: number }[] = []
       line.words.forEach((w) => {
-        if (!w.word.trim() && normalizedWords.length) {
-          normalizedWords.at(-1)!.word += w.word
+        if (!w.text.trim() && normalizedWords.length) {
+          normalizedWords.at(-1)!.text += w.text
           return
         }
-        normalizedWords.push({ word: w.word, startTime: w.startTime, endTime: w.endTime })
+        normalizedWords.push({ text: w.text, startTime: w.startTime, endTime: w.endTime })
       })
       const lineItems: (number | string)[] = []
-      normalizedWords.forEach((w) => lineItems.push(w.startTime, w.word))
+      normalizedWords.forEach((w) => lineItems.push(w.startTime, w.text))
       lineItems.push(normalizedWords.at(-1)!.endTime)
       const lineStr =
         `[${ms2str(line.startTime)}]` +

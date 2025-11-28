@@ -42,7 +42,7 @@
         @keydown="handleKeydown"
         @focus="handleFocus"
         @compositionend="handleCompositionEnd"
-        @blur="props.word.word = inputModel"
+        @blur="props.word.text = inputModel"
       />
     </div>
   </div>
@@ -81,13 +81,13 @@ const inputComponent = useTemplateRef('wordInputComponent')
 const inputEl = shallowRef<HTMLInputElement | null | undefined>(null)
 const { focused } = useFocus(inputEl)
 onMounted(() => (inputEl.value = inputComponent.value?.input))
-const inputModel = ref(props.word.word)
+const inputModel = ref(props.word.text)
 watch(
-  () => props.word.word,
+  () => props.word.text,
   (val) => (inputModel.value = val),
 )
 watch(inputModel, (val) => {
-  if (!focused.value) props.word.word = val
+  if (!focused.value) props.word.text = val
 })
 
 // Selection
@@ -195,8 +195,8 @@ function handleKeydown(event: KeyboardEvent) {
       event.preventDefault()
       const prevWord = props.parent.words[props.index - 1]
       if (!prevWord) return
-      const cursorPos = prevWord.word.length
-      prevWord.word += el.value
+      const cursorPos = prevWord.text.length
+      prevWord.text += el.value
       if (props.word.startTime && props.word.endTime) {
         prevWord.endTime = props.word.endTime
       }
@@ -234,12 +234,12 @@ function handleKeydown(event: KeyboardEvent) {
       const totDuration = props.word.endTime - props.word.startTime
       const breakTime = props.word.startTime + (totDuration * breakIndex) / (el.value.length || 1)
       const newWord = coreStore.newWord({
-        word: el.value.slice(breakIndex),
+        text: el.value.slice(breakIndex),
         startTime: breakTime,
         endTime: props.word.endTime,
       })
       props.word.endTime = breakTime
-      props.word.word = el.value.slice(0, breakIndex)
+      props.word.text = el.value.slice(0, breakIndex)
       props.parent.words.splice(props.index + 1, 0, newWord)
       runtimeStore.selectLineWord(props.parent, newWord)
       nextTick(() => staticStore.wordHooks.get(newWord.id)?.focusInput(0))
@@ -267,7 +267,7 @@ const hooks: WordComponentActions = {
     }
     if (position === undefined || Number.isNaN(position)) inputEl.value.select()
     else if (position < 0) {
-      const length = props.word.word.length
+      const length = props.word.text.length
       const cursor = length + position + 1
       inputEl.value.setSelectionRange(cursor, cursor)
     } else inputEl.value.setSelectionRange(position, position)

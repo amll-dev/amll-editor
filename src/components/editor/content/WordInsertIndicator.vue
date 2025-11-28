@@ -66,7 +66,7 @@ function handleDrop(e: DragEvent) {
     }
     const isBegin = props.index === 0
     const isEnd = props.index === props.parent.words.length
-    const placeholder = coreStore.newWord({ word: '#PLACEHOLDER#', bookmarked: true })
+    const placeholder = coreStore.newWord({ text: '#PLACEHOLDER#', bookmarked: true })
     props.parent.words.splice(props.index, 0, placeholder)
     coreStore.deleteWord(...pendingWords)
     const insertIndex = props.parent.words.indexOf(placeholder)

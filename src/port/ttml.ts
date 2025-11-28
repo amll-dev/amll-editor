@@ -84,7 +84,7 @@ export function parseTTML(ttmlString: string): Persist {
       let textContent = child.textContent || ''
       if (isText(child)) {
         const word = coreCreate.newWord({
-          word: textContent,
+          text: textContent,
         })
         line.words.push(word)
       } else if (isElement(child) && matchTag(child, 'span')) {
@@ -100,7 +100,7 @@ export function parseTTML(ttmlString: string): Persist {
           line.romanization = textContent
         } else {
           const word = coreCreate.newWord({
-            word: textContent,
+            text: textContent,
             startTime: safeStr2ms(spanAttrs.get('begin')),
             endTime: safeStr2ms(spanAttrs.get('end')),
             placeholdingBeat: Number(spanAttrs.get('amll:empty-beat') || '0') || 0,
@@ -124,8 +124,8 @@ export function parseTTML(ttmlString: string): Persist {
     if (removeBrace && line.words.length) {
       const firstWord = line.words[0]!
       const lastWord = line.words.at(-1)!
-      firstWord.word = firstWord.word.replace(/^\(/, '')
-      lastWord.word = lastWord.word.replace(/\)$/, '')
+      firstWord.text = firstWord.text.replace(/^\(/, '')
+      lastWord.text = lastWord.text.replace(/\)$/, '')
     }
   }
   for (const rawLine of rawLines) processLine(rawLine)
@@ -182,12 +182,12 @@ export function stringifyTTML(data: Persist) {
 
     // Contents
     for (const [index, word] of line.words.entries()) {
-      let content = word.word
+      let content = word.text
       if (line.background) {
         if (index === 0) content = `(${content}`
         else if (index === line.words.length - 1) content = `${content})`
       }
-      if (word.word.trim() === '') {
+      if (word.text.trim() === '') {
         parentNode.appendChild(doc.createTextNode(content))
         continue
       }

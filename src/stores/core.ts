@@ -22,7 +22,7 @@ const newWord = (attrs: Partial<LyricWord> = {}): LyricWord =>
   reactive({
     startTime: 0,
     endTime: 0,
-    word: '',
+    text: '',
     placeholdingBeat: 0,
     currentplaceholdingBeat: 0,
     bookmarked: false,
@@ -39,17 +39,17 @@ const line: LyricLine = newLine({
 const word1: LyricWord = newWord({
   startTime: 0,
   endTime: 1000,
-  word: 'Hello',
+  text: 'Hello',
 })
 const word2: LyricWord = newWord({
   startTime: 0,
   endTime: 0,
-  word: ' ',
+  text: ' ',
 })
 const word3: LyricWord = newWord({
   startTime: 2300,
   endTime: 3000,
-  word: 'world!',
+  text: 'world!',
   placeholdingBeat: 3,
 })
 line.words.push(word1, word2, word3)
@@ -151,7 +151,7 @@ export interface LyricWord {
   /** 单词的结束时间 */
   endTime: number
   /** 词内容 */
-  word: string
+  text: string
   /** 占位拍，用于日语多音节汉字时轴 */
   placeholdingBeat: number
   /** 当前占位拍 */

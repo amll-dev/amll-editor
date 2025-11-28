@@ -14,7 +14,7 @@ export function parseSeparatePlainText(
     return coreCreate.newLine({
       words: [
         coreCreate.newWord({
-          word: orig || '',
+          text: orig || '',
         }),
       ],
       translation: trans || '',
@@ -48,7 +48,7 @@ export function parseInterleavedPlainText(
       coreCreate.newLine({
         words: [
           coreCreate.newWord({
-            word: original,
+            text: original,
           }),
         ],
         translation,

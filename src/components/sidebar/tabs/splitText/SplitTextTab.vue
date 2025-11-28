@@ -174,7 +174,7 @@ async function applyToLines(lines: LyricLine[]) {
   const processor = selectedEngine.value.processor
   working.value = true
   const results = await processor(
-    lines.map((line) => line.words.map((w) => w.word).join('')),
+    lines.map((line) => line.words.map((w) => w.text).join('')),
     customRewrites.filter(({ target }) => target.trim()),
     caseSensitive.value,
   )
@@ -189,15 +189,15 @@ async function applyToLines(lines: LyricLine[]) {
   lines.forEach((line, lineIndex) => {
     const result = results[lineIndex]!
     if (result.length === line.words.length) {
-      const getText = (w: (typeof result)[number]) => (typeof w === 'string' ? w : w.word)
-      const allTheSame = line.words.every(({ word }, i) => word === getText(result[i]!))
+      const getText = (w: (typeof result)[number]) => (typeof w === 'string' ? w : w.text)
+      const allTheSame = line.words.every(({ text }, i) => text === getText(result[i]!))
       if (allTheSame) return // No change
     }
-    const newPartialWords = result.map((word) => (typeof word === 'string' ? { word } : word))
+    const newPartialWords = result.map((word) => (typeof word === 'string' ? { text: word } : word))
     let currOldPos = 0
     type XY = [number, number]
     const oldPosTime: XY[] = line.words.flatMap((w) => {
-      const text = w.word.replace(filterRegex, '')
+      const text = w.text.replace(filterRegex, '')
       if (text.length === 0) {
         // Skip filtered-out words
         return []
@@ -218,7 +218,7 @@ async function applyToLines(lines: LyricLine[]) {
      */
     const maxOldPos = currOldPos
     const newMaxPos = newPartialWords
-      .map((w) => w.word.replace(filterRegex, '').length)
+      .map((w) => w.text.replace(filterRegex, '').length)
       .reduce((a, b) => a + b, 0)
     if (!maxOldPos || !newMaxPos) {
       // All filtered out, just reset timings
@@ -256,7 +256,7 @@ async function applyToLines(lines: LyricLine[]) {
       return Math.round(y1 + (y2 - y1) * t)
     }
     line.words = newPartialWords.map((word) => {
-      const charCount = word.word.replace(filterRegex, '').length
+      const charCount = word.text.replace(filterRegex, '').length
       const startRatio = currNewPos / newMaxPos
       const startTime = getTimeAtRatio(startRatio)
       const endRatio = (currNewPos += charCount) / newMaxPos
@@ -295,8 +295,8 @@ function handleDrop() {
         continuity = false
         continue
       }
-      if (continuity && words.length) words[words.length - 1] += word.word
-      else words.push(word.word)
+      if (continuity && words.length) words[words.length - 1] += word.text
+      else words.push(word.text)
       continuity = true
     }
     continuity = false

@@ -50,7 +50,7 @@ export function parseLRC(lrc: string): Persist {
         coreCreate.newLine({
           startTime: ts,
           endTime: ts,
-          words: [coreCreate.newWord({ word: lineStr, startTime: ts, endTime: ts })],
+          words: [coreCreate.newWord({ text: lineStr, startTime: ts, endTime: ts })],
         }),
       )
     })
@@ -82,7 +82,7 @@ export function stringifyLRC(data: Persist): string {
       const min = Math.floor(line.startTime / 60000)
       const sec = Math.floor((line.startTime % 60000) / 1000)
       const ms = line.startTime % 1000
-      const text = line.words.map((w) => w.word).join('')
+      const text = line.words.map((w) => w.text).join('')
       return `[${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}.${String(
         ms,
       ).padStart(3, '0')}]${text}`

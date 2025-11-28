@@ -6,7 +6,7 @@ export interface Rewrite {
   target: string
   indices: number[]
 }
-export type SplittedWord = string | (Partial<LyricWord> & { word: string })
+export type SplittedWord = string | (Partial<LyricWord> & { text: LyricWord['text'] })
 export type Splitter = (
   strs: string[],
   rewrites: Readonly<Rewrite>[],

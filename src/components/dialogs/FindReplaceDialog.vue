@@ -309,7 +309,7 @@ function handleDrop() {
   dragCounter = 0
   runtimeStore.canDrop = false
   runtimeStore.isDraggingCopy = false
-  const text = (runtimeStore.getFirstSelectedWord()?.word || '').trim()
+  const text = (runtimeStore.getFirstSelectedWord()?.text || '').trim()
   if (!text.length) return
   if (useRegex.value) {
     findInput.value = escapeRegex(text)
@@ -536,7 +536,7 @@ function focusPosInEditor(pos: DocPos) {
     const line = coreStore.lyricLines[pos.lineIndex]!
     const word = line.words[pos.wordIndex]!
     runtimeStore.selectLineWord(line, word)
-    if (!word.word.trim()) shouldSwitchToContent = true
+    if (!word.text.trim()) shouldSwitchToContent = true
     if (runtimeStore.isContentView || shouldSwitchToContent)
       tryRaf(() => {
         const hook = staticStore.wordHooks.get(word.id)
@@ -599,7 +599,7 @@ function isPosMatch(pos: DocPos, pattern: RegExp): boolean {
   if (pos.field === 'word') {
     if (pos.wordIndex < 0) return false
     const word = line.words[pos.wordIndex]!
-    textToMatch = word.word
+    textToMatch = word.text
   } else if (pos.field === 'translation') {
     textToMatch = line.translation
   } else if (pos.field === 'roman') {
@@ -615,9 +615,9 @@ function replacePosText(pos: DocPos, pattern: RegExp, replaceText: string) {
   let changed = false
   if (pos.field === 'word' && findInWords.value) {
     const word = line.words[pos.wordIndex]!
-    const replaced = word.word.replace(pattern, replaceText)
-    changed = word.word !== replaced
-    word.word = replaced
+    const replaced = word.text.replace(pattern, replaceText)
+    changed = word.text !== replaced
+    word.text = replaced
   } else if (pos.field === 'translation' && findInTranslations.value) {
     const replaced = line.translation.replace(pattern, replaceText)
     changed = line.translation !== replaced
@@ -680,7 +680,7 @@ function handleFind(jumper: Jumper, noAlert = false) {
           ? line.words.slice(pos.wordIndex)
           : line.words.slice(0, pos.wordIndex + 1)
       const wordIndexOffset = direction === Direction.Next ? pos.wordIndex : 0
-      const wordsText = wordsToCheck.map((w) => w.word).join('')
+      const wordsText = wordsToCheck.map((w) => w.text).join('')
       const match = wordsText.match(pattern)
       if (!match) {
         pos = {
@@ -697,9 +697,9 @@ function handleFind(jumper: Jumper, noAlert = false) {
       let charCount = 0
       let matchWordStartIndex = -1
       let matchWordEndIndex = -1
-      for (const [index, { word }] of wordsToCheck.entries()) {
+      for (const [index, { text }] of wordsToCheck.entries()) {
         const startCharIndex = charCount
-        const endCharIndex = (charCount += word.length)
+        const endCharIndex = (charCount += text.length)
         if (startCharIndex <= matchBeginIndex && matchBeginIndex < endCharIndex) {
           matchWordStartIndex = index
         }

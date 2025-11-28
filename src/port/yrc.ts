@@ -28,7 +28,7 @@ export function parseYRC(yrc: string): Persist {
       const words = [...wordMatches].map((match) => {
         const [, wStartStr, wDurStr, wText] = match
         return coreCreate.newWord({
-          word: wText,
+          text: wText,
           startTime: Number(wStartStr),
           endTime: Number(wStartStr) + Number(wDurStr),
         })
@@ -57,7 +57,7 @@ export function stringifyYRC(data: Persist): string {
         .map((w) => {
           const wStart = w.startTime
           const wDur = w.endTime - w.startTime
-          return `(${wStart},${wDur},0)${w.word}`
+          return `(${wStart},${wDur},0)${w.text}`
         })
         .join('')
       return `[${lStart},${lDur}]${lWords}`

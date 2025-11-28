@@ -17,7 +17,7 @@
         style="color: var(--p-button-text-warn-color); margin-right: 0.3em"
       ></i>
       <span class="tword-text" @dblclick="handleTextDbClick">
-        {{ props.word.word }}
+        {{ props.word.text }}
       </span>
     </div>
     <Timestamp class="tword-timestamp" end v-model="props.word.endTime" v-tooltip="'词结束时间'" />

@@ -59,16 +59,16 @@ export function parseSPL(spl: string): Persist {
         lineStr = lineStr.slice(wordTimeStamp.length)
       }
     }
-    const words: { word: string; startTime: number | undefined; endTime: number | undefined }[] = []
+    const words: { text: string; startTime: number | undefined; endTime: number | undefined }[] = []
     lineItems.forEach((item, index) => {
       if (typeof item === 'number') return
       const startTime = lineItems[index - 1]
       const endTime = lineItems[index + 1]
       if (typeof startTime === 'string' || typeof endTime === 'string') return
-      if (item.startsWith(' ') && words.at(-1)?.word.trim())
-        words.push({ word: ' ', startTime: 0, endTime: 0 })
-      words.push({ word: item.trim(), startTime, endTime })
-      if (item.endsWith(' ')) words.push({ word: ' ', startTime: 0, endTime: 0 })
+      if (item.startsWith(' ') && words.at(-1)?.text.trim())
+        words.push({ text: ' ', startTime: 0, endTime: 0 })
+      words.push({ text: item.trim(), startTime, endTime })
+      if (item.endsWith(' ')) words.push({ text: ' ', startTime: 0, endTime: 0 })
     })
     lineTimeStamps.forEach((lineStartTime) => {
       lyricLines.push(
@@ -77,7 +77,7 @@ export function parseSPL(spl: string): Persist {
           endTime: words.at(-1)?.endTime ?? lineStartTime,
           words: words.map((w) =>
             coreCreate.newWord({
-              word: w.word,
+              text: w.text,
               startTime: w.startTime ?? lineStartTime,
               endTime: w.endTime ?? lineStartTime,
             }),
@@ -98,11 +98,11 @@ export function stringifySPL(data: Persist): string {
     if (line.words.length === 0) return `[${ms2str(line.startTime)}]`
     const normalizedWords: { word: string; startTime: number; endTime: number }[] = []
     line.words.forEach((w) => {
-      if (!w.word.trim() && normalizedWords.length) {
-        normalizedWords.at(-1)!.word += w.word
+      if (!w.text.trim() && normalizedWords.length) {
+        normalizedWords.at(-1)!.word += w.text
         return
       }
-      normalizedWords.push({ word: w.word, startTime: w.startTime, endTime: w.endTime })
+      normalizedWords.push({ word: w.text, startTime: w.startTime, endTime: w.endTime })
     })
     const lineItems: (number | string)[] = []
     normalizedWords.forEach((w) => lineItems.push(w.startTime, w.word))

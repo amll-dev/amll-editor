@@ -125,7 +125,7 @@ function placeholdingBeatInputs() {
     if (typeof phBeatInput.value !== 'number' || typeof currPhBeatInput.value !== 'number') return
     coreStore.lyricLines.forEach((line) => {
       line.words.forEach((word) => {
-        if (word.word !== setFirstItem.value?.word) return
+        if (word.text !== setFirstItem.value?.text) return
         word.placeholdingBeat = phBeatInput.value!
       })
     })

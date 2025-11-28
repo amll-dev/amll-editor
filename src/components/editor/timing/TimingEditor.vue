@@ -75,7 +75,7 @@ function findNextLineWord(
       if (wordIndex === -1) continue
       for (let i = wordIndex + 1; i < line.words.length; i++) {
         const nextWord = line.words[i]!
-        if (nextWord.word.trim()) return [lineIndex, line, nextWord]
+        if (nextWord.text.trim()) return [lineIndex, line, nextWord]
       }
       found = true
     } else {
@@ -98,7 +98,7 @@ function findLastLineWord(
       if (wordIndex === -1) continue
       for (let i = wordIndex - 1; i >= 0; i--) {
         const prevWord = line.words[i]!
-        if (prevWord.word.trim()) return [lineIndex, line, prevWord]
+        if (prevWord.text.trim()) return [lineIndex, line, prevWord]
       }
       found = true
     } else {
@@ -111,13 +111,13 @@ function findLastLineWord(
 }
 
 function isWordFirstOfLine(line: LyricLine, word: LyricWord) {
-  for (const w of line.words) if (w.word.trim()) return w === word
+  for (const w of line.words) if (w.text.trim()) return w === word
   return false
 }
 function isWordLastOfLine(line: LyricLine, word: LyricWord) {
   for (let i = line.words.length - 1; i >= 0; i--) {
     const w = line.words[i]!
-    if (w.word.trim()) return w === word
+    if (w.text.trim()) return w === word
   }
   return false
 }
@@ -187,8 +187,8 @@ function shiftLine(shift: 1 | -1): LyricLine | undefined {
     nextLineIndex += shift
   const nextLine = coreStore.lyricLines[nextLineIndex]
   if (!nextLine) return
-  const lastWordFilteredIndex = line.words.filter((w) => w.word.trim()).indexOf(word)
-  const filteredTargetWords = nextLine.words.filter((w) => w.word.trim())
+  const lastWordFilteredIndex = line.words.filter((w) => w.text.trim()).indexOf(word)
+  const filteredTargetWords = nextLine.words.filter((w) => w.text.trim())
   if (filteredTargetWords.length === 0) return
   const targetWord = filteredTargetWords[lastWordFilteredIndex] ?? filteredTargetWords.at(-1)
   if (!targetWord) return

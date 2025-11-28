@@ -28,7 +28,7 @@ export function parseQRC(qrc: string) {
       const words = [...wordMatches].map((match) => {
         const [, wText, wStartStr, wDurStr] = match
         return coreCreate.newWord({
-          word: wText,
+          text: wText,
           startTime: Number(wStartStr),
           endTime: Number(wStartStr) + Number(wDurStr),
         })
@@ -57,7 +57,7 @@ export function stringifyQRC(data: Persist): string {
         .map((w) => {
           const wStart = w.startTime
           const wDur = w.endTime - w.startTime
-          return `${w.word}(${wStart},${wDur})`
+          return `${w.text}(${wStart},${wDur})`
         })
         .join('')
       return `[${lStart},${lDur}]${lWords}`
