@@ -4,6 +4,7 @@
     v-model:visible="visible"
     header="查找替换"
     @focusin="handleTopFocus"
+    @show="handleshow"
   >
     <div class="findreplace-content" v-focustrap>
       <div class="findreplace-mode">
@@ -124,6 +125,15 @@
             <label for="matchFullField" class="findreplace-option-label">整字段匹配</label>
           </div>
           <div class="findreplace-option-item">
+            <Checkbox
+              v-model="crossWordMatch"
+              inputId="crossWordMatch"
+              binary
+              :disabled="showReplace"
+            />
+            <label for="crossWordMatch" class="findreplace-option-label">跨词匹配</label>
+          </div>
+          <div class="findreplace-option-item">
             <Checkbox v-model="useRegex" inputId="useRegex" binary />
             <label for="useRegex" class="findreplace-option-label">使用正则</label>
           </div>
@@ -181,7 +191,11 @@ import { useGlobalKeyboard } from '@/utils/hotkey'
 import { usePreferenceStore } from '@/stores/preference'
 import { tryRaf } from '@/utils/tryRaf'
 import { useToast } from 'primevue/usetoast'
+import type { TimeoutHandle } from '@/utils/types'
 
+function handleshow() {
+  console.time('focusFindInput')
+}
 const [visible] = defineModel<boolean>({ required: true })
 const focusFindInput = () => {
   tryRaf(() => {
@@ -189,14 +203,16 @@ const focusFindInput = () => {
     if (!inputEl) return
     inputEl.focus()
     inputEl.select()
+    console.timeEnd('focusFindInput')
     return true
   })
 }
+// WORKAROUND:
 // PrimeVue automatically focus close button after open animation ends
 // So wait after that to focus our input
 // Ideal waiting time should be 200ms
 const openingPendingMaxTimeout = 1000
-let openingPending: undefined | number = undefined
+let openingPending: undefined | TimeoutHandle = undefined
 watch(visible, (newVal) => {
   if (newVal)
     openingPending = setTimeout(() => {
@@ -237,6 +253,7 @@ const matchCase = ref(false)
 const matchWholeWord = ref(false)
 const useRegex = ref(false)
 const matchFullField = ref(false)
+const crossWordMatch = ref(false)
 const wrapSearch = ref(true)
 
 watch(showOptions, (newVal) => {
@@ -247,6 +264,9 @@ watch(showOptions, (newVal) => {
     wrapSearch.value = true
     matchFullField.value = false
   }
+})
+watch(showReplace, (newVal) => {
+  if (newVal) crossWordMatch.value = false
 })
 
 useGlobalKeyboard('find', () => {
@@ -305,11 +325,11 @@ function handleDrop() {
 }
 
 const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-function compileRegexPattern(input: string): RegExp | null {
+function compileRegexPattern(input: string, global = false): RegExp | null {
   let pattern = useRegex.value ? input : escapeRegex(input)
   if (matchWholeWord.value) pattern = `\\b${pattern}\\b`
   if (matchFullField.value) pattern = `^${pattern}$`
-  const flags = matchCase.value ? 'g' : 'gi'
+  const flags = (global ? 'g' : '') + (matchCase.value ? '' : 'i')
   try {
     return new RegExp(pattern, flags)
   } catch {
@@ -319,6 +339,10 @@ function compileRegexPattern(input: string): RegExp | null {
 const compiledPattern = computed<RegExp | null>(() => {
   if (findInput.value === '') return null
   return compileRegexPattern(findInput.value)
+})
+const compiledPatternGlobal = computed<RegExp | null>(() => {
+  if (findInput.value === '') return null
+  return compileRegexPattern(findInput.value, true)
 })
 const findInputInvalid = computed(() => {
   if (useRegex.value && findInput.value !== '' && !compiledPattern.value) return true
@@ -479,21 +503,31 @@ function checkPosInRange(pos: DocPos): boolean {
   if (pos.field === 'roman' && !findInRoman.value) return false
   return true
 }
-function rangedJumpPos(
-  fromPos: DocPos | null,
-  jumper: Jumper,
-  forceDisableWrap = false,
-): DocPos | null {
-  if (!fromPos) return jumper(null)
-  let pos: DocPos | null = fromPos
-  while (true) {
-    const nextPos = jumper(pos)
-    if (!nextPos) {
-      if (wrapSearch.value && !forceDisableWrap) return jumper(null)
-      return null
+function getRangedJumpPos(jumper: Jumper): Jumper {
+  let firstFlag = true
+  let beginPos: DocPos | null = null
+  let wrappedBack = false
+  return (fromPos: DocPos | null, forceDisableWrap = false): DocPos | null => {
+    if (firstFlag) {
+      beginPos = fromPos
+      firstFlag = false
     }
-    if (checkPosInRange(nextPos)) return nextPos
-    pos = nextPos
+    if (!fromPos) return jumper(null)
+    let pos: DocPos | null = fromPos
+    while (true) {
+      const nextPos = jumper(pos)
+      if (wrappedBack && beginPos && comparePos(nextPos!, beginPos) >= 0) return null
+      if (!nextPos) {
+        if (wrapSearch.value && !forceDisableWrap) {
+          wrappedBack = true
+          if (!beginPos) return null
+          return jumper(null)
+        }
+        return null
+      }
+      if (checkPosInRange(nextPos)) return nextPos
+      pos = nextPos
+    }
   }
 }
 function focusPosInEditor(pos: DocPos) {
@@ -536,6 +570,29 @@ function focusPosInEditor(pos: DocPos) {
       return true
     })
 }
+function focusMultipleWordsInEditor(
+  lineIndex: number,
+  startWordIndex: number,
+  endWordIndex: number,
+  shouldSwitchToContent = false,
+) {
+  const line = coreStore.lyricLines[lineIndex]!
+  const words = line.words.slice(startWordIndex, endWordIndex + 1)
+  runtimeStore.selectLineWord(line, ...words)
+  if (shouldSwitchToContent) {
+    if (!runtimeStore.isContentView) runtimeStore.currentView = View.Content
+    tryRaf(() => {
+      if (!staticStore.editorHook || staticStore.editorHook.view !== View.Content) return
+      staticStore.editorHook.scrollTo(lineIndex, { align: 'nearest' })
+      return true
+    })
+  } else
+    tryRaf(() => {
+      if (!staticStore.editorHook) return
+      staticStore.editorHook.scrollTo(lineIndex, { align: 'nearest' })
+      return true
+    })
+}
 function isPosMatch(pos: DocPos, pattern: RegExp): boolean {
   const line = coreStore.lyricLines[pos.lineIndex]!
   let textToMatch = ''
@@ -552,6 +609,8 @@ function isPosMatch(pos: DocPos, pattern: RegExp): boolean {
   return result
 }
 function replacePosText(pos: DocPos, pattern: RegExp, replaceText: string) {
+  if (pattern.flags.indexOf('g') === -1)
+    console.warn('Replacing with non-global regex, this may cause unexpected behavior.')
   const line = coreStore.lyricLines[pos.lineIndex]!
   let changed = false
   if (pos.field === 'word' && findInWords.value) {
@@ -570,29 +629,103 @@ function replacePosText(pos: DocPos, pattern: RegExp, replaceText: string) {
   }
   return changed
 }
-function arePosEqual(a: DocPos | null, b: DocPos | null): boolean {
-  if (a === b) return true
-  if (!a || !b) return false
-  if (a.lineIndex !== b.lineIndex) return false
-  if (a.field !== b.field) return false
-  if (a.field === 'word' && b.field === 'word' && a.wordIndex !== b.wordIndex) return false
-  return true
+const fieldOrder = computed(() => ({
+  word: 0,
+  translation: preferenceStore.swapTranslateRoman ? 2 : 1,
+  roman: preferenceStore.swapTranslateRoman ? 1 : 2,
+}))
+function comparePos(a: DocPos, b: DocPos) {
+  if (a.lineIndex !== b.lineIndex) return a.lineIndex - b.lineIndex
+  if (a.field !== b.field) return fieldOrder.value[a.field] - fieldOrder.value[b.field]
+  if (a.field === 'word' && b.field === 'word') return a.wordIndex - b.wordIndex
+  return 0
 }
+
+const MAX_SEARCH_STEPS = 100000
 function handleFind(jumper: Jumper, noAlert = false) {
-  const startingPos = currPos.value ? rangedJumpPos(currPos.value, jumper) : getFirstPos()
-  const pattern = compiledPattern.value
-  let firstFlag = true
-  if (!pattern) return
-  for (
-    let pos = startingPos;
-    pos && (firstFlag || !arePosEqual(pos, startingPos)); // avoid infinite loop when no match
-    pos = rangedJumpPos(pos, jumper)
-  ) {
-    firstFlag = false
-    if (!isPosMatch(pos, pattern)) continue
-    focusPosInEditor(pos)
-    currPos.value = pos
+  enum Direction {
+    Next,
+    Prev,
+  }
+  const direction = jumper === getNextPos ? Direction.Next : Direction.Prev
+  const rangedJumpPos = getRangedJumpPos(jumper)
+  const startingPos = currPos.value ? rangedJumpPos(currPos.value) : getFirstPos()
+  if (!startingPos) {
+    if (!noAlert)
+      toast.add({
+        severity: 'warn',
+        summary: '找不到结果',
+        detail: '在所选范围内文档为空。',
+        life: 3000,
+      })
     return
+  }
+  const pattern = compiledPattern.value
+  if (!pattern) return
+  for (let pos: DocPos | null = startingPos, step = 0; pos; pos = rangedJumpPos(pos), step++) {
+    if (step > MAX_SEARCH_STEPS) {
+      throw new Error('Exceeded maximum search steps, aborting.')
+    }
+    if (!crossWordMatch.value || pos.field !== 'word') {
+      if (!isPosMatch(pos, pattern)) continue
+      focusPosInEditor(pos)
+      currPos.value = pos
+      return
+    } else {
+      if (showReplace.value)
+        throw new Error('Unreachable: cross-word match should be disabled in replace mode.')
+      const line = coreStore.lyricLines[pos.lineIndex]!
+      const wordsToCheck =
+        direction === Direction.Next
+          ? line.words.slice(pos.wordIndex)
+          : line.words.slice(0, pos.wordIndex + 1)
+      const wordIndexOffset = direction === Direction.Next ? pos.wordIndex : 0
+      const wordsText = wordsToCheck.map((w) => w.word).join('')
+      const match = wordsText.match(pattern)
+      if (!match) {
+        pos = {
+          lineIndex: pos.lineIndex,
+          field: 'word',
+          wordIndex: direction === Direction.Next ? line.words.length : 0,
+        }
+        continue
+      }
+      const matchBeginIndex = match.index || 0
+      console.log(matchBeginIndex)
+      const matchEndIndex = matchBeginIndex + match[0].length
+      const shouldSwitchToContent = !!match[0].trim()
+      let charCount = 0
+      let matchWordStartIndex = -1
+      let matchWordEndIndex = -1
+      for (const [index, { word }] of wordsToCheck.entries()) {
+        const startCharIndex = charCount
+        const endCharIndex = (charCount += word.length)
+        if (startCharIndex <= matchBeginIndex && matchBeginIndex < endCharIndex) {
+          matchWordStartIndex = index
+        }
+        if (startCharIndex < matchEndIndex && matchEndIndex <= endCharIndex) {
+          matchWordEndIndex = index
+          break
+        }
+      }
+      if (matchWordStartIndex === -1 || matchWordEndIndex === -1) {
+        throw new Error('Unreachable: Failed to locate matched words in cross-word match.')
+      }
+      matchWordStartIndex += wordIndexOffset
+      matchWordEndIndex += wordIndexOffset
+      focusMultipleWordsInEditor(
+        pos.lineIndex,
+        matchWordStartIndex,
+        matchWordEndIndex,
+        shouldSwitchToContent,
+      )
+      currPos.value = {
+        lineIndex: pos.lineIndex,
+        field: 'word',
+        wordIndex: direction === Direction.Next ? matchWordEndIndex : matchWordStartIndex,
+      }
+      return
+    }
   }
   runtimeStore.clearSelection()
   if (!noAlert)
@@ -613,20 +746,23 @@ function handleFindPrev() {
 }
 function handleReplace() {
   const pattern = compiledPattern.value
+  const globalPattern = compiledPatternGlobal.value
   const replacement = replaceInput.value
-  if (!pattern) return
+  if (!pattern || !globalPattern) return
   if (currPos.value && isPosMatch(currPos.value, pattern)) {
-    replacePosText(currPos.value, pattern, replacement)
+    replacePosText(currPos.value, globalPattern, replacement)
     handleFind(getNextPos, true)
   } else handleFind(getNextPos)
 }
 function handleReplaceAll() {
   const pattern = compiledPattern.value
+  const globalPattern = compiledPatternGlobal.value
   let counter = 0
-  if (!pattern) return
-  for (let pos = getFirstPos(); pos; pos = rangedJumpPos(pos, getNextPos, true)) {
+  if (!pattern || !globalPattern) return
+  const rangedJumpPos = getRangedJumpPos(getNextPos)
+  for (let pos = getFirstPos(); pos; pos = rangedJumpPos(pos)) {
     if (!isPosMatch(pos, pattern)) continue
-    counter += replacePosText(pos, pattern, replaceInput.value) ? 1 : 0
+    counter += replacePosText(pos, globalPattern, replaceInput.value) ? 1 : 0
   }
   if (counter)
     toast.add({
@@ -749,10 +885,10 @@ function handleReplaceInputKeydown(e: KeyboardEvent) {
 }
 
 .findreplace-options-list {
-  display: flex;
+  display: grid;
   row-gap: 0.4rem;
   column-gap: 1.5rem;
-  flex-wrap: wrap;
+  grid-template-columns: auto auto;
 }
 .findreplace-option-item {
   display: flex;
