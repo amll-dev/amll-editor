@@ -32,8 +32,13 @@
             :style="{ visibility: canvasReady ? 'hidden' : 'visible' }"
             class="audio-progress-ghost"
           >
-            <div class="audio-progress-primary">00:00.000</div>
-            <div class="audio-progress-secondary">
+            <div class="audio-progress-primary" :style="{ fontSize: primarySize + 'rem' }">
+              00:00.000
+            </div>
+            <div
+              class="audio-progress-secondary"
+              :style="{ fontSize: secondarySize + 'rem', opacity: secondaryOpacity }"
+            >
               <span class="audio-percentage-text">0%</span>
               <span class="audio-length-text">00:00.000</span>
             </div>
@@ -142,11 +147,20 @@ onUnmounted(() => revokeListeners?.())
 watch([displayProgress, lengthRef], () => drawProgress())
 
 const isDark = useDark()
-const primarySize = 1.156
-const primaryOffset = 1
-const secondarySize = 0.765
+// Where sizes from:
+// Primary:   00:00.000      <- 9 ch
+// Secondary: 100% 00:00.000 <- 13 ch + space (use 0.6ch)
+// So to align, it should be: 9 x primarySize == 13.6 x secondarySize
+// => primarySize / 13.6 == secondarySize / 9 == fontSizeUnit
+// => primarySize = fontSizeUnit * 13.6
+//    secondarySize = fontSizeUnit * 9
+const fontSizeUnit = 0.085
+const primarySize = fontSizeUnit * 13.6
+const secondarySize = fontSizeUnit * 9
+
+const primaryOffset = 1.5
+const secondaryOffset = 0.8
 const secondaryOpacity = 0.7
-const secondaryOffset = 0
 
 let cachedDPR = -1
 const drawProgress = () => {
@@ -224,12 +238,7 @@ const drawProgress = () => {
   text-align: center;
   line-height: 1;
 }
-.audio-progress-primary {
-  font-size: 1.156rem;
-}
 .audio-progress-secondary {
-  font-size: 0.765rem;
-  opacity: 0.7;
   display: flex;
   width: 13.6ch;
   justify-content: space-between;
