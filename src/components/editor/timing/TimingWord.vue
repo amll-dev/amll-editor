@@ -39,7 +39,7 @@ const props = defineProps<{
   parentIndex: number
 }>()
 const runtimeStore = useRuntimeStore()
-const configStore = usePreferenceStore()
+const preferenceStore = usePreferenceStore()
 function handleMouseDown() {
   runtimeStore.selectLineWord(props.parent, props.word)
 }
@@ -58,12 +58,12 @@ const isActive = computed(
 const emit = defineEmits<{
   (e: 'needScroll', parentIndex: number): void
 }>()
-watch([isActive, () => configStore.scrollWithPlayback], () => {
+watch([isActive, () => preferenceStore.scrollWithPlayback], () => {
   if (props.parent.background) return
-  if (isActive.value && configStore.scrollWithPlayback) emit('needScroll', props.parentIndex)
+  if (isActive.value && preferenceStore.scrollWithPlayback) emit('needScroll', props.parentIndex)
 })
-// watch([isSelected, () => configStore.scrollWithPlayback], () => {
-//   if (isSelected.value && !configStore.scrollWithPlayback) emit('needScroll', props.parentIndex)
+// watch([isSelected, () => preferenceStore.scrollWithPlayback], () => {
+//   if (isSelected.value && !preferenceStore.scrollWithPlayback) emit('needScroll', props.parentIndex)
 // })
 
 function handleTextDbClick() {

@@ -1,5 +1,5 @@
 <template>
-  <aside class="sidebar" :style="{ width: configStore.sidebarWidth + 'px' }">
+  <aside class="sidebar" :style="{ width: preferenceStore.sidebarWidth + 'px' }">
     <div
       v-if="currentSidebarTab && runtimeStore.openedSidebars.length === 1"
       class="sidebar-title single"
@@ -54,7 +54,7 @@ import { Button, Tab, TabList, Tabs } from 'primevue'
 import { usePreferenceStore } from '@/stores/preference'
 
 const runtimeStore = useRuntimeStore()
-const configStore = usePreferenceStore()
+const preferenceStore = usePreferenceStore()
 
 const openedSidebarTabs = computed(() => runtimeStore.openedSidebars.map((key) => sidebarRegs[key]))
 const currentSidebarTab = computed(() => openedSidebarTabs.value[runtimeStore.currentSidebarIndex])
@@ -62,10 +62,10 @@ const currentSidebarTab = computed(() => openedSidebarTabs.value[runtimeStore.cu
 const MIN_SIDEBAR_WIDTH = 200
 function handleResizeStart(e: MouseEvent) {
   const startX = e.clientX
-  const startWidth = configStore.sidebarWidth
+  const startWidth = preferenceStore.sidebarWidth
   function handleMouseMove(e: MouseEvent) {
     const deltaX = e.clientX - startX
-    configStore.sidebarWidth = Math.max(MIN_SIDEBAR_WIDTH, startWidth + deltaX)
+    preferenceStore.sidebarWidth = Math.max(MIN_SIDEBAR_WIDTH, startWidth + deltaX)
   }
   function handleMouseUp() {
     window.removeEventListener('mousemove', handleMouseMove)

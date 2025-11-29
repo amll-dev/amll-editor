@@ -9,7 +9,7 @@
         fluid
         size="small"
         placeholder="0"
-        v-model="configStore.globalLatency"
+        v-model="preferenceStore.globalLatency"
       />
     </div>
     <Button
@@ -35,7 +35,7 @@ import { ref } from 'vue'
 import { tipDesc } from '@/utils/tooltip'
 import { useGlobalKeyboard } from '@/utils/hotkey'
 
-const configStore = usePreferenceStore()
+const preferenceStore = usePreferenceStore()
 const batchShiftDialogVisible = ref(false)
 
 useGlobalKeyboard('batchTimeShift', () => {
