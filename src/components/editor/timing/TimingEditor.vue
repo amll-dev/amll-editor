@@ -48,6 +48,7 @@ function handleScrollTo(lineIndex: number) {
   // so a short distance scroll is expected
   // besides, smooth scrolling in a table-like editor can help users track the movement
 }
+// onBeforeUnmounted instead of onUnmounted: vscroll quits at unmounted phase
 onBeforeUnmount(() => {
   if (runtimeStore.currentView !== View.Content || !vscroll.value) return
   const start = vscroll.value.findStartIndex()

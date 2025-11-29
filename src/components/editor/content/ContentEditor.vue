@@ -292,6 +292,7 @@ useGlobalKeyboard('delete', () => {
 })
 
 const vscroll = useTemplateRef('vscroll')
+// onBeforeUnmounted instead of onUnmounted: vscroll quits at unmounted phase
 onBeforeUnmount(() => {
   if (runtimeStore.currentView !== View.Timing || !vscroll.value) return
   const start = vscroll.value.findStartIndex()
