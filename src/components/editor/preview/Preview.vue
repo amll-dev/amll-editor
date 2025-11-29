@@ -3,7 +3,7 @@
     <LyricPlayer
       class="amll-lyric-player"
       :lyric-lines="amllLyricLines"
-      :current-time="progressComputed"
+      :current-time="progressComputed - amendmentRef"
       :playing="playingComputed"
       :enable-blur="false"
       :enable-spring="false"
@@ -32,7 +32,7 @@ import { tryRaf } from '@/utils/tryRaf'
 import { Button } from 'primevue'
 const coreStore = useCoreStore()
 const {
-  audio: { progressComputed, playingComputed, seek },
+  audio: { progressComputed, playingComputed, amendmentRef, seek },
 } = useStaticStore()
 interface AMLLLyricLine {
   words: AMLLLyricWord[]
