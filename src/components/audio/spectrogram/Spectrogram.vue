@@ -1,12 +1,17 @@
 <template>
-  <div
-    class="spectrogram-container"
-    style="position: relative; overflow: hidden"
-    ref="containerEl"
-    :style="{ height: userSetContainerHeight + 'px' }"
-    @wheel.prevent="handleWheel"
-  >
-    <canvas class="spectrogram-canvas" ref="canvasEl"></canvas>
+  <div class="spectrogram-comp">
+    <div class="spectrogram-toolbar">
+      <Slider orientation="vertical" v-model="userGain" :min="0" :max="1" :step="0.05" />
+    </div>
+    <div
+      class="spectrogram-container"
+      style="position: relative; overflow: hidden"
+      ref="containerEl"
+      :style="{ height: userSetContainerHeight + 'px' }"
+      @wheel.prevent="handleWheel"
+    >
+      <canvas class="spectrogram-canvas" ref="canvasEl"></canvas>
+    </div>
   </div>
 </template>
 
@@ -30,6 +35,7 @@ import {
 import { useStaticStore } from '@/stores/static'
 import { generatePalette, getIcyBlueColor } from './colors'
 import { useElementSize } from '@vueuse/core'
+import { Slider } from 'primevue'
 const { audio } = useStaticStore()
 
 const userSetContainerHeight = ref(250)
@@ -37,9 +43,9 @@ const userSetContainerHeight = ref(250)
 const scrollLeft = ref(0)
 const containerEl = useTemplateRef('containerEl')
 const { width: containerWidth, height: containerHeight } = useElementSize(containerEl)
-const scaleRatio = ref(2)
-const MINSCALE = 1,
-  MAXSCALE = 20
+const scaleRatio = ref(0.5)
+const MINSCALE = 0.25,
+  MAXSCALE = 3
 
 const clamper = (min: number, max: number) => (value: number) => {
   if (value < min) return min
@@ -55,7 +61,7 @@ const detltaToRatio = (delta: number) => {
 }
 function handleWheel(event: WheelEvent) {
   if (!event.ctrlKey) {
-    scrollLeft.value += event.deltaY
+    scrollLeft.value += event.deltaX || event.deltaY
     if (scrollLeft.value < 0) scrollLeft.value = 0
     if (scrollLeft.value > maxScrollLeft.value) scrollLeft.value = maxScrollLeft.value
   } else {
@@ -68,9 +74,9 @@ function handleWheel(event: WheelEvent) {
     if (!rect) return
     const cursorX = event.clientX - rect.left
     const cursorRatio = cursorX / rect.width
-    const contentX = scrollLeft.value + cursorRatio * rect.width
-    const newContentX = (contentX / oldScale) * newScale
-    scrollLeft.value = newContentX - cursorRatio * rect.width
+    const contentX = scrollLeft.value + cursorRatio * containerWidth.value
+    const newContentX = contentX * (newScale / oldScale)
+    scrollLeft.value = newContentX - cursorX
     if (scrollLeft.value < 0) scrollLeft.value = 0
     if (newScale < oldScale && scrollLeft.value > maxScrollLeft.value)
       scrollLeft.value = maxScrollLeft.value
@@ -80,16 +86,20 @@ function handleWheel(event: WheelEvent) {
 const maxScrollLeft = computed(() => {
   if (!audio.lengthComputed.value) return 0
   if (!containerWidth.value) return 0
-  return (audio.lengthComputed.value / TILE_DURATION_MS) * tileWidth.value - containerWidth.value
+  return (
+    (audio.lengthComputed.value / TILE_DURATION_MS) * visualTileWidth.value - containerWidth.value
+  )
 })
-const firstVisibleIndex = computed(() => Math.floor(scrollLeft.value / tileWidth.value))
+const firstVisibleIndex = computed(() => Math.floor(scrollLeft.value / visualTileWidth.value))
 const lastVisibleIndex = computed(() =>
-  Math.ceil((scrollLeft.value + containerWidth.value) / tileWidth.value),
+  Math.ceil((scrollLeft.value + containerWidth.value) / visualTileWidth.value),
 )
 
 const TILE_DURATION_MS = 5000
-const tileWidth = computed(() => Math.round(256 * scaleRatio.value))
-const GAIN = 5.0
+const renderTileWidth = 2048
+const visualTileWidth = computed(() => Math.round(renderTileWidth * scaleRatio.value))
+const userGain = ref(0.5)
+const gain = computed(() => userGain.value ** 2 * 10)
 
 const paletteData = shallowRef(generatePalette(getIcyBlueColor))
 
@@ -117,8 +127,8 @@ onUnmounted(() => revokeListeners?.())
 
 let tiles: { entry: TileEntry; index: number }[] = []
 const obj2id = (obj: Object) => stableStringify(obj)
-const VISIBLE_TILE_BUFFER = 0
-watch([audio.audioBufferComputed, scrollLeft, scaleRatio], requestTiles, {
+const VISIBLE_TILE_BUFFER = 1
+watch([audio.audioBufferComputed, scrollLeft, scaleRatio, gain], requestTiles, {
   immediate: true,
   flush: 'post',
 })
@@ -132,17 +142,17 @@ async function requestTiles() {
     (_, i) => {
       const index = firstVisibleIndex.value - VISIBLE_TILE_BUFFER + i
       const start = index * TILE_DURATION_MS
-      if (start >= audio.lengthComputed.value) return null
+      if (start < 0 || start >= audio.lengthComputed.value) return null
       const end = start + TILE_DURATION_MS
       const clampedEnd = Math.min(end, audio.lengthComputed.value)
       const clampedWidth =
         clampedEnd !== end
-          ? Math.ceil(tileWidth.value * ((clampedEnd - start) / TILE_DURATION_MS))
-          : tileWidth.value
+          ? Math.ceil(renderTileWidth * ((clampedEnd - start) / TILE_DURATION_MS))
+          : renderTileWidth
       const paramsWithoutId: Omit<RequestTileParamsWithIndex, 'id'> = {
         startTime: start,
         endTime: clampedEnd,
-        gain: GAIN,
+        gain: gain.value,
         tileWidthPx: clampedWidth,
         paletteId: 'default',
         index,
@@ -151,7 +161,10 @@ async function requestTiles() {
       return { ...paramsWithoutId, id }
     },
   ).filter((req): req is RequestTileParamsWithIndex => req !== null)
-  tiles = await batchRequestTiles(requests)
+  const requestedTiles = await batchRequestTiles(requests)
+  if (!requestedTiles) return
+  tiles = requestedTiles
+  console.log('Spectrogram: received tiles count', requestedTiles.length)
   drawTiles()
 }
 
@@ -163,8 +176,8 @@ function drawTiles() {
   const dpr = devicePixelRatio || 1
   const width = containerWidth.value
   const height = containerHeight.value
-  canvas.width = width * dpr
-  canvas.height = height * dpr
+  canvas.width = Math.ceil(width * dpr)
+  canvas.height = Math.ceil(height * dpr)
   canvas.style.width = width + 'px'
   canvas.style.height = height + 'px'
   ctx.imageSmoothingEnabled = false
@@ -172,15 +185,26 @@ function drawTiles() {
   ctx.clearRect(0, 0, width, height)
   console.log('Drawing tiles', tiles.length)
   tiles.forEach(({ entry, index }) => {
-    const x = index * tileWidth.value - scrollLeft.value
-    ctx.drawImage(entry.bitmap, x, 0, tileWidth.value, containerHeight.value)
+    const x = index * visualTileWidth.value - scrollLeft.value
+    ctx.drawImage(entry.bitmap, x, 0, visualTileWidth.value, containerHeight.value)
   })
 }
 watch([containerWidth, containerHeight], drawTiles)
 </script>
 
 <style>
+.spectrogram-comp {
+  display: flex;
+}
+.spectrogram-toolbar {
+  width: 2.5rem;
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem 0;
+}
 .spectrogram-container {
+  width: 0;
+  flex: 1;
   background: #000;
   position: relative;
   overflow: hidden;

@@ -2,6 +2,7 @@ import { LRUCache } from './lruCache'
 import { nextTick, onBeforeUnmount, onMounted, readonly, ref, watch, type ShallowRef } from 'vue'
 import SpectrogramWorker from './spectrogram.worker?worker'
 import type { WorkerEmitMsg, WorkerGetMsg } from './spectrogram.worker'
+import { nanoid } from 'nanoid'
 
 const MAX_CACHED_TILES = 70
 
@@ -58,6 +59,7 @@ export const useSpectrogramWorker = (
   const workerInitPromise = new Promise<void>((resolve) => {
     workerInitResolve = resolve
   })
+  let workerInited = false
 
   onMounted(() => {
     worker = new SpectrogramWorker()
@@ -112,6 +114,7 @@ export const useSpectrogramWorker = (
         if (workerInitResolve) {
           workerInitResolve()
           workerInitResolve = null
+          workerInited = true
         }
       }
     }
@@ -184,42 +187,47 @@ export const useSpectrogramWorker = (
     }
   }
 
-  const TIMEOUT_MS = 10000
-  function queueEmptyPromise(): Promise<void> {
-    if (requestedTiles.size === 0) return Promise.resolve()
-    return new Promise((resolve, reject) => {
-      const stopWatch = requestedTiles.listen((size) => {
-        if (size === 0) {
-          clearTimeout(timeout)
-          stopWatch()
-          resolve()
-        }
-      })
-      const timeout = setTimeout(() => {
-        stopWatch()
-        reject(
-          new Error(
-            'Timeout waiting for spectrogram worker queue to empty, current count: ' +
-              requestedTiles.size,
-          ),
-        )
-      }, TIMEOUT_MS)
-    })
-  }
+  const TIMEOUT_MS = 5000
 
+  let currentTransaction = undefined as string | undefined
   async function batchRequestTiles(requests: RequestTileParamsWithIndex[]) {
+    const transactionId = nanoid()
+    currentTransaction = transactionId
     if (requests.length > MAX_CACHED_TILES)
       throw new Error('Number of requested tiles exceeds max cache size')
-    await workerInitPromise
-    await queueEmptyPromise()
+    if (!workerInited) await workerInitPromise
     for (const req of requests) requestTileIfNeeded(req)
-    await nextTick()
-    await queueEmptyPromise()
+    if (!requests.every((req) => tileCache.has(req.id)))
+      await new Promise<void>((resolve, reject) => {
+        const unwatch = tileCache.listen(() => {
+          console.log('checking')
+          if (requests.every((req) => tileCache.has(req.id))) {
+            console.log('all tiles ready')
+            unwatch()
+            clearTimeout(timeout)
+            resolve()
+          }
+        })
+        const timeout = setTimeout(() => {
+          reject(
+            new Error(
+              'Time exceeded waiting for spectrogram tiles, missing tiles: ' +
+                requests
+                  .filter((req) => !tileCache.has(req.id))
+                  .map((req) => req.id)
+                  .join(', '),
+            ),
+          )
+          unwatch()
+        }, TIMEOUT_MS)
+      })
+    if (currentTransaction !== transactionId) {
+      console.log('batchRequestTiles: transaction cancelled')
+      return null
+    }
     return requests.map((req) => {
       const entry = tileCache.get(req.id)
-      if (!entry) {
-        throw new Error('Tile not found in cache after batch request: ' + req.id)
-      }
+      if (!entry) throw new Error('Tile not found in cache after batch request: ' + req.id)
       return { entry, index: req.index }
     })
   }

@@ -44,7 +44,11 @@ export class LRUCache<K, V> {
       this.evict()
     }
     console.log('LRUCache set', key, this.map.size)
-    this.setListeners.forEach((listener) => listener())
+    this.notifyAll()
+  }
+
+  has(key: K): boolean {
+    return this.map.has(key)
   }
 
   /**
@@ -59,6 +63,7 @@ export class LRUCache<K, V> {
       }
       this.map.delete(lruKey)
     }
+    this.notifyAll()
   }
 
   /**
@@ -71,12 +76,18 @@ export class LRUCache<K, V> {
       }
     }
     this.map.clear()
+    this.notifyAll()
   }
 
   /**
    * @description 监听缓存设置事件
    */
-  onSet(listener: () => void) {
+  listen(listener: () => void) {
     this.setListeners.add(listener)
+    return () => this.setListeners.delete(listener)
+  }
+
+  private notifyAll() {
+    this.setListeners.forEach((listener) => listener())
   }
 }
