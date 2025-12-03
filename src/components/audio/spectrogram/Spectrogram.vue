@@ -2,21 +2,26 @@
   <div
     class="spectrogram-container"
     style="position: relative; overflow: hidden"
+    ref="containerEl"
     :style="{ height: props.height + 'px' }"
+    @wheel="handleWheel"
   >
-    <Tile
-      v-for="(tile, index) in tiles"
-      :key="index"
-      :tile="tile"
-      :left="index * TILE_WIDTH_PX"
-      :height="props.height"
-    />
+    <div class="spectrogram-scroller" :style="{ transform: `translateX(${-scrollLeft}px)` }">
+      <Tile
+        v-for="(tile, index) in tiles"
+        :key="index"
+        :tile="tile"
+        :left="index * TILE_WIDTH_PX"
+        :height="props.height"
+      />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { shallowRef, computed, watchEffect, ref, watch } from 'vue'
+import { shallowRef, computed, ref, watch, useTemplateRef } from 'vue'
 import Tile from './Tile.vue'
+import stringify from 'fast-json-stable-stringify'
 import {
   useSpectrogramWorker,
   type TileEntry,
@@ -24,11 +29,27 @@ import {
 } from './useSpectrogramWorker'
 import { useStaticStore } from '@/stores/static'
 import { generatePalette, getIcyBlueColor } from './colors'
+import { useElementSize } from '@vueuse/core'
 const { audio } = useStaticStore()
 
 const props = defineProps<{
   height: number
 }>()
+const scrollLeft = ref(0)
+const containerEl = useTemplateRef('containerEl')
+const { width: containerWidth } = useElementSize(containerEl)
+
+function handleWheel(event: WheelEvent) {
+  event.preventDefault()
+  scrollLeft.value += event.deltaY
+  // clamp
+  if (scrollLeft.value < 0) {
+    scrollLeft.value = 0
+  }
+}
+const scrollLeftEnd = computed(() => scrollLeft.value + containerWidth.value)
+const firstVisibleTileIndex = computed(() => Math.floor(scrollLeft.value / TILE_WIDTH_PX))
+const lastVisibleTileIndex = computed(() => Math.ceil(scrollLeftEnd.value / TILE_WIDTH_PX))
 
 // ======== temporary constants ========
 const TILE_DURATION_S = 5
@@ -45,20 +66,22 @@ const { tileCache, requestTileIfNeeded, workerInitPromise } = useSpectrogramWork
 
 // ---- 预生成 5 个 tile ----
 const tileCount = 5
+const obj2id = (obj: Object) => stringify(obj)
 
-const tileRequests = computed(() => {
+const tileRequests = computed((): RequestTileParams[] => {
   return Array.from({ length: tileCount }, (_, i) => {
     const start = i * TILE_DURATION_S
     const end = start + TILE_DURATION_S
 
-    return {
-      reqId: start,
+    const paramsWithoutId: Omit<RequestTileParams, 'id'> = {
       startTime: start,
       endTime: end,
       gain: GAIN,
       tileWidthPx: TILE_WIDTH_PX,
       paletteId: 'default',
-    } satisfies RequestTileParams
+    }
+    const id = obj2id(paramsWithoutId)
+    return { ...paramsWithoutId, id }
   })
 })
 
@@ -77,7 +100,7 @@ watch(
 tileCache.onSet(() => {
   console.log('Tile cache updated')
   tiles.value = tileRequests.value
-    .map((r) => tileCache.get(r.reqId))
+    .map((r) => tileCache.get(r.id))
     .filter((x): x is TileEntry => !!x)
 })
 </script>
