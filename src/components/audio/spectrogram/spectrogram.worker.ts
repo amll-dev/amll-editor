@@ -74,8 +74,8 @@ self.onmessage = async (event: MessageEvent<WorkerGetMsg>) => {
 
     const { id, startTime, endTime, gain, tileWidthPx, paletteId } = event.data
 
-    const startSample = Math.floor(startTime * audioSampleRate)
-    const endSample = Math.ceil(endTime * audioSampleRate)
+    const startSample = Math.floor((startTime / 1000) * audioSampleRate)
+    const endSample = Math.ceil((endTime / 1000) * audioSampleRate)
 
     if (startSample >= fullAudioData.length) return
 

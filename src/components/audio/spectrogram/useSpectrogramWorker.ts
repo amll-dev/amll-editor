@@ -154,7 +154,6 @@ export const useSpectrogramWorker = (
     if (needsRequest && !requestedTiles.has(id)) {
       requestedTiles.add(id)
       if (!worker) console.warn('Spectrogram worker is not initialized')
-      console.log('id:', id)
       worker?.postMessage({
         type: 'GET_TILE',
         id,
