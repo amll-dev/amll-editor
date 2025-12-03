@@ -43,7 +43,7 @@ export class LRUCache<K, V> {
     if (this.map.size > this.maxSize) {
       this.evict()
     }
-    console.log('LRUCache set', key, this.map.size)
+    // console.log('LRUCache set', key, this.map.size)
     this.notifyAll()
   }
 

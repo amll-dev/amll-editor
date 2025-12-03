@@ -96,9 +96,9 @@ self.onmessage = async (event: MessageEvent<WorkerGetMsg>) => {
       currentPalette,
     )
 
-    const t1 = performance.now()
+    // const t1 = performance.now()
 
-    console.log(`[Worker] ${id} width ${tileWidthPx} ${(t1 - t0).toFixed(2)} ms`)
+    // console.log(`[Worker] ${id} width ${tileWidthPx} ${(t1 - t0).toFixed(2)} ms`)
 
     const canvas = new OffscreenCanvas(tileWidthPx, TILE_HEIGHT)
     const ctx = canvas.getContext('2d')

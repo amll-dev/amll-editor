@@ -1,7 +1,13 @@
 <template>
   <div class="spectrogram-comp">
     <div class="spectrogram-toolbar">
-      <Slider orientation="vertical" v-model="userGain" :min="0" :max="1" :step="0.05" />
+      <Slider
+        orientation="vertical"
+        v-model="userGain"
+        :min="MINUSERGAIN"
+        :max="MAXUSERGAIN"
+        :step="0.05"
+      />
     </div>
     <div
       class="spectrogram-container"
@@ -46,6 +52,8 @@ const { width: containerWidth, height: containerHeight } = useElementSize(contai
 const scaleRatio = ref(0.5)
 const MINSCALE = 0.25,
   MAXSCALE = 8
+const MINUSERGAIN = 0.1,
+  MAXUSERGAIN = 1.2
 
 const clamper = (min: number, max: number) => (value: number) => {
   if (value < min) return min
@@ -53,20 +61,28 @@ const clamper = (min: number, max: number) => (value: number) => {
   return value
 }
 const clampScale = clamper(MINSCALE, MAXSCALE)
+const clampUserGain = clamper(MINUSERGAIN, MAXUSERGAIN)
 const RATIO_STEP = 0.005
 const detltaToRatio = (delta: number) => {
   delta *= RATIO_STEP
   const factor = delta < 0 ? 1 - delta : 1 / (1 + delta)
   return factor
 }
+
+let zoomAccum = 0
+const ZOOMACCUMTHRES = 25
 function handleWheel(event: WheelEvent) {
-  if (!event.ctrlKey) {
-    scrollLeft.value += event.deltaX || event.deltaY
-    if (scrollLeft.value < 0) scrollLeft.value = 0
-    if (scrollLeft.value > maxScrollLeft.value) scrollLeft.value = maxScrollLeft.value
-  } else {
+  if (event.ctrlKey) {
+    let deltaY = event.deltaY
+    if (Math.abs(event.deltaY) > ZOOMACCUMTHRES) zoomAccum = 0
+    else {
+      zoomAccum += event.deltaY
+      if (Math.abs(zoomAccum) < ZOOMACCUMTHRES) return
+      deltaY = zoomAccum * 3
+      zoomAccum = 0
+    }
     const oldScale = scaleRatio.value
-    const newScale = clampScale(oldScale * detltaToRatio(event.deltaY))
+    const newScale = clampScale(oldScale * detltaToRatio(deltaY))
     if (newScale === oldScale) return
     // adjust scrollLeft to keep the point under the cursor stationary
     if (!containerEl.value) return
@@ -80,6 +96,13 @@ function handleWheel(event: WheelEvent) {
     if (newScale < oldScale && scrollLeft.value > maxScrollLeft.value)
       scrollLeft.value = maxScrollLeft.value
     scaleRatio.value = newScale
+  } else if (event.altKey) {
+    userGain.value = clampUserGain(userGain.value + (event.deltaY > 0 ? -0.05 : 0.05))
+  } else {
+    zoomAccum = 0
+    scrollLeft.value += event.deltaX || event.deltaY
+    if (scrollLeft.value < 0) scrollLeft.value = 0
+    if (scrollLeft.value > maxScrollLeft.value) scrollLeft.value = maxScrollLeft.value
   }
 }
 const maxScrollLeft = computed(() => {
@@ -104,10 +127,7 @@ const gain = computed(() => userGain.value ** 2 * 10)
 const paletteData = shallowRef(generatePalette(getIcyBlueColor))
 
 // worker composable
-const { batchRequestTiles, workerInitPromise } = useSpectrogramWorker(
-  audio.audioBufferComputed,
-  paletteData,
-)
+const { batchRequestTiles } = useSpectrogramWorker(audio.audioBufferComputed, paletteData)
 
 const canvasEl = useTemplateRef('canvasEl')
 let revokeListeners: (() => void) | null = null
@@ -128,13 +148,11 @@ onUnmounted(() => revokeListeners?.())
 let tiles: { entry: TileEntry; index: number }[] = []
 const obj2id = (obj: Object) => stableStringify(obj)
 const VISIBLE_TILE_BUFFER = 1
-watch([audio.audioBufferComputed, scrollLeft, scaleRatio, gain], requestTiles, {
-  immediate: true,
-  flush: 'post',
-})
+watch([scrollLeft, scaleRatio, gain], requestTiles)
+watch(audio.audioBufferComputed, () => nextTick(requestTiles))
+onMounted(requestTiles)
 
 async function requestTiles() {
-  await workerInitPromise
   const expectedTileWidth = scaleRatio.value > 1 ? maxTileWidth : basicTileWidth
   const requests = Array.from(
     {
@@ -191,6 +209,14 @@ function drawTiles() {
   })
 }
 watch([containerWidth, containerHeight], drawTiles)
+
+watch([audio.playingComputed, audio.progressComputed], () => {
+  if (audio.playingComputed.value) {
+    scrollLeft.value =
+      (audio.progressComputed.value / TILE_DURATION_MS) * visualTileWidth.value -
+      containerWidth.value / 2
+  }
+})
 </script>
 
 <style>

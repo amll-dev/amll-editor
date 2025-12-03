@@ -1,5 +1,5 @@
 import { LRUCache } from './lruCache'
-import { nextTick, onBeforeUnmount, onMounted, readonly, ref, watch, type ShallowRef } from 'vue'
+import { onBeforeUnmount, onMounted, readonly, ref, watch, type ShallowRef } from 'vue'
 import SpectrogramWorker from './spectrogram.worker?worker'
 import type { WorkerEmitMsg, WorkerGetMsg } from './spectrogram.worker'
 import { nanoid } from 'nanoid'
@@ -36,22 +36,7 @@ export const useSpectrogramWorker = (
   const tileCache = new LRUCache<string, TileEntry>(MAX_CACHED_TILES, (_key, entry) => {
     entry.bitmap.close()
   })
-  const requestedTiles = (() => {
-    const set = new Set<string>()
-    type Listener = (size: number) => void
-    const listeners = new Set<Listener>()
-    const notifyAll = () => listeners.forEach((l) => l(set.size))
-    return {
-      has: (id: string) => set.has(id),
-      add: (id: string) => (set.add(id), notifyAll()),
-      delete: (id: string) => (set.delete(id), notifyAll()),
-      clear: () => (set.clear(), notifyAll()),
-      listen: (listener: Listener) => (listeners.add(listener), () => listeners.delete(listener)),
-      get size() {
-        return set.size
-      },
-    }
-  })()
+  const requestedTiles = new Set<string>()
 
   const lastTileTimestamp = ref(0)
 
@@ -60,6 +45,7 @@ export const useSpectrogramWorker = (
     workerInitResolve = resolve
   })
   let workerInited = false
+  const getWorkerInited = () => workerInited
 
   onMounted(() => {
     worker = new SpectrogramWorker()
@@ -200,9 +186,7 @@ export const useSpectrogramWorker = (
     if (!requests.every((req) => tileCache.has(req.id)))
       await new Promise<void>((resolve, reject) => {
         const unwatch = tileCache.listen(() => {
-          console.log('checking')
           if (requests.every((req) => tileCache.has(req.id))) {
-            console.log('all tiles ready')
             unwatch()
             clearTimeout(timeout)
             resolve()
@@ -222,7 +206,6 @@ export const useSpectrogramWorker = (
         }, TIMEOUT_MS)
       })
     if (currentTransaction !== transactionId) {
-      console.log('batchRequestTiles: transaction cancelled')
       return null
     }
     return requests.map((req) => {
@@ -237,5 +220,6 @@ export const useSpectrogramWorker = (
     batchRequestTiles,
     lastTileTimestamp: readonly(lastTileTimestamp),
     workerInitPromise,
+    getWorkerInited,
   }
 }
