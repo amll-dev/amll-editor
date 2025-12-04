@@ -46,14 +46,26 @@ const { audio } = useStaticStore()
 
 const userSetContainerHeight = ref(250)
 
-const scrollLeft = ref(0)
 const containerEl = useTemplateRef('containerEl')
 const { width: containerWidth, height: containerHeight } = useElementSize(containerEl)
+const halfContainerWidth = computed(() => containerWidth.value / 2)
+
 const scaleRatio = ref(0.5)
-const MINSCALE = 0.25,
-  MAXSCALE = 8
-const MINUSERGAIN = 0.1,
-  MAXUSERGAIN = 1.2
+const MINSCALE = 0.25
+const MAXSCALE = 8
+
+const userGain = ref(0.5)
+const MINUSERGAIN = 0.1
+const MAXUSERGAIN = 1.2
+const gain = computed(() => userGain.value ** 2 * 10)
+
+const TILE_DURATION_MS = 5000
+const baseTileWidth = 1024
+const maxTileWidth = baseTileWidth * MAXSCALE
+const vTileWidth = computed(() => Math.round(baseTileWidth * scaleRatio.value))
+const vTileWidthPerMs = computed(() => vTileWidth.value / TILE_DURATION_MS)
+
+const scrollCenter = computed(() => audio.amendedProgressComputed.value * vTileWidthPerMs.value)
 
 const clamper = (min: number, max: number) => (value: number) => {
   if (value < min) return min
@@ -81,48 +93,23 @@ function handleWheel(event: WheelEvent) {
       deltaY = zoomAccum * 3
       zoomAccum = 0
     }
-    const oldScale = scaleRatio.value
-    const newScale = clampScale(oldScale * detltaToRatio(deltaY))
-    if (newScale === oldScale) return
-    // adjust scrollLeft to keep the point under the cursor stationary
-    if (!containerEl.value) return
-    const rect = containerEl.value.getBoundingClientRect()
-    if (!rect) return
-    const cursorX = event.clientX - rect.left
-    const contentX = scrollLeft.value + cursorX
-    const newContentX = (contentX * newScale) / oldScale
-    scrollLeft.value = newContentX - cursorX
-    if (scrollLeft.value < 0) scrollLeft.value = 0
-    if (newScale < oldScale && scrollLeft.value > maxScrollLeft.value)
-      scrollLeft.value = maxScrollLeft.value
+    const newScale = clampScale(scaleRatio.value * detltaToRatio(deltaY))
     scaleRatio.value = newScale
   } else if (event.shiftKey) {
     userGain.value = clampUserGain(userGain.value + (event.deltaY > 0 ? -0.05 : 0.05))
   } else {
     zoomAccum = 0
-    scrollLeft.value += event.deltaX || event.deltaY
-    if (scrollLeft.value < 0) scrollLeft.value = 0
-    if (scrollLeft.value > maxScrollLeft.value) scrollLeft.value = maxScrollLeft.value
+    const delta = event.deltaX || event.deltaY
+    audio.seekBy(delta / vTileWidthPerMs.value)
   }
 }
-const maxScrollLeft = computed(() => {
-  if (!audio.lengthComputed.value) return 0
-  if (!containerWidth.value) return 0
-  return (
-    (audio.lengthComputed.value / TILE_DURATION_MS) * visualTileWidth.value - containerWidth.value
-  )
-})
-const firstVisibleIndex = computed(() => Math.floor(scrollLeft.value / visualTileWidth.value))
-const lastVisibleIndex = computed(() =>
-  Math.ceil((scrollLeft.value + containerWidth.value) / visualTileWidth.value),
-)
 
-const TILE_DURATION_MS = 5000
-const basicTileWidth = 1024
-const maxTileWidth = basicTileWidth * MAXSCALE
-const visualTileWidth = computed(() => Math.round(basicTileWidth * scaleRatio.value))
-const userGain = ref(0.5)
-const gain = computed(() => userGain.value ** 2 * 10)
+const firstVisibleIndex = computed(() =>
+  Math.floor((scrollCenter.value - halfContainerWidth.value) / vTileWidth.value),
+)
+const lastVisibleIndex = computed(() =>
+  Math.ceil((scrollCenter.value + halfContainerWidth.value) / vTileWidth.value),
+)
 
 const paletteData = shallowRef(generatePalette(getIcyBlueColor))
 
@@ -147,13 +134,12 @@ onUnmounted(() => revokeListeners?.())
 
 let tiles: { entry: TileEntry; index: number }[] = []
 const obj2id = (obj: Object) => stableStringify(obj)
-const VISIBLE_TILE_BUFFER = 1
-watch([scrollLeft, scaleRatio, gain], requestTiles)
-watch(audio.audioBufferComputed, () => nextTick(requestTiles))
+const VISIBLE_TILE_BUFFER = 0
+watch([audio.audioBufferComputed, scrollCenter, scaleRatio, gain], requestTiles)
 onMounted(requestTiles)
 
 async function requestTiles() {
-  const expectedTileWidth = scaleRatio.value > 1 ? maxTileWidth : basicTileWidth
+  const expectedTileWidth = scaleRatio.value > 1 ? maxTileWidth : baseTileWidth
   const requests = Array.from(
     {
       length: lastVisibleIndex.value - firstVisibleIndex.value + 2 * VISIBLE_TILE_BUFFER + 1,
@@ -204,19 +190,11 @@ function drawTiles() {
   ctx.clearRect(0, 0, width, height)
   console.log('Drawing tiles', tiles.length)
   tiles.forEach(({ entry, index }) => {
-    const x = index * visualTileWidth.value - scrollLeft.value
-    ctx.drawImage(entry.bitmap, x, 0, visualTileWidth.value, containerHeight.value)
+    const x = index * vTileWidth.value - (scrollCenter.value - halfContainerWidth.value)
+    ctx.drawImage(entry.bitmap, x, 0, vTileWidth.value, containerHeight.value)
   })
 }
 watch([containerWidth, containerHeight], drawTiles)
-
-watch([audio.playingComputed, audio.progressComputed], () => {
-  if (audio.playingComputed.value) {
-    scrollLeft.value =
-      (audio.progressComputed.value / TILE_DURATION_MS) * visualTileWidth.value -
-      containerWidth.value / 2
-  }
-})
 </script>
 
 <style>

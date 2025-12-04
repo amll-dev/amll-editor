@@ -135,15 +135,12 @@ function isWordLastOfLine(line: LyricLine, word: LyricWord) {
 }
 
 const preferenceStore = usePreferenceStore()
-const getAmendedProgress = () => {
-  return staticStore.audio.getProgress() - staticStore.audio.amendmentRef.value
-}
 useGlobalKeyboard('markBegin', () => {
   if (runtimeStore.selectedWords.size !== 1) return
   preferenceStore.scrollWithPlayback = false
   const word = runtimeStore.getFirstSelectedWord()!
   const line = runtimeStore.getFirstSelectedLine()!
-  word.startTime = getAmendedProgress()
+  word.startTime = staticStore.audio.amendedProgressComputed.value
   word.currentplaceholdingBeat = 0
   if (isWordFirstOfLine(line, word)) line.startTime = word.startTime
   const lineIndex = coreStore.lyricLines.indexOf(runtimeStore.getFirstSelectedLine()!)
@@ -155,8 +152,7 @@ useGlobalKeyboard('markEnd', () => {
   preferenceStore.scrollWithPlayback = false
   const word = runtimeStore.getFirstSelectedWord()!
   const line = runtimeStore.getFirstSelectedLine()!
-  const progress = getAmendedProgress()
-  word.endTime = progress
+  word.endTime = staticStore.audio.amendedProgressComputed.value
   if (isWordLastOfLine(line, word)) line.endTime = word.endTime
   const next = findNextLineWord(word)
   if (!next) return
@@ -174,7 +170,7 @@ useGlobalKeyboard('markEndBegin', () => {
     return
   }
   word.currentplaceholdingBeat = 0
-  const progress = getAmendedProgress()
+  const progress = staticStore.audio.amendedProgressComputed.value
   word.endTime = progress
   if (isWordLastOfLine(line, word)) line.endTime = word.endTime
   const next = findNextLineWord(word)

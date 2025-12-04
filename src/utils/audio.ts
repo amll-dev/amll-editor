@@ -67,14 +67,18 @@ export function useAudioCtrl() {
     audio.currentTime = target
   }
   const getProgress = () => Math.round(audio.currentTime * 1000)
+  const getPreciseProgress = () => audio.currentTime * 1000
   const progressRef = ref(0)
   const maintainProgressRef = () => {
     progressRef.value = getProgress()
     if (!audio.paused) requestAnimationFrame(maintainProgressRef)
   }
   audio.onseeked = () => (progressRef.value = getProgress())
-  const amendmentRef = computed(
-    () => usePreferenceStore().globalLatency * playbackRateRef.value * (playingRef.value ? 1 : 0),
+  const amendmentComputed = computed(() =>
+    !playingRef.value ? 0 : usePreferenceStore().globalLatency * playbackRateRef.value,
+  )
+  const amendedProgressComputed = computed(() =>
+    Math.min(Math.max(0, progressRef.value - amendmentComputed.value), lengthRef.value),
   )
 
   /**
@@ -153,10 +157,12 @@ export function useAudioCtrl() {
     seek,
     seekBy,
     getProgress,
+    getPreciseProgress,
     /** Readonly: use `seek` to change */
     progressComputed: readonly(progressRef),
     lengthComputed: readonly(lengthRef),
-    amendmentRef,
+    amendmentComputed,
+    amendedProgressComputed,
     /** Readonly: use `play`, `pause`, `togglePlay` to change */
     playingComputed: readonly(playingRef),
     volumeRef,
