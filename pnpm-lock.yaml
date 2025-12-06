@@ -98,6 +98,9 @@ importers:
       primevue:
         specifier: ^4.4.1
         version: 4.4.1(vue@3.5.22(typescript@5.9.3))
+      pyodide:
+        specifier: ^0.29.0
+        version: 0.29.0
       virtua:
         specifier: ^0.46.5
         version: 0.46.5(vue@3.5.22(typescript@5.9.3))
@@ -806,6 +809,9 @@ packages:
   '@types/earcut@2.1.4':
     resolution: {integrity: sha512-qp3m9PPz4gULB9MhjGID7wpo3gJ4bTGXm7ltNDsmOvsPduTeHp8wSW9YckBj3mljeOh4F0m2z/0JKAALRKbmLQ==}
 
+  '@types/emscripten@1.41.5':
+    resolution: {integrity: sha512-cMQm7pxu6BxtHyqJ7mQZ2kXWV5SLmugybFdHCBbJ5eHzOo6VhBckEgAT3//rP5FwPHNPeEiq4SmQ5ucBwsOo4Q==}
+
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
 
@@ -1383,6 +1389,10 @@ packages:
   punycode@1.4.1:
     resolution: {integrity: sha512-jmYNElW7yvO7TV33CjSmvSiE2yco3bV2czu/OzDKdMNVZQWfxCblURLhf+47syQRBntjfLdd/H0egrzIG+oaFQ==}
 
+  pyodide@0.29.0:
+    resolution: {integrity: sha512-ObIvsTmcrxAWKg+FT1GjfSdDmQc5CabnYe/nn5BCuhr9BVVITeQ24DBdZuG5B2tIiAZ9YonBpnDB7cmHZyd2Rw==}
+    engines: {node: '>=18.0.0'}
+
   qs@6.14.0:
     resolution: {integrity: sha512-YWWTjgABSKcvs/nWBi9PycY/JiPJqOD4JA6o9Sej2AtvSGarXxKC3OQSk4pAarbdQlKAh5D4FCQkJNkW+GAn3w==}
     engines: {node: '>=0.6'}
@@ -1772,6 +1782,18 @@ packages:
   wrap-ansi@7.0.0:
     resolution: {integrity: sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==}
     engines: {node: '>=10'}
+
+  ws@8.18.3:
+    resolution: {integrity: sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
 
   y18n@5.0.8:
     resolution: {integrity: sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==}
@@ -2315,6 +2337,8 @@ snapshots:
   '@types/css-font-loading-module@0.0.12': {}
 
   '@types/earcut@2.1.4': {}
+
+  '@types/emscripten@1.41.5': {}
 
   '@types/estree@1.0.8': {}
 
@@ -2958,6 +2982,14 @@ snapshots:
 
   punycode@1.4.1: {}
 
+  pyodide@0.29.0:
+    dependencies:
+      '@types/emscripten': 1.41.5
+      ws: 8.18.3
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
   qs@6.14.0:
     dependencies:
       side-channel: 1.1.0
@@ -3284,6 +3316,8 @@ snapshots:
       ansi-styles: 4.3.0
       string-width: 4.2.3
       strip-ansi: 6.0.1
+
+  ws@8.18.3: {}
 
   y18n@5.0.8: {}
 

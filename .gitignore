@@ -29,3 +29,4 @@ coverage
 
 *.tsbuildinfo
 /chunk-analysis.html
+__pycache__

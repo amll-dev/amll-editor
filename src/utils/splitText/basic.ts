@@ -56,7 +56,7 @@ export function basicSplit(
         }
         if (splitter) {
           const subParts = splitter(token)
-          handleSubparts(subParts)
+          handleSubparts([...subParts])
           continue
         }
         stickToLast()

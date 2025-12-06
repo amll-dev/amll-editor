@@ -46,6 +46,7 @@
     "pinia": "^3.0.3",
     "primeicons": "^7.0.0",
     "primevue": "^4.4.1",
+    "pyodide": "^0.29.0",
     "virtua": "^0.46.5",
     "vue": "^3.5.22",
     "vue-draggable-plus": "^0.6.0",

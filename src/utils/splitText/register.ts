@@ -3,6 +3,7 @@ import { basicSplit } from './basic'
 import { compromiseSplit } from './compromise'
 import { prosoticSplit } from './prosotic'
 import { japaneseSplit } from './japanese'
+import { silabeadorSplit } from './silabeador/silabeador'
 
 export interface Rewrite {
   target: string
@@ -45,6 +46,10 @@ const engines: SplitEngine[] = [
     description:
       '针对日语拗音等做专门处理，逻辑来自 @Xionghaizi001。若有自定义规则，将优先提取自定义词拆分，其余部分按规则拆分。',
     processor: japaneseSplit,
+  },
+  {
+    name: 'Silabeador 西班牙语断词',
+    processor: silabeadorSplit,
   },
 ]
 
