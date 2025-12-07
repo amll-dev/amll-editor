@@ -4,8 +4,7 @@
     :class="{
       dragging: runtimeStore.isDraggingWord,
       dragover,
-      floatup,
-      zerowidth: props.index === 0,
+      beginning: props.index === 0,
     }"
     @dragover="handleDragOver"
     @dragleave="handleDragLeave"
@@ -25,12 +24,6 @@ const coreStore = useCoreStore()
 const staticStore = useStaticStore()
 const dragover = ref(false)
 const props = defineProps<{ parent: LyricLine; index: number }>()
-
-const floatup = ref(false)
-watch(
-  () => runtimeStore.isDraggingWord,
-  (val) => setTimeout(() => (floatup.value = val), 200),
-)
 
 function handleDragOver(e: DragEvent) {
   if (!runtimeStore.isDraggingWord) return
@@ -98,22 +91,23 @@ function checkWordContinuity(words: Readonly<LyricWord[]>): null | [number, numb
 <style lang="scss">
 .winsert-indicator {
   box-sizing: content-box;
-  width: 0.5rem;
+  width: 0;
   position: relative;
+  --extra-width: 0.85rem;
+  margin: -0.2rem 0;
+  margin-left: calc(var(--c-word-gap) / -2 - var(--extra-width));
+  margin-right: calc(var(--c-word-gap) / 2 - var(--extra-width));
+  padding: 0.1rem calc(var(--extra-width));
+  z-index: 1;
+  pointer-events: none;
   &.dragging {
-    margin: -0.1rem -0.8rem;
-    padding: 0.1rem 0.8rem;
-    z-index: -1;
-  }
-  &.floatup {
-    z-index: 1;
+    pointer-events: auto;
   }
   &.dragover {
     &::after {
       visibility: visible;
     }
   }
-
   &::after {
     visibility: hidden;
     content: '';
@@ -125,18 +119,15 @@ function checkWordContinuity(words: Readonly<LyricWord[]>): null | [number, numb
     width: 0;
     margin: 0.2rem auto;
     box-shadow: 0 0 0 0.08rem var(--p-primary-color);
-    .winsert-indicator.zerowidth & {
+    .winsert-indicator.beginning & {
       box-shadow: none;
       width: 0.3rem;
     }
   }
-  &.zerowidth {
-    margin-left: -0.5rem;
-    &.dragging {
-      z-index: 1;
-      margin: -0.1rem -0.5rem;
-      padding: 0.1rem 0.5rem 0.1rem 0;
-    }
+  &.beginning {
+    margin: -0.1rem -0.5rem;
+    padding: 0.1rem 0.5rem 0.1rem 0;
+    width: var(--c-word-gap);
     &::after {
       transform: translateX(-0.2rem);
     }

@@ -17,10 +17,10 @@
 </template>
 <script setup lang="ts">
 import { useRuntimeStore } from '@/stores/runtime'
-import { useMouse } from '@vueuse/core'
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 
-const { x: pointerX, y: pointerY } = useMouse()
+const pointerX = ref(0)
+const pointerY = ref(0)
 const runtimeStore = useRuntimeStore()
 const dragCount = computed(() =>
   runtimeStore.isDraggingLine ? runtimeStore.selectedLines.size : runtimeStore.selectedWords.size,
@@ -32,6 +32,17 @@ const dragText = computed(
 const dragIcon = computed(() => {
   if (!runtimeStore.canDrop) return 'pi-ban'
   return runtimeStore.isDraggingCopy ? 'pi-clone' : 'pi-arrow-right'
+})
+
+const handleMouseMove = (e: MouseEvent) => {
+  pointerX.value = e.pageX
+  pointerY.value = e.pageY
+}
+onMounted(() => {
+  window.addEventListener('dragover', handleMouseMove)
+})
+onUnmounted(() => {
+  window.removeEventListener('dragover', handleMouseMove)
 })
 </script>
 

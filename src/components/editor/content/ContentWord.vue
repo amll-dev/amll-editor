@@ -1,6 +1,6 @@
 <template>
   <div
-    class="lword"
+    class="cword"
     :class="{
       selected: isSelected,
       removing: isSelected && runtimeStore.isDragging && !runtimeStore.isDraggingCopy,
@@ -10,9 +10,9 @@
     @contextmenu.stop="handleContext"
     @dragstart.stop
   >
-    <div class="lword-drag-ghost" ref="dragGhostEl"></div>
+    <div class="cword-drag-ghost" ref="dragGhostEl"></div>
     <div
-      class="lword-head"
+      class="cword-head"
       draggable="true"
       @mousedown="handleMousedown"
       @click="handleClick"
@@ -20,23 +20,23 @@
       @dragstart="handleDragStart"
       @dragend="handleDragEnd"
     >
-      <i v-if="props.word.bookmarked" class="lword-head-bookmark pi pi-bookmark-fill"></i>
-      <i v-else class="lword-head-bars pi pi-bars"></i>
-      <div style="flex: 1">&ZeroWidthSpace;</div>
-      <div v-if="props.word.placeholdingBeat" class="lword-head-placeholding-beat">
+      &ZeroWidthSpace;
+      <i v-if="props.word.bookmarked" class="cword-head-bookmark pi pi-bookmark-fill"></i>
+      <i v-else class="cword-head-bars pi pi-bars"></i>
+      <div v-if="props.word.placeholdingBeat" class="cword-head-placeholding-beat">
         {{ props.word.placeholdingBeat }}
       </div>
     </div>
-    <div class="lword-input-shell" :class="{ focused: focused }">
-      <div class="lword-input-widthcontrol lword-input-alike">
+    <div class="cword-input-shell" :class="{ focused: focused }">
+      <div class="cword-input-widthcontrol cword-input-alike">
         {{ widthController }}
       </div>
-      <div class="lword-input-placeholder lword-input-alike">
+      <div class="cword-input-placeholder cword-input-alike">
         {{ placeholder }}
       </div>
       <InputText
         ref="wordInputComponent"
-        class="lword-input"
+        class="cword-input"
         v-model="inputModel"
         size="large"
         @keydown="handleKeydown"
@@ -298,53 +298,67 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss">
-.lword {
+.cword {
   height: var(--content-word-height);
-  display: flex;
-  flex-direction: column;
+  --head-height: 1.8rem;
+  --body-height: calc(var(--content-word-height) - var(--head-height));
   --p-inputtext-lg-font-size: 1.3rem;
-  --w-bg-color: var(--l-border-color);
+  --w-bg-color: var(--c-border-color);
   position: relative;
+  margin-right: var(--c-word-gap);
   transition:
     transform 0.1s,
     opacity 0.1s;
   &.selected {
     --w-bg-color: var(--p-primary-color);
     color: var(--p-primary-contrast-color);
+    z-index: 3;
   }
   &.removing {
     opacity: 0.5;
     transform: scale(0.9);
   }
 }
-.lword-head {
+.cword-head {
   flex: 1;
-  display: flex;
-  align-items: center;
-  padding: 0.2rem;
   font-size: 1rem;
+  height: var(--head-height);
   cursor: move;
   background-color: var(--w-bg-color);
   border-top-left-radius: var(--p-inputtext-border-radius);
   border-top-right-radius: var(--p-inputtext-border-radius);
   font-family: var(--font-monospace);
+  position: relative;
 }
-.lword-head-bookmark {
+.cword-head-bookmark,
+.cword-head-bars,
+.cword-head-placeholding-beat {
+  position: absolute;
+  top: 0.1rem;
+  bottom: 0;
+  margin: auto 0.2rem;
+  height: fit-content;
+}
+.cword-head-bookmark {
+  left: 0;
   font-size: 0.8rem;
   color: var(--p-button-text-warn-color);
-  .lword.selected & {
+  .cword.selected & {
     color: inherit;
   }
 }
-.lword-head-bars {
+.cword-head-bars {
+  left: 0;
   font-size: 0.8rem;
   transform: scaleX(0.8);
   opacity: 0.4;
 }
-.lword-head-placeholding-beat {
+.cword-head-placeholding-beat {
+  right: 0.1rem;
   font-weight: bold;
 }
-.lword-input-shell {
+.cword-input-shell {
+  height: var(--body-height);
   --p-inputtext-lg-padding-x: 0.6rem;
   --p-inputtext-lg-padding-y: 0.5rem;
   position: relative;
@@ -352,7 +366,7 @@ onUnmounted(() => {
   border-bottom-left-radius: var(--p-inputtext-border-radius);
   border-bottom-right-radius: var(--p-inputtext-border-radius);
   font-size: var(--p-inputtext-lg-font-size);
-  .lword.selected & {
+  .cword.selected & {
     background-color: color-mix(
       in srgb,
       var(--p-primary-color) 10%,
@@ -360,35 +374,36 @@ onUnmounted(() => {
     );
   }
 }
-.lword-input-alike {
+.cword-input-alike {
   padding: var(--p-inputtext-lg-padding-y) var(--p-inputtext-lg-padding-x);
   border: 1px solid transparent;
   white-space: pre;
 }
-.lword-input-widthcontrol {
+.cword-input-widthcontrol {
   visibility: hidden;
 }
-.lword-input,
-.lword-input-placeholder {
+.cword-input,
+.cword-input-placeholder {
   position: absolute;
   left: 0;
   right: 0;
   top: 0;
+  bottom: 0;
 }
-.lword-input.lword-input {
+.cword-input.cword-input {
   background: transparent;
   transition: none;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
-  .lword.selected & {
+  .cword.selected & {
     border-color: var(--p-primary-color);
   }
 }
-.lword-input-placeholder {
+.cword-input-placeholder {
   color: var(--p-inputtext-placeholder-color);
   font-weight: 300;
 }
-.lword-drag-ghost {
+.cword-drag-ghost {
   position: absolute;
   top: 0;
   left: 0;

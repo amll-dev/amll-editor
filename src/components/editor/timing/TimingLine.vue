@@ -88,10 +88,10 @@ function handleMouseDown() {
 .tline {
   box-sizing: content-box;
   display: flex;
-  --l-border-color: var(--p-button-secondary-background);
-  --l-bg-color: transparent;
-  border: 2px solid var(--l-border-color);
-  background-color: var(--l-bg-color);
+  --t-border-color: var(--p-button-secondary-background);
+  --t-bg-color: transparent;
+  border: 2px solid var(--t-border-color);
+  background-color: var(--t-bg-color);
   border-radius: 0.5rem;
   overflow: hidden;
   margin: 0.2rem 0.5rem;
@@ -100,10 +100,10 @@ function handleMouseDown() {
   --word-height: 7.5rem;
   &:hover,
   &.selected {
-    --l-bg-color: var(--p-content-background);
+    --t-bg-color: var(--p-content-background);
   }
   &.selected {
-    --l-border-color: var(--p-button-secondary-hover-background);
+    --t-border-color: var(--p-button-secondary-hover-background);
     opacity: 1;
   }
   &.ignored {
@@ -118,7 +118,7 @@ function handleMouseDown() {
   gap: 0.5rem;
   padding-right: 0.5rem;
   border-right: 1px solid transparent;
-  --tline-head-background: color-mix(in srgb, var(--l-border-color), var(--global-background) 40%);
+  --tline-head-background: color-mix(in srgb, var(--t-border-color), var(--global-background) 40%);
   background-color: var(--tline-head-background);
 }
 .tline-head-btns {
@@ -132,7 +132,7 @@ function handleMouseDown() {
   );
   --p-button-text-secondary-hover-background: color-mix(
     in srgb,
-    var(--l-border-color),
+    var(--t-border-color),
     transparent 40%
   );
   .tline-tag {

@@ -4,7 +4,6 @@
     :class="{
       dragging: runtimeStore.isDragging,
       dragover,
-      floatup,
     }"
     @dragover.prevent="handleDragOver"
     @dragleave="handleDragLeave"
@@ -18,18 +17,12 @@ import { useRuntimeStore } from '@/stores/runtime'
 import { useStaticStore } from '@/stores/static'
 import { alignLineTime } from '@/utils/alignLineTime'
 import { sortLines, sortWords } from '@/utils/selection'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 const runtimeStore = useRuntimeStore()
 const coreStore = useCoreStore()
 const staticStore = useStaticStore()
 const dragover = ref(false)
 const props = defineProps<{ index: number }>()
-
-const floatup = ref(false)
-watch(
-  () => runtimeStore.isDragging,
-  (val) => setTimeout(() => (floatup.value = val), 200),
-)
 
 function handleDragOver(_e: DragEvent) {
   dragover.value = true
@@ -112,23 +105,18 @@ function handleContext(e: MouseEvent) {
   box-sizing: content-box;
   height: 0.8rem;
   position: relative;
+  pointer-events: none;
+  z-index: 3;
   &::before {
     content: '';
     position: absolute;
-    top: 0;
+    top: -2rem;
     left: 0;
     right: 0;
-    bottom: 0;
+    bottom: -0.6rem;
   }
   &.dragging {
-    z-index: -1;
-    &::before {
-      top: -2rem;
-      bottom: -0.6rem;
-    }
-  }
-  &.floatup {
-    z-index: 3;
+    pointer-events: auto;
   }
   &.dragover {
     &::after {

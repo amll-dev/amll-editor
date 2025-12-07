@@ -250,22 +250,24 @@ onUnmounted(() => {
 .cline {
   margin: 0 0.5rem;
   min-height: 9.8rem;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr;
   overflow: hidden;
-  border: 2px var(--l-border-color) solid;
-  background-color: var(--l-bg-color);
+  border: 2px var(--c-border-color) solid;
+  background-color: var(--c-bg-color);
   border-radius: 0.5rem;
-  --l-border-color: var(--p-button-secondary-background);
-  --l-bg-color: transparent;
+  --c-border-color: var(--p-button-secondary-background);
+  --c-bg-color: transparent;
+  --c-word-gap: 0.5rem;
   opacity: 0.8;
   transition: transform 0.2s;
   // animation: fade 0.2s;
   &:hover,
   &.selected {
-    --l-bg-color: var(--p-content-background);
+    --c-bg-color: var(--p-content-background);
   }
   &.selected {
-    --l-border-color: var(--p-button-secondary-hover-background);
+    --c-border-color: var(--p-button-secondary-hover-background);
     opacity: 1;
   }
   &.removing {
@@ -274,8 +276,9 @@ onUnmounted(() => {
   }
 }
 .cline-head {
-  display: flex;
-  --cline-head-background: color-mix(in srgb, var(--l-border-color), var(--global-background) 40%);
+  display: grid;
+  grid-template-columns: auto auto;
+  --cline-head-background: color-mix(in srgb, var(--c-border-color), var(--global-background) 40%);
   background-color: var(--cline-head-background);
   color: var(--p-button-secondary-color);
   cursor: move;
@@ -343,7 +346,7 @@ onUnmounted(() => {
   );
   --p-button-text-secondary-hover-background: color-mix(
     in srgb,
-    var(--l-border-color),
+    var(--c-border-color),
     transparent 40%
   );
   &-duet {
@@ -358,21 +361,17 @@ onUnmounted(() => {
   }
 }
 
-.cline-inner {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
 .cline-secondary {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   padding: 0.8rem 0.5rem 0.5rem;
   gap: 0.5rem;
 }
 .cline-content {
   flex: 1;
   display: flex;
-  padding: 0.5rem;
+  padding: var(--c-word-gap);
+  padding-right: 0;
   flex-wrap: wrap;
   row-gap: 0.5rem;
   align-content: flex-start;
