@@ -6,7 +6,11 @@
       #default="{ item: line, index: lineIndex }"
       ref="vscroll"
     >
-      <div :key="line.id" class="line-item-shell">
+      <div
+        :key="line.id"
+        class="line-item-shell"
+        v-if="(line as LyricLine).words.some((w) => w.text.trim())"
+      >
         <Line :line="line" :index="lineIndex">
           <template v-for="word in line.words" :key="word.id">
             <Word
@@ -74,7 +78,10 @@ onMounted(() => {
 })
 
 const shouldIgnore = (line: LyricLine) =>
-  line.ignoreInTiming || (preferenceStore.alwaysIgnoreBackground && line.background)
+  line.ignoreInTiming ||
+  (preferenceStore.alwaysIgnoreBackground && line.background) ||
+  !line.words.length ||
+  line.words.every((w) => !w.text.trim())
 
 function findNextLineWord(
   word: LyricWord,
