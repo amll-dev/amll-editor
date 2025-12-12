@@ -188,6 +188,7 @@ useGlobalKeyboard('markEndBegin', () => {
   if (!next) return
   const [nextWordLineIndex, nextWordLine, nextWord] = next
   nextWord.startTime = progress
+  nextWord.currentplaceholdingBeat = 0
   if (isWordFirstOfLine(nextWordLine, nextWord)) nextWordLine.startTime = progress
   runtimeStore.selectLineWord(nextWordLine, nextWord)
   handleScrollTo(nextWordLineIndex)
