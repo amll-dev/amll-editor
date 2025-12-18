@@ -3,9 +3,18 @@
 # AMLL Editor
 
 基于 Vue 的开源逐词歌词编辑器。<br>
-作为 [AMLL TTML Tool](https://github.com/Steve-xmh/amll-ttml-tool) 的继任者，是 [AMLL](https://github.com/Steve-xmh/applemusic-like-lyrics) 生态的一部分。
+目标成为 [AMLL TTML Tool](https://github.com/Steve-xmh/amll-ttml-tool) 的继任者，可与 [AMLL](https://github.com/Steve-xmh/applemusic-like-lyrics) 生态协作。
 
-仍处于早期开发阶段。
+暂处于早期开发阶段。
+
+## License
+
+本项目以 GNU Affero General Public License v3.0 only 许可授权。
+
+This project is licensed under the GNU Affero General Public License v3.0 only.
+See [the LICENSE file](./LICENSE) for details.
+
+SPDX-License-Identifier: AGPL-3.0-only
 
 ## Legal Notice
 
