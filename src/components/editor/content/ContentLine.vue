@@ -249,7 +249,6 @@ onUnmounted(() => {
 <style lang="scss">
 .cline {
   margin: 0 0.5rem;
-  min-height: 9.8rem;
   display: grid;
   grid-template-columns: auto 1fr;
   overflow: hidden;
@@ -364,7 +363,7 @@ onUnmounted(() => {
 .cline-secondary {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  padding: 0.8rem 0.5rem 0.5rem;
+  padding: 0.5rem;
   gap: 0.5rem;
 }
 .cline-content {
