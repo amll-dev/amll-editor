@@ -62,10 +62,10 @@ import { Button, Card, Popover } from 'primevue'
 import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue'
 import PopoverPane from './Popover.vue'
 import Spectrogram from './Spectrogram.vue'
-import { ms2str } from '@utils/timeModel'
+import { ms2str } from '@utils/formatTime'
 import Waveform from './Waveform.vue'
 import { useGlobalKeyboard } from '@core/hotkey'
-import { tipHotkey } from '@utils/tooltip'
+import { tipHotkey } from '@utils/generateTooltip'
 import { useStaticStore } from '@states/stores'
 
 const { audio } = useStaticStore()

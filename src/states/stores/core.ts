@@ -2,7 +2,7 @@ import { reactive } from 'vue'
 import { defineStore } from 'pinia'
 import { useRuntimeStore } from './runtime'
 import { nanoid } from 'nanoid'
-import { alignLineEndTime, alignLineStartTime } from '@utils/alignLineTime'
+import { alignLineEndTime, alignLineStartTime } from '@utils/alignLineWordTime'
 import type { LyricLine, LyricWord, Metadata } from '@core/types'
 
 const newLine = (attrs: Partial<LyricLine> = {}) =>

@@ -194,7 +194,7 @@ import { useFindReplaceEngine } from '@core/findReplace'
 import { useGlobalKeyboard } from '@core/hotkey'
 import { tryRaf } from '@utils/tryRaf'
 import type { TimeoutHandle } from '@utils/types'
-import { sortWords } from '@utils/selection'
+import { sortWords } from '@utils/sortLineWords'
 import InputText from '@ui/components/InputText.vue'
 
 const [visible] = defineModel<boolean>({ required: true })

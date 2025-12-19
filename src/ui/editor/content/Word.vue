@@ -60,7 +60,8 @@ import {
   useTemplateRef,
   watch,
 } from 'vue'
-import { forceOutsideBlur, sortIndex } from '@utils/selection'
+import { sortIndex } from '@utils/sortLineWords'
+import { forceOutsideBlur } from '@utils/forceOutsideBlur'
 import { digit2Sup } from '@utils/toSupSub'
 import type { TimeoutHandle } from '@utils/types'
 import { useRuntimeStore, useCoreStore, useStaticStore } from '@states/stores'

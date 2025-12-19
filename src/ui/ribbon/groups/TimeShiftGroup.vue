@@ -32,7 +32,7 @@ import RibbonGroup from '../RibbonGroupShell.vue'
 import { usePrefStore } from '@states/stores'
 import BatchTimeShiftDialog from '@ui/dialogs/BatchTimeShiftDialog.vue'
 import { ref } from 'vue'
-import { tipDesc } from '@utils/tooltip'
+import { tipDesc } from '@utils/generateTooltip'
 import { useGlobalKeyboard } from '@core/hotkey'
 
 const prefStore = usePrefStore()

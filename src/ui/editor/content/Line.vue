@@ -84,12 +84,13 @@
 </template>
 
 <script setup lang="ts">
-import { forceOutsideBlur, sortIndex } from '@utils/selection'
+import { sortIndex } from '@utils/sortLineWords'
+import { forceOutsideBlur } from '@utils/forceOutsideBlur'
 import { Button, FloatLabel } from 'primevue'
 import { computed, onMounted, onUnmounted, useTemplateRef } from 'vue'
 import InputText from '@ui/components/InputText.vue'
 import type { TimeoutHandle } from '@utils/types'
-import { tipMultiLine } from '@utils/tooltip'
+import { tipMultiLine } from '@utils/generateTooltip'
 import type { LyricLine } from '@core/types'
 import { useCoreStore, usePrefStore, useRuntimeStore, useStaticStore } from '@states/stores'
 import type { LineComponentActions } from '@states/stores/static'

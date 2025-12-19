@@ -16,7 +16,7 @@
 
 import type { LyricLine } from '@core/types'
 import { type Persist } from '..'
-import { str2ms } from '@utils/timeModel'
+import { str2ms } from '@utils/formatTime'
 import { coreCreate } from '@states/stores/core'
 
 export function parseLRC(lrc: string): Persist {

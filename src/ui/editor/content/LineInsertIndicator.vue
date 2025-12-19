@@ -14,8 +14,8 @@
 <script setup lang="ts">
 import type { LyricLine } from '@core/types'
 import { useRuntimeStore, useCoreStore, useStaticStore } from '@states/stores'
-import { alignLineTime } from '@utils/alignLineTime'
-import { sortLines, sortWords } from '@utils/selection'
+import { alignLineTime } from '@utils/alignLineWordTime'
+import { sortLines, sortWords } from '@utils/sortLineWords'
 import { ref } from 'vue'
 const runtimeStore = useRuntimeStore()
 const coreStore = useCoreStore()

@@ -72,7 +72,7 @@ import { exportPersist, importPersist } from '@core/ports'
 
 import FromTextModal from '@ui/dialogs/FromTextModal.vue'
 import FromOtherFormatModal from '@ui/dialogs/FromOtherFormatModal.vue'
-import { tipHotkey } from '@utils/tooltip'
+import { tipHotkey } from '@utils/generateTooltip'
 import { View } from '@core/types'
 
 const runtimeStore = useRuntimeStore()

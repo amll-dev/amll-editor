@@ -11,7 +11,7 @@
 
 import type { LyricLine, LyricWord } from '@core/types'
 import type { Persist } from '..'
-import { ms2str, str2ms } from '@utils/timeModel'
+import { ms2str, str2ms } from '@utils/formatTime'
 import { coreCreate } from '@states/stores/core'
 
 const tagMetadataMap: Record<string, string> = {

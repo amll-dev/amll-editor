@@ -33,7 +33,7 @@ import RibbonGroup from '../RibbonGroupShell.vue'
 import { useRuntimeStore, useCoreStore } from '@states/stores'
 import { computed } from 'vue'
 import { useGlobalKeyboard } from '@core/hotkey'
-import { tipDesc } from '@utils/tooltip'
+import { tipDesc } from '@utils/generateTooltip'
 const runtimeStore = useRuntimeStore()
 
 const focusingSet = computed(() =>

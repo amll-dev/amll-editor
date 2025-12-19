@@ -1,15 +1,6 @@
 import type { LyricLine, LyricWord } from '@core/types'
 import { useCoreStore } from '@states/stores'
 
-export function forceOutsideBlur() {
-  const focusedInput = document.activeElement
-  const isInputElement = (el: Element | null): el is HTMLInputElement =>
-    el !== null && el.tagName === 'INPUT'
-  if (!isInputElement(focusedInput)) return
-  if (focusedInput.closest('[data-escape-auto-blur]')) return
-  focusedInput.blur()
-}
-
 export function sortIndex(a: number, b: number): [number, number] {
   if (a < 0 || b < 0) throw new Error('Indices must be non-negative')
   return a < b ? [a, b] : [b, a]

@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { useStaticStore } from '@states/stores'
-import { ms2str } from '@utils/timeModel'
+import { ms2str } from '@utils/formatTime'
 import { useCssVar } from '@vueuse/core'
 import { onMounted, onUnmounted, useTemplateRef } from 'vue'
 import WaveSurfer from 'wavesurfer.js'

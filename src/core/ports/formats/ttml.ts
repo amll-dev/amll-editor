@@ -4,7 +4,7 @@
 
 // import { DOMParser, XMLSerializer } from '@xmldom/xmldom'
 
-import { ms2str, str2ms } from '../../../utils/timeModel'
+import { ms2str, str2ms } from '@utils/formatTime'
 import { importPersist, type Persist } from '..'
 import type { LyricLine, MetadataKey } from '@core/types'
 import { coreCreate } from '@states/stores/core'
