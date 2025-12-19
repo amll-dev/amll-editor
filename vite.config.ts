@@ -6,6 +6,21 @@ import { visualizer } from 'rollup-plugin-visualizer'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 import packageJSON from './package.json'
 
+const aliasRelMap: Record<string, string> = {
+  '@': './src',
+  '@core': './src/core',
+  '@assets': './src/assets',
+  '@components': './src/components',
+  '@ui': './src/ui',
+  '@utils': './src/utils',
+  '@states': './src/states',
+  '@vendors': './src/vendors'
+}
+const aliasMap: Record<string, string> = {}
+for (const [key, relPath] of Object.entries(aliasRelMap)) {
+  aliasMap[key] = fileURLToPath(new URL(relPath, import.meta.url))
+}
+
 const PYODIDE_EXCLUDE_DEV = ['!**/*.{md,html}', '!**/*.d.ts', '!**/*.whl', '!**/node_modules']
 const PYODIDE_EXCLUDE_PROD = PYODIDE_EXCLUDE_DEV.concat(['!**/*.map'])
 function viteStaticCopyPyodide(isDev: boolean) {
@@ -77,15 +92,9 @@ export default defineConfig(({ mode }) => ({
       ],
     },
   },
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-    },
-  },
+  resolve: { alias: aliasMap },
   define: {
     __VERSION__: JSON.stringify(packageJSON.version),
   },
-  optimizeDeps: {
-    exclude: ['pyodide'],
-  },
+  optimizeDeps: { exclude: ['pyodide'] },
 }))
