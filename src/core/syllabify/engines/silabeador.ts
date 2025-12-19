@@ -1,8 +1,8 @@
-import type { Syllabify as SL } from '../..'
+import type { Syllabify as SL } from '..'
 import { loadPyodide } from 'pyodide'
-import { basicSplit } from '../basic'
-import silabeadorPy from './silabeador.py?raw'
-import exceptionsLst from './exceptions.lst?raw'
+import { basicSplit } from './basic'
+import silabeadorPy from '@vendors/silabeador/silabeador.py?raw'
+import exceptionsLst from '@vendors/silabeador/exceptions.lst?raw'
 
 let globalSilabeador: ReturnType<typeof useSilabeador> | null = null
 

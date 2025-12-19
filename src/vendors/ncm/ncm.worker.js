@@ -1,12 +1,3 @@
-/**
- * NCM container parser worker.
- * Derived from https://github.com/AthBe1337/ncmdump-web (MIT License)
- * Modified to integrate with this project's playback pipeline.
- *
- * This module performs local decoding for user-supplied files.
- * It does not provide or enable any DRM circumvention functionality.
- */
-
 import createModule from './wasm/ncmdump.js'
 import wasmUrl from './wasm/ncmdump.wasm?url'
 

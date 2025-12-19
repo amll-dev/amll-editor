@@ -1,4 +1,5 @@
 /chunk-analysis.html
-/src/lib/
-LICENSE
+/src/vendors/**/*.js
+/src/vendors/**/*.d.ts
+/LICENSE
 *.dict.json
