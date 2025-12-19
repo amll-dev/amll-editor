@@ -14,7 +14,7 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "format": "prettier --write src/",
-    "dict-rebuild": "python pipelines/splitDict/writeback.py && tsx pipelines/splitDict/toDict.ts"
+    "dict-rebuild": "python pipelines/prosoticDictGen/scripts/corrected2csv.py && tsx pipelines/prosoticDictGen/scripts/csv2dictJson.ts"
   },
   "dependencies": {
     "@applemusic-like-lyrics/core": "^0.2.0",

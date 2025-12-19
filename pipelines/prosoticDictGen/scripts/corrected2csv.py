@@ -1,8 +1,9 @@
+# from SUBTLEXus_syllables-corrected.txt to SUBTLEXus_syllables-corrected.csv
 import csv
 
-CSV_FILE = "./pipelines/splitDict/SUBTLEXus_syllables.csv"
-READABLE_FILE = "./pipelines/splitDict/SUBTLEXus_syllables-corrected.txt"
-OUTPUT_FILE = "./pipelines/splitDict/SUBTLEXus_syllables-corrected.csv"
+CSV_FILE = "./pipelines/prosoticDictGen/SUBTLEXus_syllables.csv"
+READABLE_FILE = "./pipelines/prosoticDictGen/SUBTLEXus_syllables-corrected.txt"
+OUTPUT_FILE = "./pipelines/prosoticDictGen/SUBTLEXus_syllables-corrected.csv"
 
 corrected = {}
 with open(READABLE_FILE, encoding="utf-8") as f:

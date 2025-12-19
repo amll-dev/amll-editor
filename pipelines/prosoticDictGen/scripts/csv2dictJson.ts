@@ -1,8 +1,9 @@
+// from SUBTLEXus_syllables-corrected.csv to SUBTLEXus_prosotic.dict.json
 import nlp from 'compromise/tokenize'
 import nlpSpeech from 'compromise-speech'
 import fs from 'fs'
 
-const SRC = './pipelines/splitDict/SUBTLEXus_syllables-corrected.csv'
+const SRC = './pipelines/prosoticDictGen/SUBTLEXus_syllables-corrected.csv'
 const OUT = './public/dicts/SUBTLEXus_prosotic.dict.json'
 
 const data = fs.readFileSync(SRC, 'utf-8').trim()

@@ -3,11 +3,11 @@ import prosodic
 from pathlib import Path
 
 
-INPUT_FILE = Path("./pipelines/splitDict/SUBTLEXus.csv")
+INPUT_FILE = Path("./pipelines/prosoticDictGen/SUBTLEXus.csv")
 
-CSV_OUT = Path("./pipelines/splitDict/SUBTLEXus_syllables.csv")
-TXT_OUT = Path("./pipelines/splitDict/SUBTLEXus_syllables-readable.txt")
-FAIL_OUT = Path("./pipelines/splitDict/SUBTLEXus_failed.txt")
+CSV_OUT = Path("./pipelines/prosoticDictGen/SUBTLEXus_syllables.csv")
+TXT_OUT = Path("./pipelines/prosoticDictGen/SUBTLEXus_syllables-readable.txt")
+FAIL_OUT = Path("./pipelines/prosoticDictGen/SUBTLEXus_failed.txt")
 
 failed_words = []
 
