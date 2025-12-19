@@ -6,7 +6,7 @@ import { useCoreStore } from './core'
 
 export const useRuntimeStore = defineStore('runtime', () => {
   // View
-  const currentView = ref(View.Content)
+  const currentView = ref<View>(View.Content)
   const isContentView = computed(() => currentView.value === View.Content)
   const isTimingView = computed(() => currentView.value === View.Timing)
   const isPreviewView = computed(() => currentView.value === View.Preview)

@@ -1,10 +1,12 @@
 import SplitTextTab from './tabs/syllabify/Syllabify.vue'
 import MetadataTab from './tabs/metadata/MetadataTab.vue'
+import type { ValueOf } from '@utils/types'
 
-export enum SidebarKey {
-  SplitText = 'SplitText',
-  Metadata = 'Metadata',
-}
+export const SidebarKey = {
+  SplitText: 'SplitText',
+  Metadata: 'Metadata',
+} as const
+export type SidebarKey = ValueOf<typeof SidebarKey>
 
 interface SidebarTab {
   key: SidebarKey

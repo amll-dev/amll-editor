@@ -180,7 +180,7 @@ async function applyToLines(lines: LyricLine[]) {
   lines.forEach((line, lineIndex) => {
     const result = results[lineIndex]!
     if (result.length === line.words.length) {
-      const getText = (w: (typeof result)[number]) => (typeof w === 'string' ? w : w.text)
+      const getText = (w: SL.SplittedWord) => (typeof w === 'string' ? w : w.text)
       const allTheSame = line.words.every(({ text }, i) => text === getText(result[i]!))
       if (allTheSame) return // No change
     }
