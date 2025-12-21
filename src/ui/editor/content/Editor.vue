@@ -43,6 +43,11 @@
       </div>
     </VList>
     <ContextMenu ref="menu" :model="menuItems" />
+    <EmptyTip
+      v-if="coreStore.lyricLines.length === 0"
+      title="没有歌词行"
+      tip="使用「打开」菜单加载内容，或右键空白处插入新行"
+    />
     <Teleport to="body">
       <DragGhost v-if="runtimeStore.isDragging" />
     </Teleport>
@@ -58,6 +63,7 @@ import { nextTick, onBeforeUnmount, onMounted, onUnmounted, shallowRef, useTempl
 import { forceOutsideBlur } from '@utils/forceOutsideBlur'
 import WordInsertIndicator from './WordInsertIndicator.vue'
 import LineInsertIndicator from './LineInsertIndicator.vue'
+import EmptyTip from '@ui/components/EmptyTip.vue'
 import DragGhost from './DragGhost.vue'
 import type { MenuItem } from 'primevue/menuitem'
 import { VList } from 'virtua/vue'

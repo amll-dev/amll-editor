@@ -24,6 +24,16 @@
         </Line>
       </div>
     </VList>
+    <EmptyTip
+      v-if="coreStore.lyricLines.length === 0"
+      title="没有歌词行"
+      tip="使用「打开」菜单加载内容，或右键空白处插入新行"
+    />
+    <EmptyTip
+      v-else-if="coreStore.lyricLines.every((line) => !line.words.some((w) => w.text.trim()))"
+      title="所有行均为空"
+      tip="使用「打开」菜单加载内容，或在内容视图下编辑"
+    />
   </div>
 </template>
 
@@ -31,6 +41,7 @@
 import { VList } from 'virtua/vue'
 import Line from './Line.vue'
 import Word from './Word.vue'
+import EmptyTip from '@ui/components/EmptyTip.vue'
 import { onBeforeUnmount, onMounted, onUnmounted, useTemplateRef } from 'vue'
 import { useRuntimeStore, useCoreStore, useStaticStore, usePrefStore } from '@states/stores'
 import { useGlobalKeyboard } from '@core/hotkey'
