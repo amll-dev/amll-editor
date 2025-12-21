@@ -1,20 +1,14 @@
 <template>
   <Titlebar />
-  <template v-if="runtimeStore.isPreviewView">
-    <main>
-      <Preview class="editor" />
-    </main>
-  </template>
-  <template v-else>
-    <Ribbon />
-    <main>
-      <KeepAlive>
-        <Sidebar v-if="runtimeStore.sidebarShown" />
-      </KeepAlive>
-      <ContentEditor v-if="runtimeStore.isContentView" class="editor" />
-      <TimingEditor v-if="runtimeStore.isTimingView" class="editor" />
-    </main>
-  </template>
+  <Ribbon v-if="!runtimeStore.isPreviewView" />
+  <main>
+    <KeepAlive>
+      <Sidebar v-if="!runtimeStore.isPreviewView && runtimeStore.sidebarShown" />
+    </KeepAlive>
+    <ContentEditor v-if="runtimeStore.isContentView" />
+    <TimingEditor v-else-if="runtimeStore.isTimingView" />
+    <Preview v-else-if="runtimeStore.isPreviewView" />
+  </main>
   <Player />
   <Toast />
 </template>
@@ -131,6 +125,7 @@ main {
 .editor {
   flex: 1;
   overflow-x: hidden;
+  position: relative;
   .editor-scroller::-webkit-scrollbar {
     width: 16px;
   }

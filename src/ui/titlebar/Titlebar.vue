@@ -1,5 +1,5 @@
 <template>
-  <div class="titlebar">
+  <header class="titlebar">
     <div class="leftbar">
       <Button
         label="打开"
@@ -56,7 +56,7 @@
         @click="handleSaveClick"
       />
     </div>
-  </div>
+  </header>
 </template>
 
 <script setup lang="ts">

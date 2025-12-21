@@ -1,15 +1,17 @@
 <template>
-  <Card class="ribbon" id="ribbon" @wheel="handleWheel">
-    <template #content>
-      <ContentProcessGroup />
-      <LineAttrGroup />
-      <WordAttrGroup />
-      <TimeShiftGroup />
-      <MarkGroup />
-      <ViewGroup />
-      <PerformanceGroup />
-    </template>
-  </Card>
+  <nav>
+    <Card class="ribbon" id="ribbon" @wheel="handleWheel">
+      <template #content>
+        <ContentProcessGroup />
+        <LineAttrGroup />
+        <WordAttrGroup />
+        <TimeShiftGroup />
+        <MarkGroup />
+        <ViewGroup />
+        <PerformanceGroup />
+      </template>
+    </Card>
+  </nav>
 </template>
 
 <script setup lang="ts">
