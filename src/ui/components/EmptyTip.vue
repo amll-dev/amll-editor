@@ -30,7 +30,7 @@ const props = defineProps<{
   gap: 0.5rem;
   color: light-dark(var(--p-zinc-500), var(--p-zinc-400));
 }
-.empty-tip-icon {
+.pi.empty-tip-icon {
   font-size: 1.8rem;
   margin-bottom: 1rem;
   opacity: 0.8;
