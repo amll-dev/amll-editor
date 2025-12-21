@@ -36,6 +36,7 @@ export function parseTTML(ttmlString: string): Persist {
 
   // Metadata
   const agentToDuet = new Map<string, boolean>()
+  const agents: Set<string> = new Set()
   const metadataNode = tagSelect('head', 'metadata')
   const metadata: Record<MetadataKey, string[]> = {}
   for (const child of Array.from(metadataNode?.childNodes ?? [])) {
@@ -46,7 +47,7 @@ export function parseTTML(ttmlString: string): Persist {
     if (tagname === 'ttm:agent') {
       const id = attrs.get('xml:id')
       if (!id) continue
-      agentToDuet.set(id, agentToDuet.size !== 0)
+      agents.add(id)
     } else if (tagname === 'amll:meta') {
       const key = attrs.get('key')
       const value = attrs.get('value')
@@ -54,6 +55,9 @@ export function parseTTML(ttmlString: string): Persist {
       if (!Array.isArray(metadata[key])) metadata[key] = []
       metadata[key].push(value)
     }
+  }
+  if (agents.has('v1')) {
+    agents.forEach((id) => agentToDuet.set(id, id !== 'v1'))
   }
 
   // Contents
