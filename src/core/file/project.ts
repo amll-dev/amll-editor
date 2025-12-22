@@ -1,5 +1,6 @@
 import type { Persist } from '@core/types'
-import { useStaticStore } from '@states/stores'
+import { exportPersist, importPersist } from '@states/services/port'
+import { usePrefStore, useStaticStore } from '@states/stores'
 import JSZip from 'jszip'
 import { toRaw } from 'vue'
 
@@ -26,8 +27,20 @@ interface ProjData extends Persist {
 }
 
 const DATA_FILENAME = 'data.json'
-const FILE_VERSION = 'ALPv1.0'
-const DATA_VERSION = 'ALDv1.0'
+const FILE_VERSION = 'ALPv0.0'
+const DATA_VERSION = 'ALDv0.0'
+
+export function collectProjectData(createdAt?: Date): ProjPayload {
+  const staticStore = useStaticStore()
+  const prefStore = usePrefStore()
+  const data = exportPersist()
+  const audioFile: File | null = toRaw(staticStore.audio.rawFileComputed.value)
+  const payload: ProjPayload = { data, createdAt }
+  if (audioFile && prefStore.packAudioToProject) {
+    payload.audioFile = audioFile
+  }
+  return payload
+}
 
 export function makeProjectFile({ data, createdAt, audioFile }: ProjPayload) {
   const zip = new JSZip()
@@ -88,4 +101,9 @@ export async function parseProjectFile(file: File): Promise<ProjPayload> {
   }
 
   return { data, createdAt, audioFile }
+}
+
+export function mountProjectData(payload: ProjPayload) {
+  importPersist(payload.data)
+  if (payload.audioFile) useStaticStore().audio.mount(payload.audioFile)
 }
