@@ -12,6 +12,7 @@ export const usePrefStore = defineStore('preference', () => {
   const sidebarWidth = ref(360)
   const hotkeyMap = reactive(getDefaultHotkeyMap())
   const isMac = ref(isAppleDevice())
+  const packAudioToProject = ref(true)
 
   return {
     globalLatency,
@@ -23,6 +24,7 @@ export const usePrefStore = defineStore('preference', () => {
     sidebarWidth,
     hotkeyMap,
     isMac,
+    packAudioToProject,
   }
 })
 

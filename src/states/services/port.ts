@@ -26,7 +26,6 @@ export function exportPersist(): Persist {
       {} as Record<MetadataKey, string[]>,
     ),
     lyricLines: cloneDeep(coreStore.lyricLines),
-    version: __VERSION__,
   }
   return outputData
 }
