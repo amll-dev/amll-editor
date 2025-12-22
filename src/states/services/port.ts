@@ -1,8 +1,10 @@
 import type { MetadataKey, Persist } from '@core/types'
 import { editHistory } from './history'
 import { useCoreStore, useRuntimeStore } from '@states/stores'
+import { cloneDeep } from 'lodash-es'
 
 export function importPersist(data: Persist) {
+  data = cloneDeep(data)
   editHistory.shutdown()
   const coreStore = useCoreStore()
   const runtimeStore = useRuntimeStore()
@@ -20,10 +22,10 @@ export function exportPersist(): Persist {
   const coreStore = useCoreStore()
   const outputData: Persist = {
     metadata: [...coreStore.metadata].reduce(
-      (obj, { key, values }) => ((obj[key] = values), obj),
+      (obj, { key, values }) => ((obj[key] = [...values]), obj),
       {} as Record<MetadataKey, string[]>,
     ),
-    lyricLines: coreStore.lyricLines,
+    lyricLines: cloneDeep(coreStore.lyricLines),
     version: __VERSION__,
   }
   return outputData
