@@ -15,7 +15,7 @@ export function importPersist(data: Persist) {
     coreStore.metadata.push({ key, values })
   }
   coreStore.lyricLines.splice(0, coreStore.lyricLines.length, ...data.lyricLines)
-  editHistory.clear()
+  editHistory.init()
 }
 
 export function exportPersist(): Persist {
