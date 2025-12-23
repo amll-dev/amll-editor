@@ -1,17 +1,18 @@
 export type { Convert } from './types'
+import type { Convert as CV } from './types'
+
+export { detectFormat } from './detect'
 import { lrcReg } from './formats/lrc'
 import { lrcA2Reg } from './formats/lrca2'
 import { qrcReg } from './formats/qrc'
 import { splReg } from './formats/spl'
-import { ttmlReg } from './formats/ttml'
 import { yrcReg } from './formats/yrc'
-import type { Convert as CV } from './types'
 
 export const portFormatRegister: CV.Format[] = [
   lrcReg,
   lrcA2Reg,
   yrcReg,
   qrcReg,
-  ttmlReg,
+  // ttmlReg,
   splReg,
 ]

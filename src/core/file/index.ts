@@ -1,4 +1,5 @@
-import type { ValueOf } from '@utils/types'
+import { portFormatRegister } from '@core/convert'
+import { ttmlReg } from '@core/convert/formats/ttml'
 import { ref } from 'vue'
 
 export { simpleChooseFile, simpleSaveFile } from './simple'
@@ -10,12 +11,38 @@ export { simpleChooseTextFile, simpleSaveTextFile } from './simple'
 // Other formats are supported via import/export services
 // Won't be saved directly
 
-const BackingFmt = {
-  ALP: 'alp',
-  TTML: 'ttml',
-} as const
-type BackingFmt = ValueOf<typeof BackingFmt>
+const allSupportedExt = new Set([
+  '.alp',
+  '.ttml',
+  ...portFormatRegister.map((f) => f.accept).flat(),
+]) as Set<`.${string}`>
+const allSupportedExtArr = [...allSupportedExt]
+type FSTypes = OpenFilePickerOptions['types']
+const filePickerTypes: FSTypes = [
+  {
+    description: '所有支持的格式',
+    accept: { 'application/alp': allSupportedExtArr },
+  },
+  {
+    description: 'AMLL Editor 工程',
+    accept: { 'application/alp': ['.alp'] },
+  },
+  {
+    description: ttmlReg.name,
+    accept: { 'application/ttml+xml': ['.ttml'] },
+  },
+  ...portFormatRegister.map((format) => ({
+    description: format.name,
+    accept: { [`text/${format.accept[0]}`]: format.accept },
+  })),
+]
 
-let backingFormat: BackingFmt = BackingFmt.ALP
+// window.__test = () =>
+//   showOpenFilePicker({
+//     types: filePickerTypes,
+//     excludeAcceptAllOption: true,
+//     id: 'amll-ttml-tool-file-open',
+//   })
+
 let fileSystemHandle: FileSystemFileHandle | null = null
-const displayFilenameRef = ref<string>('未命名.alp')
+const displayFilenameRef = ref<string>('')
