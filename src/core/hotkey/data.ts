@@ -36,6 +36,8 @@ export const hotkeyCommands = [
   'chooseMedia',
   'open',
   'batchTimeShift',
+  'save',
+  'saveAs',
 ] as const
 
 export const hotkeyInputBlockList: HK.Key[] = [
@@ -78,6 +80,8 @@ export const getDefaultHotkeyMap = () =>
     metadata: k(Ctrl, 'i'),
     open: k(Ctrl, 'o'),
     batchTimeShift: k(Ctrl, Alt, 't'),
+    save: k(Ctrl, 's'),
+    saveAs: k(Ctrl, Shift, 's'),
   })
 
 //#region Helpers

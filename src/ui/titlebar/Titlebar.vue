@@ -1,19 +1,16 @@
 <template>
   <header class="titlebar">
     <div class="leftbar">
-      <Button
+      <SplitButton
         label="打开"
         icon="pi pi-folder-open"
         severity="secondary"
-        @click="(e) => openMenu?.toggle(e)"
-        v-tooltip="tipHotkey('打开或导入', 'open')"
+        :model="openMenuItems"
+        @click="handleOpenClick"
       />
 
-      <template>
-        <Menu ref="openMenu" :model="openMenuItems" popup />
-        <FromOtherFormatModal v-model="showImportFromOtherFormatModal" />
-        <FromTextModal v-model="showImportFromTextModal" />
-      </template>
+      <FromOtherFormatModal v-model="showImportFromOtherFormatModal" />
+      <FromTextModal v-model="showImportFromTextModal" />
 
       <Button
         icon="pi pi-cog"
@@ -40,6 +37,10 @@
         :disabled="!editHistory.redoable.value"
         v-tooltip="tipHotkey('重做', 'redo')"
       />
+      <div class="filename-section">
+        <span class="name">{{ filename }}</span>
+        <span class="asterisk" v-if="isDirty">*</span>
+      </div>
     </div>
     <div class="centerbar">
       <SelectButton
@@ -51,18 +52,13 @@
       />
     </div>
     <div class="rightbar">
-      <SplitButton
-        label="复制"
-        icon="pi pi-save"
-        :model="[{ label: '另存为', icon: 'pi pi-file-export' }]"
-        @click="handleSaveClick"
-      />
+      <SplitButton label="保存" icon="pi pi-save" :model="saveMenuItems" @click="handleSaveClick" />
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
-import { Button, Menu, SelectButton, SplitButton } from 'primevue'
+import { Button, Menu, SelectButton, SplitButton, useToast } from 'primevue'
 import { useRuntimeStore } from '@states/stores'
 import { nextTick, ref, useTemplateRef, watch } from 'vue'
 import type { MenuItem } from 'primevue/menuitem'
@@ -77,6 +73,11 @@ import { tipHotkey } from '@utils/generateTooltip'
 import { View } from '@core/types'
 import { SidebarKey } from '@ui/sidebar'
 import { exportPersist, importPersist } from '@states/services/port'
+
+import { FileState as FS } from '@core/file'
+import { useGlobalKeyboard } from '@core/hotkey'
+const { displayFilenameComputed: filename } = FS
+const { isDirty } = editHistory
 
 const runtimeStore = useRuntimeStore()
 
@@ -97,8 +98,26 @@ watch(
   () => (viewHandler.value = stateToView()),
 )
 
+const toast = useToast()
+const successTip = (summary: string, detail?: string) => {
+  toast.add({ severity: 'success', summary, detail, life: 3000 })
+}
+const errorTip = (summary: string, detail?: string) => {
+  toast.add({ severity: 'error', summary, detail, life: 3000 })
+}
+
 // File open
-const openMenu = useTemplateRef('openMenu')
+async function handleOpenClick() {
+  try {
+    successTip('成功装载文件', await FS.openFile())
+  } catch (e) {
+    console.error(e)
+    const err = e as Error
+    if (err.message.includes('The user aborted a request.')) return
+    else errorTip('打开文件失败', (e as Error).message)
+    return
+  }
+}
 
 const handleImportFromFile = (accept: string, parser: (content: string) => void) => async () => {
   const file = await simpleChooseTextFile(accept)
@@ -149,6 +168,13 @@ const openMenuItems: MenuItem[] = [
     command: handleNewProject,
   },
 ]
+const saveMenuItems: MenuItem[] = [
+  {
+    label: '另存为',
+    icon: 'pi pi-file-export',
+    command: handleSaveAsClick,
+  },
+]
 
 async function handleNewProject() {
   importPersist({
@@ -158,10 +184,28 @@ async function handleNewProject() {
 }
 
 // File save
-function handleSaveClick() {
+async function handleSaveClick() {
   //test: clipboard
-  navigator.clipboard.writeText(stringifyTTML(exportPersist()))
+  // navigator.clipboard.writeText(stringifyTTML(exportPersist()))
+  try {
+    successTip('成功保存文件', await FS.saveFile())
+  } catch (e) {
+    console.error(e)
+    errorTip('保存文件失败', (e as Error).message)
+  }
 }
+async function handleSaveAsClick() {
+  try {
+    successTip('成功另存为文件', await FS.saveAsFile())
+  } catch (e) {
+    console.error(e)
+    errorTip('另存为文件失败', (e as Error).message)
+  }
+}
+
+useGlobalKeyboard('save', handleSaveClick)
+useGlobalKeyboard('saveAs', handleSaveAsClick)
+useGlobalKeyboard('open', handleOpenClick)
 </script>
 
 <style lang="scss">
@@ -179,6 +223,23 @@ function handleSaveClick() {
   }
   .rightbar {
     justify-content: flex-end;
+  }
+  .filename-section {
+    display: flex;
+    align-items: center;
+    padding: 0 0.5rem;
+    line-height: 1;
+    opacity: 0.9;
+    .name {
+      font-size: 1.1rem;
+      user-select: none;
+    }
+    .asterisk {
+      color: var(--p-primary-color);
+      font-weight: bold;
+      margin-left: 0.2rem;
+      user-select: none;
+    }
   }
 }
 </style>
