@@ -4,12 +4,13 @@ export namespace Convert {
   export interface Format {
     name: string
     description?: string
-    accept: string
+    accept: string[]
     example?: string
     reference?: {
       name: string
       url: string
     }[]
     parser: (content: string) => Persist
+    stringifier: (data: Persist) => string
   }
 }

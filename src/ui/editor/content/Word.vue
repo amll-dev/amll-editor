@@ -283,7 +283,7 @@ const hooks: WordComponentActions = {
     delete el.dataset.highlight
     void el.offsetHeight
     el.dataset.highlight = ''
-    highlightTimeout = window.setTimeout(() => {
+    highlightTimeout = setTimeout(() => {
       delete el.dataset.highlight
       highlightTimeout = undefined
     }, 2000)

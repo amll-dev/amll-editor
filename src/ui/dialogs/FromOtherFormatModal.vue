@@ -15,7 +15,7 @@
     >
       <template #option="{ option: format }">
         {{ format.name }}
-        <span class="accept">{{ format.accept }}</span>
+        <span class="accept">{{ format.accept.join(', ') }}</span>
       </template>
     </Listbox>
     <div class="format-details">
@@ -23,6 +23,7 @@
         <div class="description">{{ selectedFormat.description || '未提供说明' }}</div>
         <div class="references" v-if="selectedFormat.reference || selectedFormat.example">
           <Button
+            v-if="selectedFormat.example"
             label="显示示例"
             size="small"
             icon="pi pi-align-left"
@@ -61,7 +62,7 @@
           />
         </div>
       </template>
-      <div v-else class="require-select-tip">请在左侧选择格式</div>
+      <EmptyTip v-else class="require-select-tip" title="请在左侧选择格式" icon="pi-file" />
     </div>
   </Dialog>
 </template>
@@ -73,6 +74,7 @@ import { ref } from 'vue'
 import CodeMirror from '@ui/components/CodeMirror.vue'
 import { portFormatRegister, type Convert as CV } from '@core/convert'
 import { importPersist } from '@states/services/port'
+import EmptyTip from '@ui/components/EmptyTip.vue'
 
 const [visible] = defineModel<boolean>({ required: true })
 
@@ -82,7 +84,7 @@ const inputText = ref('')
 
 async function handleOpenFromFile() {
   if (!selectedFormat.value) return
-  const file = await simpleChooseTextFile(selectedFormat.value.accept)
+  const file = await simpleChooseTextFile(selectedFormat.value.accept.join(','))
   if (!file) return
   inputText.value = file.content || ''
 }
@@ -121,6 +123,9 @@ function openUrl(url: string) {
     .accept {
       margin-inline-start: 0.3rem;
       opacity: 0.5;
+    }
+    .p-listbox-list-container {
+      max-height: unset !important;
     }
   }
   .format-details {
@@ -165,16 +170,7 @@ function openUrl(url: string) {
     gap: 0.5rem;
   }
   .require-select-tip {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    margin: auto;
-    width: max-content;
-    height: max-content;
-    font-size: 1.5rem;
-    opacity: 0.5;
+    gap: 0.3rem;
   }
 }
 </style>
