@@ -38,6 +38,7 @@ export const hotkeyCommands = [
   'batchTimeShift',
   'save',
   'saveAs',
+  'new',
 ] as const
 
 export const hotkeyInputBlockList: HK.Key[] = [
@@ -82,6 +83,7 @@ export const getDefaultHotkeyMap = () =>
     batchTimeShift: k(Ctrl, Alt, 't'),
     save: k(Ctrl, 's'),
     saveAs: k(Ctrl, Shift, 's'),
+    new: k(Ctrl, Alt, 'n'),
   })
 
 //#region Helpers

@@ -235,6 +235,7 @@ const saveMenuItems: MenuItem[] = [
 useGlobalKeyboard('save', handleSaveClick)
 useGlobalKeyboard('saveAs', handleSaveAsClick)
 useGlobalKeyboard('open', handleOpenClick)
+useGlobalKeyboard('new', handleCreateBlankProject)
 </script>
 
 <style lang="scss">
