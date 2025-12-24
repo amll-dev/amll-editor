@@ -71,10 +71,11 @@ import FromOtherFormatModal from '@ui/dialogs/FromOtherFormatModal.vue'
 import { tipHotkey } from '@utils/generateTooltip'
 import { SidebarKey } from '@ui/sidebar'
 
-import { fileState as FS } from '@core/file'
+import { fileState as FS, simpleSaveTextFile } from '@core/file'
 import { useGlobalKeyboard } from '@core/hotkey'
 import { collectPersist } from '@states/services/port'
 import ViewSwitcher from './ViewSwitcher.vue'
+import { portFormatRegister } from '@core/convert'
 const {
   displayFilenameComputed: filename,
   readonlyComputed,
@@ -231,6 +232,13 @@ const saveMenuItems: MenuItem[] = [
   {
     label: '导出到其他格式',
     icon: 'pi pi-file-export',
+    items: portFormatRegister.map((format) => ({
+      label: format.name,
+      command: () => {
+        const string = format.stringifier(collectPersist())
+        simpleSaveTextFile(FS.suggestName(), string, format.accept.join(','))
+      },
+    })),
   },
 ]
 

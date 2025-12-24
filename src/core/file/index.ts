@@ -225,7 +225,8 @@ async function saveFile() {
 }
 
 function suggestName() {
-  if (!displayFilenameRef.value.startsWith('未命名')) return displayFilenameRef.value
+  const [displayName] = breakExtension(displayFilenameRef.value)
+  if (!displayName.startsWith('未命名')) return displayName
   const coreStore = useCoreStore()
   const title = coreStore.metadata.find((m) => m.key === 'musicName' || m.key === 'ti')?.values[0]
   if (title) return title
@@ -234,7 +235,7 @@ function suggestName() {
     const [name] = breakExtension(mediaFilename)
     return name
   }
-  return displayFilenameRef.value
+  return displayName
 }
 
 /**
@@ -339,6 +340,7 @@ export const fileState = {
   saveAsFile,
   importPersist,
   createBlankProject,
+  suggestName,
   createdAtComputed: readonly(createdAtRef),
   displayFilenameComputed: readonly(displayFilenameRef),
   readonlyComputed: readonly(readonlyRef),
