@@ -1,4 +1,4 @@
-import type { Compatibility as CP } from './types'
+import type { Compatibility as CP } from '..'
 
 const secureContextInfo: CP.CompatibilityInfo = {
   key: 'secureContext',

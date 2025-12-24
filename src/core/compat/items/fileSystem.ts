@@ -1,4 +1,4 @@
-import type { Compatibility as CP } from './types'
+import type { Compatibility as CP } from '..'
 
 const fileSystemInfo: CP.CompatibilityInfo = {
   key: 'fileSystem',
@@ -12,7 +12,8 @@ const fileSystemInfo: CP.CompatibilityInfo = {
 }
 
 const meet =
-  window.isSecureContext && 'showOpenFilePicker' in window && 'showSaveFilePicker' in window
+  // window.isSecureContext && 'showOpenFilePicker' in window && 'showSaveFilePicker' in window
+  false
 
 function findWhy(): string | undefined {
   if (meet) return undefined

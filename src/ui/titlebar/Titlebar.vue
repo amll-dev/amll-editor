@@ -76,7 +76,7 @@ import { useGlobalKeyboard } from '@core/hotkey'
 import { collectPersist } from '@states/services/port'
 import ViewSwitcher from './ViewSwitcher.vue'
 import { portFormatRegister } from '@core/convert'
-import { compatibilityMap } from '@core/compat.ts'
+import { compatibilityMap } from '@core/compat'
 const {
   displayFilenameComputed: filename,
   readonlyComputed,

@@ -1,4 +1,4 @@
-import type { Compatibility as CP } from './types'
+import type { Compatibility as CP } from '..'
 
 const clipboardInfo: CP.CompatibilityInfo = {
   key: 'clipboard',

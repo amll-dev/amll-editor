@@ -1,7 +1,9 @@
-import { clipboardItem } from './clipboard'
-import { fileSystemItem } from './fileSystem'
-import { secureContextItem } from './secureContext'
+export type { Compatibility } from './types'
 import type { Compatibility as CP } from './types'
+
+import { clipboardItem } from './items/clipboard'
+import { fileSystemItem } from './items/fileSystem'
+import { secureContextItem } from './items/secureContext'
 
 export const compatibilityList: CP.CompatibilityItem[] = [
   secureContextItem,
