@@ -1,14 +1,15 @@
+const timeRegexp =
+  /^(((?<hour>[0-9]+):)?(?<min>[0-9]+):)?((?<sec>[0-9]+)([.:](?<frac>[0-9]{1,3}))?)$/
+
 export function str2ms(str: string): number | null {
-  str = str.trim()
-  const match = str.match(/^(?:(\d+):)?(\d+)?((?:\.|:)\d+)?$/)
-  if (!match) return null
-  const [, strM, strS, strMs] = match
-  const m = Number(strM || 0) * 60 * 1000
-  const s = Number(strS || 0) * 1000
-  const ms = strMs ? Number(strMs.replace(/^:/, '.')) * 1000 : 0
-  const combined = m + s + ms
-  if (isNaN(combined)) return null
-  return combined
+  const matches = timeRegexp.exec(str)
+  if (!matches) return null
+  const hour = Number(matches.groups?.hour || '0')
+  const min = Number(matches.groups?.min || '0')
+  const sec = Number(matches.groups?.sec || '0')
+  const frac = Number((matches.groups?.frac || '0').padEnd(3, '0'))
+  if ([hour, min, sec, frac].some((v) => isNaN(v))) return null
+  return (hour * 3600 + min * 60 + sec) * 1000 + frac
 }
 
 export function ms2str(num: number): string {

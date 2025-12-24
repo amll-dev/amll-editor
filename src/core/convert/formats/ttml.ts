@@ -1,11 +1,10 @@
-// Node compatible TTML parser and stringifier
-// Following AMLL TTML Lyric Format
+// Frontend TTML parser and stringifier, following AMLL TTML Lyric Format
+// Source: https://github.com/Steve-xmh/amll-ttml-tool , Licensed under GPLv3
+// Minor changes were made to fit into this project structure.
 // See https://www.w3.org/TR/2018/REC-ttml1-20181108/
 
-// import { DOMParser, XMLSerializer } from '@xmldom/xmldom'
-
-import { ms2str, str2ms } from '@utils/formatTime'
-import type { LyricLine, MetadataKey, Persist } from '@core/types'
+import { ms2str, str2ms as nullableStr2ms } from '@utils/formatTime'
+import type { LyricLine, LyricWord, Metadata, Persist } from '@core/types'
 import { coreCreate } from '@states/stores/core'
 import type { Convert as CV } from '../types'
 
@@ -31,242 +30,645 @@ export const ttmlReg: CV.Format = {
   stringifier: stringifyTTML,
 }
 
-export function parseTTML(ttmlString: string): Persist {
-  const raw = new DOMParser().parseFromString(ttmlString, 'application/xml').documentElement
-
-  const isElement = (node: Node | null): node is Element => node?.nodeType === 1
-  const isText = (node: Node | null): node is Text => node?.nodeType === 3
-  const matchTag = (node: Element, tag: string): boolean =>
-    node.tagName.toLowerCase() === tag.toLowerCase()
-  const getAttrMap = (node: Element): Map<string, string> =>
-    new Map(Array.from(node.attributes).map((attr) => [attr.name, attr.value]))
-  const safeStr2ms = (str: string | null | undefined): number => str2ms(str || '0') || 0
-
-  // xmldom does not implement querySelector
-  // so make a simple tag selector here
-  const tagSelect = (...tags: string[]): Element | null => tagSelectOnNode(raw, tags)
-  function tagSelectOnNode(node: Element, tags: string[]): Element | null {
-    const targetTag = tags.shift()
-    if (!targetTag) return node
-    if (!node.childNodes) return null
-    for (const child of Array.from(node.childNodes)) {
-      if (!isElement(child)) continue
-      if (child.tagName === targetTag) return tagSelectOnNode(child, tags)
-    }
-    return null
-  }
-
-  // Metadata
-  const agentToDuet = new Map<string, boolean>()
-  const agents: Set<string> = new Set()
-  const metadataNode = tagSelect('head', 'metadata')
-  const metadata: Record<MetadataKey, string[]> = {}
-  for (const child of Array.from(metadataNode?.childNodes ?? [])) {
-    if (child.nodeType !== 1) continue
-    const node = child as Element
-    const tagname = node.nodeName.toLowerCase()
-    const attrs = getAttrMap(node)
-    if (tagname === 'ttm:agent') {
-      const id = attrs.get('xml:id')
-      if (!id) continue
-      agents.add(id)
-    } else if (tagname === 'amll:meta') {
-      const key = attrs.get('key')
-      const value = attrs.get('value')
-      if (!key || !value) continue
-      if (!Array.isArray(metadata[key])) metadata[key] = []
-      metadata[key].push(value)
-    }
-  }
-  if (agents.has('v1')) {
-    agents.forEach((id) => agentToDuet.set(id, id !== 'v1'))
-  }
-
-  // Contents
-  const bodyNode = tagSelect('body')
-  if (!bodyNode) throw new Error('No <body> found in TTML')
-  const rawLines = Array.from(bodyNode.childNodes)
-    .filter((node) => isElement(node))
-    .filter((node) => matchTag(node, 'div'))
-    .flatMap((div) =>
-      Array.from(div.childNodes)
-        .filter((node) => isElement(node))
-        .filter((el) => matchTag(el, 'p')),
-    )
-  const lyricLines: LyricLine[] = []
-  function processLine(rawLine: Element, removeBrace?: boolean) {
-    // Attrs
-    const attrs = getAttrMap(rawLine)
-    const line = coreCreate.newLine({
-      startTime: safeStr2ms(attrs.get('begin')),
-      endTime: safeStr2ms(attrs.get('end')),
-    })
-    lyricLines.push(line)
-    const agentId = attrs.get('ttm:agent')
-    if (agentId) line.duet = agentToDuet.get(agentId) ?? false
-    const role = attrs.get('ttm:role')
-    if (role === 'x-bg') line.background = true
-    // Contents
-    const children = Array.from(rawLine.childNodes)
-    for (const child of children) {
-      let textContent = child.textContent || ''
-      if (isText(child)) {
-        const word = coreCreate.newWord({
-          text: textContent,
-        })
-        line.words.push(word)
-      } else if (isElement(child) && matchTag(child, 'span')) {
-        const spanAttrs = getAttrMap(child)
-        const role = spanAttrs.get('ttm:role')
-        if (role === 'x-bg') {
-          // Current line pushed already
-          // so nested background line will be after current line
-          processLine(child, true)
-        } else if (role === 'x-translation') {
-          line.translation = textContent
-        } else if (role === 'x-roman') {
-          line.romanization = textContent
-        } else {
-          const word = coreCreate.newWord({
-            text: textContent,
-            startTime: safeStr2ms(spanAttrs.get('begin')),
-            endTime: safeStr2ms(spanAttrs.get('end')),
-            placeholdingBeat: Number(spanAttrs.get('amll:empty-beat') || '0') || 0,
-          })
-          line.words.push(word)
-        }
-      } else console.warn('Unknown node type in TTML line:', child)
-    }
-    // Post process
-    if (line.words.length === 1) {
-      const onlyWord = line.words[0]!
-      if (!onlyWord.startTime && line.startTime) onlyWord.startTime = line.startTime
-      if (!onlyWord.endTime && line.endTime) onlyWord.endTime = line.endTime
-    }
-    if (!line.startTime || !line.endTime) {
-      const firstWord = line.words[0]
-      const lastWord = line.words.at(-1)
-      if (firstWord?.startTime && !line.startTime) line.startTime = firstWord.startTime
-      if (lastWord?.endTime && !line.endTime) line.endTime = lastWord.endTime
-    }
-    if (removeBrace && line.words.length) {
-      const firstWord = line.words[0]!
-      const lastWord = line.words.at(-1)!
-      firstWord.text = firstWord.text.replace(/^\(/, '')
-      lastWord.text = lastWord.text.replace(/\)$/, '')
-    }
-  }
-  for (const rawLine of rawLines) processLine(rawLine)
-  return { metadata, lyricLines }
+interface RomanWord {
+  startTime: number
+  endTime: number
+  text: string
+}
+interface LineMetadata {
+  main: string
+  bg: string
+}
+interface WordRomanMetadata {
+  main: RomanWord[]
+  bg: RomanWord[]
 }
 
-export function stringifyTTML(data: Persist) {
-  const rootAttrs = {
-    xmlns: 'http://www.w3.org/ns/ttml',
-    'xmlns:ttm': 'http://www.w3.org/ns/ttml#metadata',
-    'xmlns:amll': 'http://www.example.com/ns/amll',
-    'xmlns:itunes': 'http://music.apple.com/lyric-ttml-internal',
-  } as const
-  let globalStart = Infinity
-  let globalEnd = -Infinity
-  let hasDuet = false
-  const doc = new DOMParser().parseFromString('<tt></tt>', 'application/xml')
-  const root = doc.documentElement
-  for (const [key, value] of Object.entries(rootAttrs)) root.setAttribute(key, value)
-  const head = root.appendChild(doc.createElement('head'))
-  const body = root.appendChild(doc.createElement('body'))
-  const div = body.appendChild(doc.createElement('div'))
+const { newLine, newWord } = coreCreate
 
-  // Content
-  let lineIndex = 1
-  function applyAttrToEl(el: Element, attrMap: Record<string, string | undefined>) {
-    for (const [key, value] of Object.entries(attrMap))
-      if (value !== undefined) el.setAttribute(key, value)
-  }
-  function writeLineToEl(line: LyricLine | null, bgLines: LyricLine[] = []) {
-    let isPlaceholder = false
-    if (line === null) {
-      if (bgLines.length === 0) throw new Error('Cannot write null line without background lines')
-      line = coreCreate.newLine()
-      isPlaceholder = true
-    }
-    if (line.background && bgLines.length) {
-      throw new Error('Background lines cannot have nested background lines')
-    }
-    // Attrs
-    const parentNode = doc.createElement(line.background ? 'span' : 'p')
-    applyAttrToEl(parentNode, {
-      'ttm:role': line.background ? 'x-bg' : undefined,
-      begin: ms2str(
-        isPlaceholder ? Math.min(...bgLines.map((l) => l.startTime), 0) : line.startTime,
-      ),
-      end: ms2str(isPlaceholder ? Math.max(...bgLines.map((l) => l.endTime), 0) : line.endTime),
-      'ttm:agent': line.duet ? `v2` : 'v1',
-      'itunes:key': line.background ? undefined : `L${lineIndex++}`,
-    })
-    hasDuet ||= line.duet
-    globalStart = Math.min(globalStart, line.startTime)
-    globalEnd = Math.max(globalEnd, line.endTime)
+function str2ms(str: string): number {
+  const ms = nullableStr2ms(str)
+  if (ms === null) throw new TypeError(`Invalid time string: ${str}`)
+  return ms
+}
 
-    // Contents
-    for (const [index, word] of line.words.entries()) {
-      let content = word.text
-      if (line.background) {
-        if (index === 0) content = `(${content}`
-        else if (index === line.words.length - 1) content = `${content})`
+export function parseTTML(ttmlText: string): Persist {
+  const domParser = new DOMParser()
+  const ttmlDoc: XMLDocument = domParser.parseFromString(ttmlText, 'application/xml')
+
+  const itunesTranslations = new Map<string, LineMetadata>()
+  const translationTextElements = ttmlDoc.querySelectorAll(
+    'iTunesMetadata > translations > translation > text[for]',
+  )
+
+  translationTextElements.forEach((textEl) => {
+    const key = textEl.getAttribute('for')
+    if (!key) return
+
+    let main = ''
+    let bg = ''
+
+    for (const node of Array.from(textEl.childNodes)) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        main += node.textContent ?? ''
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+        if ((node as Element).getAttribute('ttm:role') === 'x-bg') {
+          bg += node.textContent ?? ''
+        }
       }
-      if (word.text.trim() === '') {
-        parentNode.appendChild(doc.createTextNode(content))
+    }
+
+    main = main.trim()
+    bg = bg
+      .trim()
+      .replace(/^[（(]/, '')
+      .replace(/[)）]$/, '')
+      .trim()
+
+    if (main.length > 0 || bg.length > 0) {
+      itunesTranslations.set(key, { main, bg })
+    }
+  })
+
+  const itunesLineRomanizations = new Map<string, LineMetadata>()
+  const itunesWordRomanizations = new Map<string, WordRomanMetadata>()
+
+  const romanizationTextElements = ttmlDoc.querySelectorAll(
+    'iTunesMetadata > transliterations > transliteration > text[for]',
+  )
+
+  romanizationTextElements.forEach((textEl) => {
+    const key = textEl.getAttribute('for')
+    if (!key) return
+
+    const mainWords: RomanWord[] = []
+    const bgWords: RomanWord[] = []
+    let lineRomanMain = ''
+    let lineRomanBg = ''
+    let isWordByWord = false
+
+    for (const node of Array.from(textEl.childNodes)) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        lineRomanMain += node.textContent ?? ''
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+        const el = node as Element
+        if (el.getAttribute('ttm:role') === 'x-bg') {
+          const nestedSpans = el.querySelectorAll('span[begin][end]')
+          if (nestedSpans.length > 0) {
+            isWordByWord = true
+            nestedSpans.forEach((span) => {
+              let bgWordText = span.textContent ?? ''
+              bgWordText = bgWordText
+                .trim()
+                .replace(/^[（(]/, '')
+                .replace(/[)）]$/, '')
+                .trim()
+
+              bgWords.push({
+                startTime: str2ms(span.getAttribute('begin') ?? ''),
+                endTime: str2ms(span.getAttribute('end') ?? ''),
+                text: bgWordText,
+              })
+            })
+          } else {
+            lineRomanBg += el.textContent ?? ''
+          }
+        } else if (el.hasAttribute('begin') && el.hasAttribute('end')) {
+          isWordByWord = true
+          mainWords.push({
+            startTime: str2ms(el.getAttribute('begin') ?? ''),
+            endTime: str2ms(el.getAttribute('end') ?? ''),
+            text: el.textContent ?? '',
+          })
+        }
+      }
+    }
+
+    if (isWordByWord) {
+      itunesWordRomanizations.set(key, { main: mainWords, bg: bgWords })
+    }
+
+    lineRomanMain = lineRomanMain.trim()
+    lineRomanBg = lineRomanBg
+      .trim()
+      .replace(/^[（(]/, '')
+      .replace(/[)）]$/, '')
+      .trim()
+
+    if (lineRomanMain.length > 0 || lineRomanBg.length > 0) {
+      itunesLineRomanizations.set(key, {
+        main: lineRomanMain,
+        bg: lineRomanBg,
+      })
+    }
+  })
+
+  const itunesTimedTranslations = new Map<string, LineMetadata>()
+  const timedTranslationTextElements = ttmlDoc.querySelectorAll(
+    'iTunesMetadata > translations > translation > text[for]',
+  )
+
+  timedTranslationTextElements.forEach((textEl) => {
+    const key = textEl.getAttribute('for')
+    if (!key) return
+
+    let main = ''
+    let bg = ''
+
+    for (const node of Array.from(textEl.childNodes)) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        main += node.textContent ?? ''
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+        if ((node as Element).getAttribute('ttm:role') === 'x-bg') {
+          bg += node.textContent ?? ''
+        }
+      }
+    }
+
+    main = main.trim()
+    bg = bg
+      .trim()
+      .replace(/^[（(]/, '')
+      .replace(/[)）]$/, '')
+      .trim()
+
+    if ((main.length > 0 || bg.length > 0) && textEl.querySelector('span')) {
+      itunesTimedTranslations.set(key, { main, bg })
+      itunesTranslations.delete(key)
+    }
+  })
+
+  let mainAgentId = 'v1'
+
+  const metadata: Metadata = []
+  for (const meta of Array.from(ttmlDoc.querySelectorAll('meta'))) {
+    if (meta.tagName === 'amll:meta') {
+      const key = meta.getAttribute('key')
+      if (key) {
+        const value = meta.getAttribute('value')
+        if (value) {
+          const existing = metadata.find((m) => m.key === key)
+          if (existing) {
+            existing.values.push(value)
+          } else {
+            metadata.push({
+              key,
+              values: [value],
+            })
+          }
+        }
+      }
+    }
+  }
+
+  for (const agent of Array.from(ttmlDoc.querySelectorAll('ttm\\:agent'))) {
+    if (agent.getAttribute('type') === 'person') {
+      const id = agent.getAttribute('xml:id')
+      if (id) {
+        mainAgentId = id
+        break
+      }
+    }
+  }
+
+  const lyricLines: LyricLine[] = []
+
+  function parseLineElement(
+    lineEl: Element,
+    background = false,
+    duet = false,
+    parentItunesKey: string | null = null,
+  ) {
+    const line: LyricLine = newLine({
+      background,
+      duet: background
+        ? duet
+        : !!lineEl.getAttribute('ttm:agent') && lineEl.getAttribute('ttm:agent') !== mainAgentId,
+    })
+    let haveBg = false
+
+    const startTime = lineEl.getAttribute('begin')
+    const endTime = lineEl.getAttribute('end')
+
+    const itunesKey = background ? parentItunesKey : lineEl.getAttribute('itunes:key')
+
+    const romanWordData = itunesKey ? itunesWordRomanizations.get(itunesKey) : undefined
+    const romanWords = background ? romanWordData?.bg : romanWordData?.main
+
+    if (itunesKey) {
+      const timedTrans = itunesTimedTranslations.get(itunesKey)
+      const lineTrans = itunesTranslations.get(itunesKey)
+
+      if (background) {
+        line.translation = timedTrans?.bg ?? lineTrans?.bg ?? ''
+      } else {
+        line.translation = timedTrans?.main ?? lineTrans?.main ?? ''
+      }
+
+      const lineRoman = itunesLineRomanizations.get(itunesKey)
+      if (background) {
+        line.romanization = lineRoman?.bg ?? ''
+      } else {
+        line.romanization = lineRoman?.main ?? ''
+      }
+    }
+
+    for (const wordNode of Array.from(lineEl.childNodes)) {
+      if (wordNode.nodeType === Node.TEXT_NODE) {
+        const text = wordNode.textContent ?? ''
+        line.words.push(
+          newWord({
+            text,
+            startTime: text.trim() ? line.startTime : 0,
+            endTime: text.trim() ? line.endTime : 0,
+          }),
+        )
+      } else if (wordNode.nodeType === Node.ELEMENT_NODE) {
+        const wordEl = wordNode as Element
+        const role = wordEl.getAttribute('ttm:role')
+
+        if (wordEl.nodeName === 'span' && role) {
+          if (role === 'x-bg') {
+            parseLineElement(wordEl, true, line.duet, itunesKey)
+            haveBg = true
+          } else if (role === 'x-translation') {
+            // Use inline translation only if there is no Apple Music style translation
+            if (!line.translation) {
+              line.translation = wordEl.innerHTML
+            }
+          } else if (role === 'x-roman') {
+            if (!line.romanization) {
+              line.romanization = wordEl.innerHTML
+            }
+          }
+        } else if (wordEl.hasAttribute('begin') && wordEl.hasAttribute('end')) {
+          const wordStartTime = str2ms(wordEl.getAttribute('begin') ?? '')
+          const wordEndTime = str2ms(wordEl.getAttribute('end') ?? '')
+
+          const word = newWord({
+            text: wordEl.textContent ?? '',
+            startTime: wordStartTime,
+            endTime: wordEndTime,
+          })
+          const placeholdingBeat = wordEl.getAttribute('amll:empty-beat')
+          if (placeholdingBeat) word.placeholdingBeat = Number(placeholdingBeat)
+
+          if (romanWords) {
+            const matchingRoman = romanWords.find(
+              (r) => r.startTime === wordStartTime && r.endTime === wordEndTime,
+            )
+            if (matchingRoman) {
+              word.romanization = matchingRoman.text
+            }
+          }
+
+          line.words.push(word)
+        }
+      }
+    }
+
+    if (startTime && endTime) {
+      line.startTime = str2ms(startTime)
+      line.endTime = str2ms(endTime)
+    } else {
+      line.startTime = line.words
+        .filter((w) => w.text.trim().length > 0)
+        .reduce((pv, cv) => Math.min(pv, cv.startTime), Number.POSITIVE_INFINITY)
+      line.endTime = line.words
+        .filter((w) => w.text.trim().length > 0)
+        .reduce((pv, cv) => Math.max(pv, cv.endTime), 0)
+    }
+
+    if (line.background) {
+      const firstWord = line.words[0]
+      if (firstWord && /^[（(]/.test(firstWord.text)) {
+        firstWord.text = firstWord.text.substring(1)
+        if (firstWord.text.length === 0) {
+          line.words.shift()
+        }
+      }
+
+      const lastWord = line.words[line.words.length - 1]
+      if (lastWord && /[)）]$/.test(lastWord.text)) {
+        lastWord.text = lastWord.text.substring(0, lastWord.text.length - 1)
+        if (lastWord.text.length === 0) {
+          line.words.pop()
+        }
+      }
+    }
+
+    if (haveBg) {
+      const bgLine = lyricLines.pop()
+      lyricLines.push(line)
+      if (bgLine) lyricLines.push(bgLine)
+    } else {
+      lyricLines.push(line)
+    }
+  }
+
+  for (const lineEl of Array.from(ttmlDoc.querySelectorAll('body p[begin][end]'))) {
+    parseLineElement(lineEl, false, false, null)
+  }
+
+  const persistMetadata: Persist['metadata'] = {}
+  for (const metaItem of metadata) {
+    persistMetadata[metaItem.key] = metaItem.values
+  }
+  return {
+    metadata: persistMetadata,
+    lyricLines: lyricLines,
+  }
+}
+
+export function stringifyTTML(ttmlLyric: Persist): string {
+  const params: LyricLine[][] = []
+  const lyric = ttmlLyric.lyricLines
+
+  let tmp: LyricLine[] = []
+  for (const line of lyric) {
+    if (line.words.length === 0 && tmp.length > 0) {
+      params.push(tmp)
+      tmp = []
+    } else {
+      tmp.push(line)
+    }
+  }
+
+  if (tmp.length > 0) {
+    params.push(tmp)
+  }
+
+  const doc = new Document()
+
+  function createWordElement(word: LyricWord): Element {
+    const span = doc.createElement('span')
+    span.setAttribute('begin', ms2str(word.startTime))
+    span.setAttribute('end', ms2str(word.endTime))
+    if (word.placeholdingBeat) span.setAttribute('amll:empty-beat', `${word.placeholdingBeat}`)
+    span.appendChild(doc.createTextNode(word.text))
+    return span
+  }
+
+  function createRomanizationSpan(word: LyricWord): Element {
+    const span = doc.createElement('span')
+    span.setAttribute('begin', ms2str(word.startTime))
+    span.setAttribute('end', ms2str(word.endTime))
+    span.appendChild(doc.createTextNode(word.romanization))
+    return span
+  }
+
+  const ttRoot = doc.createElement('tt')
+
+  ttRoot.setAttribute('xmlns', 'http://www.w3.org/ns/ttml')
+  ttRoot.setAttribute('xmlns:ttm', 'http://www.w3.org/ns/ttml#metadata')
+  ttRoot.setAttribute('xmlns:amll', 'http://www.example.com/ns/amll')
+  ttRoot.setAttribute('xmlns:itunes', 'http://music.apple.com/lyric-ttml-internal')
+
+  doc.appendChild(ttRoot)
+
+  const head = doc.createElement('head')
+
+  ttRoot.appendChild(head)
+
+  const body = doc.createElement('body')
+  const hasOtherPerson = !!lyric.find((v) => v.duet)
+
+  const metadataEl = doc.createElement('metadata')
+  const mainPersonAgent = doc.createElement('ttm:agent')
+  mainPersonAgent.setAttribute('type', 'person')
+  mainPersonAgent.setAttribute('xml:id', 'v1')
+
+  metadataEl.appendChild(mainPersonAgent)
+
+  if (hasOtherPerson) {
+    const otherPersonAgent = doc.createElement('ttm:agent')
+    otherPersonAgent.setAttribute('type', 'other')
+    otherPersonAgent.setAttribute('xml:id', 'v2')
+
+    metadataEl.appendChild(otherPersonAgent)
+  }
+
+  for (const [key, values] of Object.entries(ttmlLyric.metadata)) {
+    for (const value of values) {
+      const metaEl = doc.createElement('amll:meta')
+      metaEl.setAttribute('key', key)
+      metaEl.setAttribute('value', value)
+      metadataEl.appendChild(metaEl)
+    }
+  }
+
+  head.appendChild(metadataEl)
+
+  let i = 0
+
+  const romanizationMap = new Map<string, { main: LyricWord[]; bg: LyricWord[] }>()
+
+  const guessDuration = lyric[lyric.length - 1]?.endTime ?? 0
+  body.setAttribute('dur', ms2str(guessDuration))
+  const isDynamicLyric = lyric.some(
+    (line) => line.words.filter((v) => v.text.trim().length > 0).length > 1,
+  )
+
+  for (const param of params) {
+    const paramDiv = doc.createElement('div')
+    const beginTime = param[0]?.startTime ?? 0
+    const endTime = param[param.length - 1]?.endTime ?? 0
+
+    paramDiv.setAttribute('begin', ms2str(beginTime))
+    paramDiv.setAttribute('end', ms2str(endTime))
+
+    let skip = false
+    for (const [lineIndex, line] of param.entries()) {
+      if (skip) {
+        skip = false
         continue
       }
-      const span = doc.createElement('span')
-      applyAttrToEl(span, {
-        begin: ms2str(word.startTime),
-        end: ms2str(word.endTime),
-        'amll:empty-beat': word.placeholdingBeat.toString() || undefined,
-      })
-      span.appendChild(doc.createTextNode(content))
-      parentNode.appendChild(span)
+      const lineP = doc.createElement('p')
+      const beginTime = line.startTime ?? 0
+      const endTime = line.endTime
+
+      lineP.setAttribute('begin', ms2str(beginTime))
+      lineP.setAttribute('end', ms2str(endTime))
+
+      lineP.setAttribute('ttm:agent', line.duet ? 'v2' : 'v1')
+
+      const itunesKey = `L${++i}`
+      lineP.setAttribute('itunes:key', itunesKey)
+
+      const mainWords = line.words
+      let bgWords: LyricWord[] = []
+
+      if (isDynamicLyric) {
+        let beginTime = Number.POSITIVE_INFINITY
+        let endTime = 0
+        for (const word of line.words) {
+          if (word.text.trim().length === 0) {
+            lineP.appendChild(doc.createTextNode(word.text))
+          } else {
+            const span = createWordElement(word)
+            lineP.appendChild(span)
+            beginTime = Math.min(beginTime, word.startTime)
+            endTime = Math.max(endTime, word.endTime)
+          }
+        }
+        lineP.setAttribute('begin', ms2str(line.startTime))
+        lineP.setAttribute('end', ms2str(line.endTime))
+      } else {
+        const word = line.words[0]!
+        lineP.appendChild(doc.createTextNode(word.text))
+        lineP.setAttribute('begin', ms2str(word.startTime))
+        lineP.setAttribute('end', ms2str(word.endTime))
+      }
+
+      const nextLine = param[lineIndex + 1]
+      if (nextLine?.background) {
+        skip = true
+        const bgLine = nextLine
+        bgWords = bgLine.words
+
+        const bgLineSpan = doc.createElement('span')
+        bgLineSpan.setAttribute('ttm:role', 'x-bg')
+
+        if (isDynamicLyric) {
+          let beginTime = Number.POSITIVE_INFINITY
+          let endTime = 0
+
+          const firstWordIndex = bgLine.words.findIndex((w) => w.text.trim().length > 0)
+          const lastWordIndex = bgLine.words.map((w) => w.text.trim().length > 0).lastIndexOf(true)
+
+          for (const [wordIndex, word] of bgLine.words.entries()) {
+            if (word.text.trim().length === 0) {
+              bgLineSpan.appendChild(doc.createTextNode(word.text))
+            } else {
+              const span = createWordElement(word)
+
+              if (wordIndex === firstWordIndex && span.firstChild) {
+                span.firstChild.nodeValue = `(${span.firstChild.nodeValue}`
+              }
+              if (wordIndex === lastWordIndex && span.firstChild) {
+                span.firstChild.nodeValue = `${span.firstChild.nodeValue})`
+              }
+
+              bgLineSpan.appendChild(span)
+              beginTime = Math.min(beginTime, word.startTime)
+              endTime = Math.max(endTime, word.endTime)
+            }
+          }
+          bgLineSpan.setAttribute('begin', ms2str(beginTime))
+          bgLineSpan.setAttribute('end', ms2str(endTime))
+        } else {
+          const word = bgLine.words[0]!
+          bgLineSpan.appendChild(doc.createTextNode(`(${word.text})`))
+          bgLineSpan.setAttribute('begin', ms2str(word.startTime))
+          bgLineSpan.setAttribute('end', ms2str(word.endTime))
+        }
+
+        if (bgLine.translation) {
+          const span = doc.createElement('span')
+          span.setAttribute('ttm:role', 'x-translation')
+          span.setAttribute('xml:lang', 'zh-CN')
+          span.appendChild(doc.createTextNode(bgLine.translation))
+          bgLineSpan.appendChild(span)
+        }
+
+        if (bgLine.romanization) {
+          const span = doc.createElement('span')
+          span.setAttribute('ttm:role', 'x-roman')
+          span.appendChild(doc.createTextNode(bgLine.romanization))
+          bgLineSpan.appendChild(span)
+        }
+
+        lineP.appendChild(bgLineSpan)
+      }
+
+      if (line.translation) {
+        const span = doc.createElement('span')
+        span.setAttribute('ttm:role', 'x-translation')
+        span.setAttribute('xml:lang', 'zh-CN')
+        span.appendChild(doc.createTextNode(line.translation))
+        lineP.appendChild(span)
+      }
+
+      if (line.romanization) {
+        const span = doc.createElement('span')
+        span.setAttribute('ttm:role', 'x-roman')
+        span.appendChild(doc.createTextNode(line.romanization))
+        lineP.appendChild(span)
+      }
+
+      const hasRoman =
+        mainWords.some((w) => w.romanization && w.romanization.trim().length > 0) ||
+        bgWords.some((w) => w.romanization && w.romanization.trim().length > 0)
+
+      if (hasRoman) {
+        romanizationMap.set(itunesKey, { main: mainWords, bg: bgWords })
+      }
+
+      paramDiv.appendChild(lineP)
     }
 
-    // Additional contents
-    for (const bgLine of bgLines) parentNode.appendChild(writeLineToEl(bgLine))
-    if (line.translation) {
-      const translationSpan = doc.createElement('span')
-      applyAttrToEl(translationSpan, { 'ttm:role': 'x-translation' })
-      translationSpan.appendChild(doc.createTextNode(line.translation))
-      parentNode.appendChild(translationSpan)
-    }
-    if (line.romanization) {
-      const romanSpan = doc.createElement('span')
-      applyAttrToEl(romanSpan, { 'ttm:role': 'x-roman' })
-      romanSpan.appendChild(doc.createTextNode(line.romanization))
-      parentNode.appendChild(romanSpan)
-    }
-
-    return parentNode
+    body.appendChild(paramDiv)
   }
-  for (const [index, line] of data.lyricLines.entries()) {
-    if (line.background && index > 0) continue
-    const bgLines: LyricLine[] = []
-    for (let j = index + 1; j < data.lyricLines.length; j++) {
-      const nextLine = data.lyricLines[j]!
-      if (nextLine.background) bgLines.push(nextLine)
-      else break
+
+  if (romanizationMap.size > 0) {
+    const itunesMeta = doc.createElement('iTunesMetadata')
+    itunesMeta.setAttribute('xmlns', 'http://music.apple.com/lyric-ttml-internal')
+
+    const transliterations = doc.createElement('transliterations')
+    const transliteration = doc.createElement('transliteration')
+
+    for (const [key, { main, bg }] of romanizationMap.entries()) {
+      const textEl = doc.createElement('text')
+      textEl.setAttribute('for', key)
+
+      for (const word of main) {
+        if (word.romanization && word.romanization.trim().length > 0) {
+          textEl.appendChild(createRomanizationSpan(word))
+        } else if (word.text.trim().length === 0 && textEl.hasChildNodes()) {
+          textEl.appendChild(doc.createTextNode(word.text))
+        }
+      }
+
+      const hasBgRoman = bg.some((w) => w.romanization && w.romanization.trim().length > 0)
+      if (hasBgRoman) {
+        const bgSpan = doc.createElement('span')
+        bgSpan.setAttribute('ttm:role', 'x-bg')
+
+        const romanBgWords = bg.filter((w) => w.romanization && w.romanization.trim().length > 0)
+
+        for (const [wordIndex, word] of romanBgWords.entries()) {
+          const span = createRomanizationSpan(word)
+
+          if (wordIndex === 0 && span.firstChild) {
+            span.firstChild.nodeValue = `(${span.firstChild.nodeValue}`
+          }
+          if (wordIndex === romanBgWords.length - 1 && span.firstChild) {
+            span.firstChild.nodeValue = `${span.firstChild.nodeValue})`
+          }
+
+          bgSpan.appendChild(span)
+
+          const originalIndex = bg.indexOf(word)
+          if (originalIndex > -1 && originalIndex < bg.length - 1) {
+            const nextWord = bg[originalIndex + 1]!
+            if (nextWord && nextWord.text.trim().length === 0) {
+              bgSpan.appendChild(doc.createTextNode(nextWord.text))
+            }
+          }
+        }
+        textEl.appendChild(bgSpan)
+      }
+
+      transliteration.appendChild(textEl)
     }
-    div.appendChild(writeLineToEl(line.background ? null : line, bgLines))
+
+    transliterations.appendChild(transliteration)
+    itunesMeta.appendChild(transliterations)
+
+    metadataEl.appendChild(itunesMeta)
   }
 
-  // Metadata
-  const metadataNode = head.appendChild(doc.createElement('metadata'))
-  metadataNode.appendChild(doc.createElement('ttm:agent')).setAttribute('xml:id', 'v0')
-  if (hasDuet) metadataNode.appendChild(doc.createElement('ttm:agent')).setAttribute('xml:id', 'v2')
-  for (const [key, values] of Object.entries(data.metadata))
-    for (const value of values) {
-      const metaEl = metadataNode.appendChild(doc.createElement('amll:meta'))
-      applyAttrToEl(metaEl, { key, value })
-    }
+  ttRoot.appendChild(body)
 
-  // Output
   return new XMLSerializer().serializeToString(doc)
 }
