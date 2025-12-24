@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { editHistory } from '@states/services/history'
 import { useStaticStore } from '@states/stores'
 import { Button, Dialog } from 'primevue'
+import { watch } from 'vue'
 import { computed, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue'
 const staticStore = useStaticStore()
 const currResolver = shallowRef<null | ((value: boolean) => void)>(null)
@@ -42,6 +44,20 @@ function handleKeyDown(e: KeyboardEvent) {
     handleCancel()
   }
 }
+
+function beforeUnloadHook(e: BeforeUnloadEvent) {
+  e.preventDefault()
+  e.returnValue = ''
+  return ''
+}
+watch(
+  editHistory.isDirty,
+  (dirty) => {
+    if (dirty) window.addEventListener('beforeunload', beforeUnloadHook)
+    else window.removeEventListener('beforeunload', beforeUnloadHook)
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
