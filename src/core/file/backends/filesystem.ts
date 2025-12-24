@@ -1,35 +1,37 @@
 import { defineFileBackend } from '../types'
 
 export const fileSystemBackend = defineFileBackend<FileSystemFileHandle>({
-  async read(types, tryWrite = false) {
+  async read(id, types) {
     const [handle] = await showOpenFilePicker({
       types,
       excludeAcceptAllOption: true,
-      id: 'amll-ttml-tool-file-open',
+      id,
     })
-    const writable = tryWrite
-      ? await handle
-          .createWritable()
-          .then((w) => (w.abort(), true))
-          .catch(() => false)
-      : false
+    const file = await handle.getFile()
     return {
       handle,
+      blob: file,
       filename: handle.name,
-      writable,
     }
+  },
+  async askForWritePermission(handle) {
+    return await handle
+      .createWritable()
+      .then((w) => (w.abort(), true))
+      .catch(() => false)
   },
   async write(handle, blob) {
     const writable = await handle.createWritable()
     await writable.write(blob)
     await writable.close()
+    return handle.name
   },
-  async writeAs(types, suggestedBaseName, blob) {
+  async writeAs(id, types, suggestedBaseName, blob) {
     const handle = await showSaveFilePicker({
       types,
       suggestedName: suggestedBaseName,
       excludeAcceptAllOption: true,
-      id: 'amll-ttml-tool-file-save',
+      id,
     })
     const writable = await handle.createWritable()
     await writable.write(blob)
@@ -37,7 +39,7 @@ export const fileSystemBackend = defineFileBackend<FileSystemFileHandle>({
     return {
       handle,
       filename: handle.name,
-      writable: true,
+      blob,
     }
   },
 })

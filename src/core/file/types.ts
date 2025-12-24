@@ -15,12 +15,29 @@ export type FileHandle = {
  */
 export type FileBackend = __FileBackend<FileHandle>
 interface __FileBackend<BackendFileHandle> {
-  read(
-    types: FilePickerAcceptType[],
-    tryWrite?: boolean,
-  ): Promise<__FileReadResult<BackendFileHandle>>
-  write(handle: BackendFileHandle, blob: Blob): Promise<void>
+  /**
+   * Read a file from backend
+   * @param id For same ID, the picker tries to open in the same directory
+   */
+  read(id: string, types: FilePickerAcceptType[]): Promise<__FileReadResult<BackendFileHandle>>
+  /**
+   * Ask for write permission without actually writing
+   * @returns Whether permission is granted
+   */
+  askForWritePermission(handle: BackendFileHandle): Promise<boolean>
+  /**
+   * Write a file to backend. Should automatically ask for permission if needed.
+   * @returns The filename after write operation
+   */
+  write(handle: BackendFileHandle, blob: Blob): Promise<string>
+  /**
+   * Write a new file to backend. Should automatically ask for permission if needed.
+   * @param id For same ID, the picker tries to open in the same directory
+   * @param types Accepted file types. If cannot be honored, the picker should use the first extension of the first type.
+   * @param suggestedBaseName Suggested name **without extension**
+   */
   writeAs(
+    id: string,
     types: FilePickerAcceptType[],
     suggestedBaseName: string,
     blob: Blob,
@@ -32,7 +49,7 @@ export type FileReadResult = __FileReadResult<FileHandle>
 interface __FileReadResult<BackendFileHandle> {
   handle: BackendFileHandle
   filename: string
-  writable: boolean
+  blob: Blob
 }
 
 /**

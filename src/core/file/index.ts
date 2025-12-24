@@ -9,6 +9,9 @@ import { editHistory } from '@states/services/history'
 import type { Persist } from '@core/types'
 import { checkDataDropConfirm } from './shared'
 import { useCoreStore, useStaticStore } from '@states/stores'
+import { fileSystemBackend } from './backends/filesystem'
+import type { FileHandle, FileReadResult } from './types'
+import { compatibilityMap } from '@core/compat.ts'
 
 export { simpleChooseTextFile, simpleSaveTextFile } from './simple'
 
@@ -55,7 +58,7 @@ const allPickerTypes: FilePickerAcceptType[] = [
   })),
 ]
 
-let fileSystemHandle: FileSystemFileHandle | null = null
+let currHandle: FileHandle | null = null
 let currBackingFmt: BackingFmt = BackingFmt.ALP
 const createdAtRef = ref<Date | null>(null)
 const readonlyRef = ref<boolean>(true)
@@ -63,7 +66,7 @@ const displayFilenameRef = ref<string>('未命名.alp')
 const savedAtRef = ref<Date | null>(null)
 
 interface FileState {
-  fileSystemHandle: FileSystemFileHandle | null
+  handle: FileHandle | null
   currBackingFmt: BackingFmt
   createdAt: Date | null
   displayFilename: string
@@ -72,13 +75,15 @@ interface FileState {
 }
 function setFileState(state: Partial<FileState> | null) {
   if (!state) state = {}
-  fileSystemHandle = state.fileSystemHandle ?? null
+  currHandle = state.handle ?? null
   currBackingFmt = state.currBackingFmt ?? BackingFmt.ALP
   createdAtRef.value = state.createdAt ?? null
   displayFilenameRef.value = state.displayFilename ?? '未命名.alp'
   readonlyRef.value = state.isReadonly ?? true
   savedAtRef.value = state.savedAt ?? null
 }
+
+const backend = fileSystemBackend
 
 /**
  * Handle opening of any known file format.
@@ -87,13 +92,9 @@ function setFileState(state: Partial<FileState> | null) {
  */
 async function openFile() {
   if (!(await checkDataDropConfirm())) throw new Error('The user aborted a request.')
-  const [handle] = await showOpenFilePicker({
-    types: allPickerTypes,
-    excludeAcceptAllOption: true,
-    id: 'amll-ttml-tool-file-open',
-  })
-  await handleFile(handle)
-  return handle.name
+  const result = await backend.read('amll-ttml-tool-file-open', allPickerTypes)
+  await handleFile(result)
+  return result.filename
 }
 /**
  * Handle opening of project file (*.alp).
@@ -102,13 +103,9 @@ async function openFile() {
  */
 async function openProjFile() {
   if (!(await checkDataDropConfirm())) throw new Error('The user aborted a request.')
-  const [handle] = await showOpenFilePicker({
-    types: alpPickerType,
-    excludeAcceptAllOption: true,
-    id: 'amll-ttml-tool-file-open',
-  })
-  await handleProjFile(handle)
-  return handle.name
+  const result = await backend.read('amll-ttml-tool-file-open', alpPickerType)
+  await handleProjFile(result)
+  return result.filename
 }
 /**
  * Handle opening of TTML file (*.ttml).
@@ -117,59 +114,53 @@ async function openProjFile() {
  */
 async function openTTMLFile() {
   if (!(await checkDataDropConfirm())) throw new Error('The user aborted a request.')
-  const [handle] = await showOpenFilePicker({
-    types: ttmlPickerType,
-    excludeAcceptAllOption: true,
-    id: 'amll-ttml-tool-file-open',
-  })
-  await handleTTMLFile(handle)
-  return handle.name
+  const result = await backend.read('amll-ttml-tool-file-open', ttmlPickerType)
+  await handleTTMLFile(result)
+  return result.filename
 }
 
-const tryWritehandle = (handle: FileSystemFileHandle) =>
-  handle
-    .createWritable()
-    .then(() => (readonlyRef.value = false))
-    .catch(() => (readonlyRef.value = true))
-
-async function handleFile(handle: FileSystemFileHandle) {
-  const [, ext] = breakExtension(handle.name)
+const askForWrite = async (handle: FileHandle) => {
+  const hasPermission = await backend.askForWritePermission(handle)
+  readonlyRef.value = !hasPermission
+}
+async function handleFile(result: FileReadResult) {
+  const [, ext] = breakExtension(result.filename)
   if (!allSupportedExt.has(`.${ext}`)) throw new Error('Unsupported file format.')
-  if (ext === 'alp') await handleProjFile(handle)
-  else if (ext === 'ttml') await handleTTMLFile(handle)
-  else await handleMiscFile(handle)
+  if (ext === 'alp') await handleProjFile(result)
+  else if (ext === 'ttml') await handleTTMLFile(result)
+  else await handleMiscFile(result)
 }
-async function handleProjFile(handle: FileSystemFileHandle) {
-  const file = await handle.getFile()
-  const payload = await parseProjectFile(file)
+async function handleProjFile(result: FileReadResult) {
+  const { handle, blob, filename } = result
+  const payload = await parseProjectFile(blob)
   mountProjectData(payload)
   setFileState({
-    fileSystemHandle: handle,
+    handle,
     currBackingFmt: BackingFmt.ALP,
-    createdAt: payload.createdAt ?? new Date(file.lastModified),
-    displayFilename: file.name,
+    createdAt: payload.createdAt,
+    displayFilename: filename,
   })
   editHistory.markSaved()
-  tryWritehandle(handle)
+  askForWrite(handle)
 }
-async function handleTTMLFile(handle: FileSystemFileHandle) {
-  const file = await handle.getFile()
-  const text = await file.text()
+async function handleTTMLFile(result: FileReadResult) {
+  const { handle, blob, filename } = result
+  const text = await blob.text()
   const data = parseTTML(text)
   applyPersist(data)
   setFileState({
-    fileSystemHandle: handle,
+    handle,
     currBackingFmt: BackingFmt.ALP,
-    createdAt: new Date(file.lastModified),
-    displayFilename: file.name,
+    createdAt: new Date(),
+    displayFilename: filename,
   })
   editHistory.markSaved()
-  tryWritehandle(handle)
+  askForWrite(handle)
 }
-async function handleMiscFile(handle: FileSystemFileHandle) {
-  const file = await handle.getFile()
-  const [name, ext] = breakExtension(file.name)
-  const text = await file.text()
+async function handleMiscFile(result: FileReadResult) {
+  const { blob, filename } = result
+  const [name, ext] = breakExtension(filename)
+  const text = await blob.text()
   const format = detectFormat(ext, text)
   const data = format.parser(text)
   applyPersist(data)
@@ -199,13 +190,10 @@ async function createBlankProject() {
  * @returns Filename
  */
 async function saveFile() {
-  if (!fileSystemHandle) {
+  if (!currHandle) {
     console.log('No file handle, invoking Save As...')
-    await saveAsFile()
-    return
+    return await saveAsFile()
   }
-  const writeable = await fileSystemHandle.createWritable()
-  readonlyRef.value = false
   let blob: Blob
   if (currBackingFmt === BackingFmt.ALP) {
     const collected = collectProjectData()
@@ -215,11 +203,11 @@ async function saveFile() {
     const str = stringifyTTML(persist)
     blob = new Blob([str], { type: 'application/xml' })
   } else throw new Error('Unsupported backing format.')
-  await writeable.write(blob)
-  await writeable.close()
+  const filename = await backend.write(currHandle, blob)
   editHistory.markSaved()
   savedAtRef.value = new Date()
-  return fileSystemHandle.name
+  readonlyRef.value = false
+  return filename
 }
 
 function suggestName() {
@@ -244,38 +232,32 @@ function suggestName() {
  * @returns Filename
  */
 async function saveAsFile() {
-  const types: FilePickerAcceptType[] = [...alpPickerType, ...ttmlPickerType]
-  const handle = await showSaveFilePicker({
-    types,
-    excludeAcceptAllOption: true,
-    id: 'amll-ttml-tool-file-save-as',
-    suggestedName: suggestName(),
-  })
-  const writeable = await handle.createWritable()
-  readonlyRef.value = false
   let blob: Blob
-  const [, ext] = breakExtension(handle.name)
-  if (ext === 'alp') {
+  if (currBackingFmt === BackingFmt.ALP) {
     const collected = collectProjectData()
     blob = await makeProjectFile(collected)
     currBackingFmt = BackingFmt.ALP
-  } else if (ext === 'ttml') {
+  } else if (currBackingFmt === BackingFmt.TTML) {
     const persist = collectPersist()
     const str = stringifyTTML(persist)
     blob = new Blob([str], { type: 'application/xml' })
     currBackingFmt = BackingFmt.TTML
   } else throw new Error('Unsupported backing format.')
-  await writeable.write(blob)
-  await writeable.close()
+  const { handle, filename } = await backend.writeAs(
+    'amll-ttml-tool-file-save-as',
+    [...alpPickerType, ...ttmlPickerType],
+    suggestName(),
+    blob,
+  )
   setFileState({
-    fileSystemHandle: handle,
+    handle,
     currBackingFmt,
-    displayFilename: handle.name,
+    displayFilename: filename,
     isReadonly: false,
     savedAt: new Date(),
   })
   editHistory.markSaved()
-  return handle.name
+  return filename
 }
 
 let dragListenerInitialized = false
@@ -304,18 +286,32 @@ function initDragListener(notifier: Notifier) {
       notifier('文件打开失败', `不支持的文件类型: .${ext}`, 'error')
       return
     }
-    e.dataTransfer?.items[0]
-      ?.getAsFileSystemHandle()
-      ?.then(async (handle) => {
-        if (!(await checkDataDropConfirm())) return
-        if (!handle || !(handle instanceof FileSystemFileHandle)) return
-        await handleFile(handle)
-        console.log(`Loaded file from drop: ${handle.name}`)
-        notifier('成功加载文件', handle.name, 'success')
+    if (compatibilityMap.fileSystem)
+      e.dataTransfer?.items[0]
+        ?.getAsFileSystemHandle()
+        ?.then(async (handle) => {
+          if (!(await checkDataDropConfirm())) return
+          if (!handle || !(handle instanceof FileSystemHandle)) return
+          await handleFile({
+            handle: handle as unknown as FileHandle,
+            filename: file.name,
+            blob: file,
+          })
+          console.log(`Loaded file from drop: ${handle.name}`)
+          notifier('成功加载文件', handle.name, 'success')
+        })
+        .catch((err) => {
+          notifier('文件打开失败', String(err), 'error')
+        })
+    else {
+      handleFile({
+        handle: null as unknown as FileHandle,
+        filename: file.name,
+        blob: file,
       })
-      .catch((err) => {
-        notifier('文件打开失败', String(err), 'error')
-      })
+        .then(() => notifier('成功加载文件', file.name, 'success'))
+        .catch((err) => notifier('文件打开失败', String(err), 'error'))
+    }
   })
 }
 

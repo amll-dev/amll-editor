@@ -71,7 +71,7 @@ export function makeProjectFile({ data, createdAt, audioFile }: ProjPayload) {
   return zip.generateAsync({ type: 'blob' })
 }
 
-export async function parseProjectFile(file: File): Promise<ProjPayload> {
+export async function parseProjectFile(file: Blob): Promise<ProjPayload> {
   const zip = await JSZip.loadAsync(file)
 
   const manifestFile = zip.file('manifest.json')
