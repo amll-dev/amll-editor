@@ -1,6 +1,6 @@
 import { detectFormat, portFormatRegister } from '@core/convert'
 import { parseTTML, stringifyTTML, ttmlReg } from '@core/convert/formats/ttml'
-import { nextTick, readonly, ref } from 'vue'
+import { readonly, ref } from 'vue'
 import { collectProjectData, makeProjectFile, mountProjectData, parseProjectFile } from './project'
 import { collectPersist, applyPersist } from '@states/services/port'
 import { breakExtension } from '@utils/breakExtension'
@@ -10,8 +10,7 @@ import type { Persist } from '@core/types'
 import { checkDataDropConfirm } from './shared'
 import { useCoreStore, useStaticStore } from '@states/stores'
 import { fileSystemBackend } from './backends/filesystem'
-import type { FileHandle, FileReadResult } from './types'
-import { compatibilityMap } from '@core/compat.ts'
+import { getFileBackendAdapter, type FileHandle, type FileReadResult } from './types'
 
 export { simpleChooseTextFile, simpleSaveTextFile } from './simple'
 
@@ -189,20 +188,18 @@ async function createBlankProject() {
  * @throws user cancel; write errors.
  * @returns Filename
  */
+
+const blobGenerators: Record<BackingFmt, () => Promise<Blob>> = {
+  ALP: async () => makeProjectFile(collectProjectData()),
+  TTML: async () => new Blob([stringifyTTML(collectPersist())], { type: 'application/xml' }),
+}
+
 async function saveFile() {
   if (!currHandle) {
     console.log('No file handle, invoking Save As...')
     return await saveAsFile()
   }
-  let blob: Blob
-  if (currBackingFmt === BackingFmt.ALP) {
-    const collected = collectProjectData()
-    blob = await makeProjectFile(collected)
-  } else if (currBackingFmt === BackingFmt.TTML) {
-    const persist = collectPersist()
-    const str = stringifyTTML(persist)
-    blob = new Blob([str], { type: 'application/xml' })
-  } else throw new Error('Unsupported backing format.')
+  const blob = await blobGenerators[currBackingFmt]()
   const filename = await backend.write(currHandle, blob)
   editHistory.markSaved()
   savedAtRef.value = new Date()
@@ -232,17 +229,7 @@ function suggestName() {
  * @returns Filename
  */
 async function saveAsFile() {
-  let blob: Blob
-  if (currBackingFmt === BackingFmt.ALP) {
-    const collected = collectProjectData()
-    blob = await makeProjectFile(collected)
-    currBackingFmt = BackingFmt.ALP
-  } else if (currBackingFmt === BackingFmt.TTML) {
-    const persist = collectPersist()
-    const str = stringifyTTML(persist)
-    blob = new Blob([str], { type: 'application/xml' })
-    currBackingFmt = BackingFmt.TTML
-  } else throw new Error('Unsupported backing format.')
+  const blob = await blobGenerators[currBackingFmt]()
   const { handle, filename } = await backend.writeAs(
     'amll-ttml-tool-file-save-as',
     [...alpPickerType, ...ttmlPickerType],
@@ -269,9 +256,8 @@ type Notifier = (
 function initDragListener(notifier: Notifier) {
   if (dragListenerInitialized) return
   dragListenerInitialized = true
-  function hasFiles(e: DragEvent): boolean {
-    return e.dataTransfer?.types.includes('Files') ?? false
-  }
+  const hasFiles = (e: DragEvent): boolean => e.dataTransfer?.types.includes('Files') ?? false
+
   document.addEventListener('dragover', (e) => {
     if (!hasFiles(e)) return
     e.preventDefault()
@@ -282,36 +268,19 @@ function initDragListener(notifier: Notifier) {
     if (!file) return
     e.preventDefault()
     const [, ext] = breakExtension(file.name)
-    if (!allSupportedExt.has(`.${ext}`)) {
-      notifier('文件打开失败', `不支持的文件类型: .${ext}`, 'error')
-      return
-    }
-    if (compatibilityMap.fileSystem)
-      e.dataTransfer?.items[0]
-        ?.getAsFileSystemHandle()
-        ?.then(async (handle) => {
-          if (!(await checkDataDropConfirm())) return
-          if (!handle || !(handle instanceof FileSystemHandle)) return
-          await handleFile({
-            handle: handle as unknown as FileHandle,
-            filename: file.name,
-            blob: file,
-          })
-          console.log(`Loaded file from drop: ${handle.name}`)
-          notifier('成功加载文件', handle.name, 'success')
-        })
-        .catch((err) => {
-          notifier('文件打开失败', String(err), 'error')
-        })
-    else {
-      handleFile({
-        handle: null as unknown as FileHandle,
-        filename: file.name,
-        blob: file,
+    if (!allSupportedExt.has(`.${ext}`))
+      return notifier('文件打开失败', `不支持的文件类型: .${ext}`, 'error')
+
+    getFileBackendAdapter(backend)
+      .dragDrop(e)
+      .then(async (result) => {
+        if (!result) throw new Error('无法获取拖放的文件')
+        await handleFile(result)
+        notifier('成功加载文件', file.name, 'success')
       })
-        .then(() => notifier('成功加载文件', file.name, 'success'))
-        .catch((err) => notifier('文件打开失败', String(err), 'error'))
-    }
+      .catch((err) => {
+        notifier('文件打开失败', String(err), 'error')
+      })
   })
 }
 

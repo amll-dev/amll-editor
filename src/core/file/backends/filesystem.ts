@@ -1,4 +1,4 @@
-import { defineFileBackend } from '../types'
+import { defineFileBackend, registerFileBackendAdapter } from '../types'
 
 export const fileSystemBackend = defineFileBackend<FileSystemFileHandle>({
   async read(id, types) {
@@ -40,6 +40,19 @@ export const fileSystemBackend = defineFileBackend<FileSystemFileHandle>({
       handle,
       filename: handle.name,
       blob,
+    }
+  },
+})
+
+registerFileBackendAdapter(fileSystemBackend, {
+  async dragDrop(e: DragEvent) {
+    const handle = await e.dataTransfer?.items[0]?.getAsFileSystemHandle()
+    if (!(handle instanceof FileSystemFileHandle)) return null
+    const file = await handle.getFile()
+    return {
+      handle,
+      filename: handle.name,
+      blob: file,
     }
   },
 })
