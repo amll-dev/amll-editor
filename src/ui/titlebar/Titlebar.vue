@@ -38,8 +38,10 @@
         v-tooltip="tipHotkey('重做', 'redo')"
       />
       <div class="filename-section">
-        <span class="name">{{ filename }}</span>
-        <span class="asterisk" v-if="isDirty">*</span>
+        <div class="filename-text">
+          <span class="name">{{ filename }}</span>
+          <span class="asterisk" v-if="isDirty">*</span>
+        </div>
       </div>
     </div>
     <div class="centerbar">
@@ -236,6 +238,8 @@ useGlobalKeyboard('save', handleSaveClick)
 useGlobalKeyboard('saveAs', handleSaveAsClick)
 useGlobalKeyboard('open', handleOpenClick)
 useGlobalKeyboard('new', handleCreateBlankProject)
+useGlobalKeyboard('exportToClipboard', handleExportToClipboard)
+useGlobalKeyboard('importFromClipboard', handleImportFromClipboard)
 </script>
 
 <style lang="scss">
@@ -259,20 +263,24 @@ useGlobalKeyboard('new', handleCreateBlankProject)
   .filename-section {
     padding: 0 0.5rem;
     opacity: 0.9;
-    line-height: 1;
     width: 0;
     flex-grow: 1;
-    align-self: center;
+    display: flex;
+    align-items: center;
     white-space: nowrap;
-    .name {
-      font-size: 1.1rem;
-      user-select: none;
-    }
-    .asterisk {
-      color: var(--p-primary-color);
-      font-weight: bold;
-      margin-left: 0.2rem;
-      user-select: none;
+    overflow-x: hidden;
+    .filename-text {
+      line-height: 1;
+      .name {
+        font-size: 1.1rem;
+        user-select: none;
+      }
+      .asterisk {
+        color: var(--p-primary-color);
+        font-weight: bold;
+        margin-left: 0.2rem;
+        user-select: none;
+      }
     }
     @media screen and (max-width: 720px) {
       & {

@@ -39,6 +39,8 @@ export const hotkeyCommands = [
   'save',
   'saveAs',
   'new',
+  'exportToClipboard',
+  'importFromClipboard',
 ] as const
 
 export const hotkeyInputBlockList: HK.Key[] = [
@@ -84,6 +86,8 @@ export const getDefaultHotkeyMap = () =>
     save: k(Ctrl, 's'),
     saveAs: k(Ctrl, Shift, 's'),
     new: k(Ctrl, Alt, 'n'),
+    exportToClipboard: k(Ctrl, Alt, 'c'),
+    importFromClipboard: k(Ctrl, Alt, 'v'),
   })
 
 //#region Helpers
