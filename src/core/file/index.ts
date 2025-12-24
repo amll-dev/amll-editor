@@ -8,6 +8,7 @@ import type { ValueOf } from '@utils/types'
 import { editHistory } from '@states/services/history'
 import type { Persist } from '@core/types'
 import { checkDataDropConfirm } from './shared'
+import { useCoreStore, useStaticStore } from '@states/stores'
 
 export { simpleChooseFile, simpleSaveFile } from './simple'
 export { simpleChooseTextFile, simpleSaveTextFile } from './simple'
@@ -218,6 +219,20 @@ async function saveFile() {
   savedAtRef.value = new Date()
   return fileSystemHandle.name
 }
+
+function suggestName() {
+  if (!displayFilenameRef.value.startsWith('未命名')) return displayFilenameRef.value
+  const coreStore = useCoreStore()
+  const title = coreStore.metadata.find((m) => m.key === 'musicName' || m.key === 'ti')?.values[0]
+  if (title) return title
+  const mediaFilename = useStaticStore().audio.filenameComputed.value
+  if (mediaFilename) {
+    const [name] = breakExtension(mediaFilename)
+    return name
+  }
+  return displayFilenameRef.value
+}
+
 /**
  * Save as a new file
  * Only for backing formats (*.alp, *.ttml)
@@ -231,7 +246,7 @@ async function saveAsFile() {
     types,
     excludeAcceptAllOption: true,
     id: 'amll-ttml-tool-file-save-as',
-    suggestedName: displayFilenameRef.value,
+    suggestedName: suggestName(),
   })
   const writeable = await handle.createWritable()
   readonlyRef.value = false
