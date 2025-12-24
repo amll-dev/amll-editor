@@ -1,6 +1,6 @@
 import { detectFormat, portFormatRegister } from '@core/convert'
 import { parseTTML, stringifyTTML, ttmlReg } from '@core/convert/formats/ttml'
-import { readonly, ref } from 'vue'
+import { nextTick, readonly, ref } from 'vue'
 import { collectProjectData, makeProjectFile, mountProjectData, parseProjectFile } from './project'
 import { collectPersist, applyPersist } from '@states/services/port'
 import { breakExtension } from '@utils/breakExtension'
@@ -9,6 +9,7 @@ import { editHistory } from '@states/services/history'
 import type { Persist } from '@core/types'
 import { checkDataDropConfirm } from './shared'
 import { useCoreStore, useStaticStore } from '@states/stores'
+import { useToast } from 'primevue'
 
 export { simpleChooseFile, simpleSaveFile } from './simple'
 export { simpleChooseTextFile, simpleSaveTextFile } from './simple'
@@ -93,11 +94,7 @@ async function openFile() {
     excludeAcceptAllOption: true,
     id: 'amll-ttml-tool-file-open',
   })
-  const [, ext] = breakExtension(handle.name)
-  if (!allSupportedExt.has(`.${ext}`)) throw new Error('Unsupported file format.')
-  if (ext === 'alp') await handleProjFile(handle)
-  else if (ext === 'ttml') await handleTTMLFile(handle)
-  else await handleMiscFile(handle)
+  await handleFile(handle)
   return handle.name
 }
 /**
@@ -137,6 +134,13 @@ const tryWritehandle = (handle: FileSystemFileHandle) =>
     .then(() => (readonlyRef.value = false))
     .catch(() => (readonlyRef.value = true))
 
+async function handleFile(handle: FileSystemFileHandle) {
+  const [, ext] = breakExtension(handle.name)
+  if (!allSupportedExt.has(`.${ext}`)) throw new Error('Unsupported file format.')
+  if (ext === 'alp') await handleProjFile(handle)
+  else if (ext === 'ttml') await handleTTMLFile(handle)
+  else await handleMiscFile(handle)
+}
 async function handleProjFile(handle: FileSystemFileHandle) {
   const file = await handle.getFile()
   const payload = await parseProjectFile(file)
@@ -274,6 +278,58 @@ async function saveAsFile() {
   editHistory.markSaved()
   return handle.name
 }
+
+function init() {
+  function hasFiles(e: DragEvent): boolean {
+    return e.dataTransfer?.types.includes('Files') ?? false
+  }
+  document.addEventListener('dragover', (e) => {
+    if (!hasFiles(e)) return
+    e.preventDefault()
+  })
+  document.addEventListener('drop', (e) => {
+    if (!hasFiles(e)) return
+    const file = e.dataTransfer?.files[0]
+    if (!file) return
+    e.preventDefault()
+    const [, ext] = breakExtension(file.name)
+    if (!allSupportedExt.has(`.${ext}`)) {
+      // nextTick(() =>
+      //   useToast().add({
+      //     severity: 'error',
+      //     summary: '文件打开失败',
+      //     detail: `不支持的文件类型: .${ext}`,
+      //     life: 3000,
+      //   }),
+      // )
+      return
+    }
+
+    e.dataTransfer?.items[0]
+      ?.getAsFileSystemHandle()
+      ?.then(async (handle) => {
+        if (!(await checkDataDropConfirm())) return
+        if (!handle || !(handle instanceof FileSystemFileHandle)) return
+        await handleFile(handle)
+        console.log(`Loaded file from drop: ${handle.name}`)
+        // useToast().add({
+        //   severity: 'success',
+        //   summary: '成功加载文件',
+        //   detail: handle.name,
+        //   life: 3000,
+        // })
+      })
+      .catch((err) => {
+        // useToast().add({
+        //   severity: 'error',
+        //   summary: '文件打开失败',
+        //   detail: String(err),
+        //   life: 3000,
+        // })
+      })
+  })
+}
+init()
 
 export const fileState = {
   openFile,
