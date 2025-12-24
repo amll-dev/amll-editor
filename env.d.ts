@@ -16,3 +16,8 @@ declare module 'syllabify' {
   function split(word: string): string[]
   export default split
 }
+
+declare module 'save-file' {
+  function saveFile(blob: Blob, filename: string): Promise<void>
+  export default saveFile
+}

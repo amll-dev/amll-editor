@@ -11,8 +11,12 @@ import { checkDataDropConfirm } from './shared'
 import { useCoreStore, useStaticStore } from '@states/stores'
 import { fileSystemBackend } from './backends/filesystem'
 import { getFileBackendAdapter, type FileHandle, type FileReadResult } from './types'
+import { compatibilityMap } from '@core/compat'
+import { h5NativeBackend } from './backends/h5native'
 
 export { simpleChooseTextFile, simpleSaveTextFile } from './simple'
+
+export const fileBackend = compatibilityMap.fileSystem ? fileSystemBackend : h5NativeBackend
 
 // Native format (*.alp) and TTML format (*.ttml) are the first-class supported formats
 // When save, they are written directly by default
@@ -82,8 +86,6 @@ function setFileState(state: Partial<FileState> | null) {
   savedAtRef.value = state.savedAt ?? null
 }
 
-const backend = fileSystemBackend
-
 /**
  * Handle opening of any known file format.
  * @throws User cancel; unsupported format; parsing errors.
@@ -91,7 +93,7 @@ const backend = fileSystemBackend
  */
 async function openFile() {
   if (!(await checkDataDropConfirm())) throw new Error('The user aborted a request.')
-  const result = await backend.read('amll-ttml-tool-file-open', allPickerTypes)
+  const result = await fileBackend.read('amll-ttml-tool-file-open', allPickerTypes)
   await handleFile(result)
   return result.filename
 }
@@ -102,7 +104,7 @@ async function openFile() {
  */
 async function openProjFile() {
   if (!(await checkDataDropConfirm())) throw new Error('The user aborted a request.')
-  const result = await backend.read('amll-ttml-tool-file-open', alpPickerType)
+  const result = await fileBackend.read('amll-ttml-tool-file-open', alpPickerType)
   await handleProjFile(result)
   return result.filename
 }
@@ -113,13 +115,13 @@ async function openProjFile() {
  */
 async function openTTMLFile() {
   if (!(await checkDataDropConfirm())) throw new Error('The user aborted a request.')
-  const result = await backend.read('amll-ttml-tool-file-open', ttmlPickerType)
+  const result = await fileBackend.read('amll-ttml-tool-file-open', ttmlPickerType)
   await handleTTMLFile(result)
   return result.filename
 }
 
 const askForWrite = async (handle: FileHandle) => {
-  const hasPermission = await backend.askForWritePermission(handle)
+  const hasPermission = await fileBackend.askForWritePermission(handle)
   readonlyRef.value = !hasPermission
 }
 async function handleFile(result: FileReadResult) {
@@ -200,7 +202,7 @@ async function saveFile() {
     return await saveAsFile()
   }
   const blob = await blobGenerators[currBackingFmt]()
-  const filename = await backend.write(currHandle, blob)
+  const filename = await fileBackend.write(currHandle, blob)
   editHistory.markSaved()
   savedAtRef.value = new Date()
   readonlyRef.value = false
@@ -230,7 +232,7 @@ function suggestName() {
  */
 async function saveAsFile() {
   const blob = await blobGenerators[currBackingFmt]()
-  const { handle, filename } = await backend.writeAs(
+  const { handle, filename } = await fileBackend.writeAs(
     'amll-ttml-tool-file-save-as',
     [...alpPickerType, ...ttmlPickerType],
     suggestName(),
@@ -271,7 +273,7 @@ function initDragListener(notifier: Notifier) {
     if (!allSupportedExt.has(`.${ext}`))
       return notifier('文件打开失败', `不支持的文件类型: .${ext}`, 'error')
 
-    getFileBackendAdapter(backend)
+    getFileBackendAdapter(fileBackend)
       .dragDrop(e)
       .then(async (result) => {
         if (!result) throw new Error('无法获取拖放的文件')
