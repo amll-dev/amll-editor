@@ -32,15 +32,21 @@ import {
   parseKeyEvent,
   shouldEscapeInInput,
 } from '../core/hotkey'
-import { Toast } from 'primevue'
+import { Toast, useToast } from 'primevue'
 import { usePrefStore, useRuntimeStore } from '@states/stores'
 import { View } from '@core/types'
 import DropDataConfirmModal from './dialogs/DropDataConfirmModal.vue'
+import { fileState } from '@core/file'
 editHistory.init()
 editHistory.markSaved() // Empty state is considered saved
 
 const prefStore = usePrefStore()
 const runtimeStore = useRuntimeStore()
+
+const toast = useToast()
+fileState.initDragListener((summary, detail, severity) => {
+  toast.add({ severity, summary, detail, life: 3000 })
+})
 
 const modalDialogActivated = () => !!document.querySelector('.p-dialog-mask.p-overlay-mask')
 const handleRootKeydown = (e: KeyboardEvent) => {

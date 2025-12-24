@@ -9,7 +9,6 @@ import { editHistory } from '@states/services/history'
 import type { Persist } from '@core/types'
 import { checkDataDropConfirm } from './shared'
 import { useCoreStore, useStaticStore } from '@states/stores'
-import { useToast } from 'primevue'
 
 export { simpleChooseTextFile, simpleSaveTextFile } from './simple'
 
@@ -279,7 +278,15 @@ async function saveAsFile() {
   return handle.name
 }
 
-function init() {
+let dragListenerInitialized = false
+type Notifier = (
+  summary: string,
+  detail: string,
+  severity?: 'info' | 'warn' | 'error' | 'success',
+) => void
+function initDragListener(notifier: Notifier) {
+  if (dragListenerInitialized) return
+  dragListenerInitialized = true
   function hasFiles(e: DragEvent): boolean {
     return e.dataTransfer?.types.includes('Files') ?? false
   }
@@ -294,17 +301,9 @@ function init() {
     e.preventDefault()
     const [, ext] = breakExtension(file.name)
     if (!allSupportedExt.has(`.${ext}`)) {
-      // nextTick(() =>
-      //   useToast().add({
-      //     severity: 'error',
-      //     summary: '文件打开失败',
-      //     detail: `不支持的文件类型: .${ext}`,
-      //     life: 3000,
-      //   }),
-      // )
+      notifier('文件打开失败', `不支持的文件类型: .${ext}`, 'error')
       return
     }
-
     e.dataTransfer?.items[0]
       ?.getAsFileSystemHandle()
       ?.then(async (handle) => {
@@ -312,24 +311,13 @@ function init() {
         if (!handle || !(handle instanceof FileSystemFileHandle)) return
         await handleFile(handle)
         console.log(`Loaded file from drop: ${handle.name}`)
-        // useToast().add({
-        //   severity: 'success',
-        //   summary: '成功加载文件',
-        //   detail: handle.name,
-        //   life: 3000,
-        // })
+        notifier('成功加载文件', handle.name, 'success')
       })
       .catch((err) => {
-        // useToast().add({
-        //   severity: 'error',
-        //   summary: '文件打开失败',
-        //   detail: String(err),
-        //   life: 3000,
-        // })
+        notifier('文件打开失败', String(err), 'error')
       })
   })
 }
-init()
 
 export const fileState = {
   openFile,
@@ -340,6 +328,7 @@ export const fileState = {
   importPersist,
   createBlankProject,
   suggestName,
+  initDragListener,
   createdAtComputed: readonly(createdAtRef),
   displayFilenameComputed: readonly(displayFilenameRef),
   readonlyComputed: readonly(readonlyRef),
