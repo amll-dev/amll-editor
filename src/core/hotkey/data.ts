@@ -78,7 +78,7 @@ export const getDefaultHotkeyMap = () =>
     delete: k('Delete'),
     backspace: k('Backspace'),
     bookmark: k(Ctrl, 'd'),
-    preferences: k(Ctrl, ','),
+    preferences: k(Ctrl, 'Comma'),
     chooseMedia: k(Ctrl, 'm'),
     metadata: k(Ctrl, 'i'),
     open: k(Ctrl, 'o'),
