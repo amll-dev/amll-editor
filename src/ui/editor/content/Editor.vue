@@ -21,7 +21,7 @@
         />
         <Line :line="line" :index="lineIndex" @contextmenu="handleLineContext">
           <WordInsertIndicator :index="0" :parent="line" />
-          <template v-for="(word, wordIndex) in line.words" :key="word.id">
+          <template v-for="(word, wordIndex) in <LyricWord[]>line.words" :key="word.id">
             <Word
               :word="word"
               :index="wordIndex"
@@ -72,7 +72,7 @@ import type { ScrollToIndexOpts } from 'virtua/unstable_core'
 import { alignLineEndTime, alignLineTime } from '@utils/alignLineWordTime'
 import { tryRaf } from '@utils/tryRaf'
 import { useCoreStore, useRuntimeStore, useStaticStore } from '@states/stores'
-import { View, type LyricLine } from '@core/types'
+import { View, type LyricLine, type LyricWord } from '@core/types'
 import type { EditorComponentActions } from '@states/stores/static'
 
 const coreStore = useCoreStore()

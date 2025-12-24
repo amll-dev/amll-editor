@@ -15,8 +15,8 @@ const wordIndex = header.indexOf('word')
 
 const results: Record<string, number[] | 0> = {}
 const nlpWithPlg = nlp.extend(nlpSpeech)
-for (let i = 1; i < lines.length; i++) {
-  const cols = lines[i].split(',')
+for (const row of lines.slice(1)) {
+  const cols = row.split(',')
   const syllable = cols[syllableIndex].toLowerCase()
   const word = cols[wordIndex].toLowerCase()
   if (word.length <= 1) continue

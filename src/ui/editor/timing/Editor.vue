@@ -9,10 +9,10 @@
       <div
         :key="line.id"
         class="line-item-shell"
-        v-if="(line as LyricLine).words.some((w) => w.text.trim())"
+        v-if="(<LyricLine>line).words.some((w) => w.text.trim())"
       >
         <Line :line="line" :index="lineIndex">
-          <template v-for="word in line.words" :key="word.id">
+          <template v-for="word in <LyricWord[]>line.words" :key="word.id">
             <Word
               :word="word"
               :parent="line"
