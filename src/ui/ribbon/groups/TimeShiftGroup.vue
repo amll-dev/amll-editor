@@ -19,7 +19,7 @@
       :severity="batchShiftDialogVisible ? undefined : 'secondary'"
       @click="batchShiftDialogVisible = !batchShiftDialogVisible"
       v-tooltip="
-        tipDesc('批量时移', '打开批量时移对话框，调整多个词或行的时间戳。', 'batchTimeShift')
+        tipDesc('批量时移', '打开批量时移对话框，调整多个音节或行的时间戳。', 'batchTimeShift')
       "
     />
     <BatchTimeShiftDialog v-model="batchShiftDialogVisible" />

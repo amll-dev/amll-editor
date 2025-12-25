@@ -9,7 +9,7 @@
           optionGroupLabel="label"
           optionGroupChildren="items"
           optionLabel="name"
-          placeholder="选择断词引擎"
+          placeholder="选择断字引擎"
           scrollHeight="20rem"
           checkmark
           fluid
@@ -23,7 +23,7 @@
             </div>
           </template>
         </Select>
-        <label for="splitEngine">断词引擎</label>
+        <label for="splitEngine">断字引擎</label>
       </IftaLabel>
       <div
         class="description"
@@ -53,7 +53,7 @@
       >
         <div class="rewrite-field-inner">
           <div v-for="(item, index) in customRewrites" class="rewrite-item">
-            <InputText placeholder="原词" type="text" v-model.lazy.trim="item.target" fluid />
+            <InputText placeholder="原始文本" type="text" v-model.lazy.trim="item.target" fluid />
             <i class="pi pi-arrow-right"></i>
             <SplitTextRewriteEditor :original="item.target" v-model="item.indices" />
             <Button
@@ -76,7 +76,7 @@
       </div>
     </div>
     <div class="action">
-      <div class="warn">现有词属性将丢失，时长按实义字符线性插值</div>
+      <div class="warn">现有音节属性将丢失，时长按实义字符线性插值</div>
       <Button
         label="应用到选定行"
         icon="pi pi-angle-right"

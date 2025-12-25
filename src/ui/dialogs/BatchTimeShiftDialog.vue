@@ -20,7 +20,7 @@
         </template>
       </InputNumber>
       <Button
-        label="应用到选定词"
+        label="应用到选定音节"
         icon="pi pi-ellipsis-h"
         fluid
         severity="secondary"

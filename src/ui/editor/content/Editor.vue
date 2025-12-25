@@ -36,7 +36,7 @@
             icon="pi pi-plus"
             severity="secondary"
             @click="appendWord(line)"
-            v-tooltip="'插入词'"
+            v-tooltip="'插入音节'"
           />
         </Line>
         <LineInsertIndicator :index="lineIndex + 1" @contextmenu="handleLineInsertContext" />
@@ -215,7 +215,7 @@ const lineMenuItems: MenuItem[] = [
 ]
 const wordMenuItems: MenuItem[] = [
   {
-    label: '在前插入词',
+    label: '在前插入音节',
     icon: 'pi pi-arrow-left',
     command: () => {
       if (contextLineIndex === undefined || contextWordIndex === undefined) return
@@ -227,7 +227,7 @@ const wordMenuItems: MenuItem[] = [
     },
   },
   {
-    label: '在后插入词',
+    label: '在后插入音节',
     icon: 'pi pi-arrow-right',
     command: () => {
       if (contextLineIndex === undefined || contextWordIndex === undefined) return
@@ -254,7 +254,7 @@ const wordMenuItems: MenuItem[] = [
     },
   },
   {
-    label: '删除单词',
+    label: '删除音节',
     icon: 'pi pi-trash',
     command: () => {
       if (contextLineIndex === undefined || contextWordIndex === undefined) return

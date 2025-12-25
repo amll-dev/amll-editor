@@ -27,7 +27,7 @@ const dragCount = computed(() =>
 )
 const dragText = computed(
   () =>
-    (runtimeStore.isDraggingCopy ? '复制' : '移动') + (runtimeStore.isDraggingLine ? '行' : '词'),
+    (runtimeStore.isDraggingCopy ? '复制' : '移动') + (runtimeStore.isDraggingLine ? '行' : '音节'),
 )
 const dragIcon = computed(() => {
   if (!runtimeStore.canDrop) return 'pi-ban'

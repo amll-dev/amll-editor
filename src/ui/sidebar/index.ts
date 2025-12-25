@@ -19,7 +19,7 @@ interface SidebarTab {
 export const sidebarRegs = {
   [SidebarKey.SplitText]: {
     key: SidebarKey.SplitText,
-    title: '批量断词',
+    title: '批量断字',
     component: SplitTextTab,
   },
   [SidebarKey.Metadata]: {

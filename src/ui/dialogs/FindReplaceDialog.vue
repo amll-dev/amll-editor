@@ -101,7 +101,7 @@
         <div class="findreplace-range-options">
           <div class="findreplace-range-option-item">
             <Checkbox v-model="findInWords" inputId="findInWords" binary />
-            <label for="findInWords" class="findreplace-range-option-label">单词</label>
+            <label for="findInWords" class="findreplace-range-option-label">音节内容</label>
           </div>
           <div class="findreplace-range-option-item">
             <Checkbox v-model="findInTranslations" inputId="findInTranslations" binary />
@@ -135,7 +135,7 @@
               binary
               :disabled="showReplace"
             />
-            <label for="crossWordMatch" class="findreplace-option-label">跨词匹配</label>
+            <label for="crossWordMatch" class="findreplace-option-label">跨音节匹配</label>
           </div>
           <div class="findreplace-option-item">
             <Checkbox v-model="useRegex" inputId="useRegex" binary />

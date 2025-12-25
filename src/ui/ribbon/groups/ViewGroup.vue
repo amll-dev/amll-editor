@@ -18,7 +18,7 @@
         v-model="prefStore.hltWordTimeConflicts"
         disabled
       />
-      <label for="ribbon-hlt-wordoverlap">高亮词时间冲突</label>
+      <label for="ribbon-hlt-wordoverlap">高亮音节时间冲突</label>
       <Checkbox
         inputId="ribbon-auto-scroll"
         value="auto-scroll"

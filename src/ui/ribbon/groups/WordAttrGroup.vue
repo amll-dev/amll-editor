@@ -1,5 +1,5 @@
 <template>
-  <RibbonGroup label="词属性">
+  <RibbonGroup label="音节属性">
     <div class="hflex" style="align-items: center; gap: 1rem">
       <div class="kvgrid">
         <span>开始时间</span>
@@ -58,7 +58,7 @@
                 fluid
                 :disabled="wordSelectedEmpty || !phBeatApplyToAllEnabled"
                 @click="phBeatApplyToAll"
-                v-tooltip="'应用到所有相同词'"
+                v-tooltip="'应用到所有相同音节'"
               />
             </InputGroupAddon>
           </InputGroup>

@@ -10,7 +10,7 @@
       v-tooltip="
         tipDesc(
           bookmarkAdd ? '添加书签' : '移除书签',
-          '在选定行或词上添加或移除书签。书签可以用于标记重要的部分，且不会导出到歌词文件中。',
+          '在选定行或音节上添加或移除书签。书签可以用于标记重要的部分，且不会导出到歌词文件中。',
           'bookmark',
         )
       "
@@ -22,7 +22,7 @@
       size="small"
       severity="secondary"
       @click="removeAllMarks"
-      v-tooltip="tipDesc('移除全部', '移除全文所有行和词的书签与批注。您可以稍后撤销。')"
+      v-tooltip="tipDesc('移除全部', '移除全文所有行和音节的书签与批注。您可以稍后撤销。')"
     />
   </RibbonGroup>
 </template>

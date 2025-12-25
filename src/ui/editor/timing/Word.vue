@@ -8,7 +8,7 @@
       class="tword-timestamp"
       begin
       v-model="props.word.startTime"
-      v-tooltip="'词起始时间'"
+      v-tooltip="'音节起始时间'"
     />
     <div class="tword-content">
       <i
@@ -20,7 +20,7 @@
         {{ props.word.text }}
       </span>
     </div>
-    <Timestamp class="tword-timestamp" end v-model="props.word.endTime" v-tooltip="'词结束时间'" />
+    <Timestamp class="tword-timestamp" end v-model="props.word.endTime" v-tooltip="'音节结束时间'" />
   </div>
 </template>
 
