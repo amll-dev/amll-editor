@@ -1,12 +1,12 @@
 import JSZip from 'jszip'
-import type { LatestProjManifest } from './fileVer'
-import type { LatestProjData } from './dataVer'
+import { latestProjManifestVersion, type LatestProjManifest } from './fileVer'
+import { latestProjDataVersion, type LatestProjData } from './dataVer'
 import type { ProjPayload } from '.'
 import type { Persist } from '@core/types'
 
 const DATA_FILENAME = 'data.json'
-const FILE_VERSION = 'ALPv0.0'
-const DATA_VERSION = 'ALDv0.0'
+const FILE_VERSION = latestProjManifestVersion
+const DATA_VERSION = latestProjDataVersion
 
 export function makeProjectFile({ persist: data, createdAt, audioFile }: ProjPayload) {
   const zip = new JSZip()
@@ -34,9 +34,47 @@ export function makeProjectFile({ persist: data, createdAt, audioFile }: ProjPay
   return zip.generateAsync({ type: 'blob' })
 }
 
-function makeProjectData(data: Persist): LatestProjData {
+function makeProjectData(persist: Persist): LatestProjData {
+  const { metadata, lyricLines: persistLines } = persist
+  const dataLines: LatestProjData['lines'] = persistLines.map((line) => {
+    const {
+      id,
+      translation,
+      romanization,
+      background,
+      duet,
+      startTime,
+      endTime,
+      ignoreInTiming,
+      bookmarked,
+      words,
+    } = line
+    return {
+      id,
+      translation,
+      romanization,
+      background,
+      duet,
+      startTime,
+      endTime,
+      ignoreInTiming,
+      bookmarked,
+      syllables: words.map(
+        ({ id, startTime, endTime, text, romanization, placeholdingBeat, bookmarked }) => ({
+          id,
+          startTime,
+          endTime,
+          text,
+          romanization,
+          placeholdingBeat,
+          bookmarked,
+        }),
+      ),
+    }
+  })
   return {
-    ...data,
     dataVersion: DATA_VERSION,
+    metadata,
+    lines: dataLines,
   }
 }
