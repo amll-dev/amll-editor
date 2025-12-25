@@ -3,6 +3,7 @@ import { latestProjManifestVersion, type LatestProjManifest } from './fileVer'
 import { latestProjDataVersion, type LatestProjData } from './dataVer'
 import type { ProjPayload } from '.'
 import type { Persist } from '@core/types'
+import { omitAttrs } from '@utils/omitAttrs'
 
 const DATA_FILENAME = 'data.json'
 const FILE_VERSION = latestProjManifestVersion
@@ -39,17 +40,7 @@ function makeProjectData(persist: Persist): LatestProjData {
   const dataLines: LatestProjData['lines'] = persistLines.map((line) => {
     return {
       ...line,
-      syllables: line.syllables.map(
-        ({ id, startTime, endTime, text, romanization, placeholdingBeat, bookmarked }) => ({
-          id,
-          startTime,
-          endTime,
-          text,
-          romanization,
-          placeholdingBeat,
-          bookmarked,
-        }),
-      ),
+      syllables: line.syllables.map((s) => omitAttrs(s, 'currentplaceholdingBeat')),
     }
   })
   return {

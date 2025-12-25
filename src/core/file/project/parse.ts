@@ -3,6 +3,7 @@ import type { ProjPayload } from '.'
 import { supportedProjManifestVersions, type SupportedProjManifest } from './fileVer'
 import { supportedProjDataVersions, type SupportedProjData } from './dataVer'
 import type { Persist } from '@core/types'
+import { omitAttrs } from '@utils/omitAttrs'
 
 export async function parseProjectFile(file: Blob): Promise<ProjPayload> {
   const zip = await JSZip.loadAsync(file)
@@ -48,29 +49,11 @@ function parseProjectData(data: SupportedProjData): Persist {
   const { metadata } = data
   const dataLines = 'lyricLines' in data ? data.lyricLines : data.lines
   const persistLines = dataLines.map((line): Persist['lines'][number] => {
-    const {
-      id,
-      translation,
-      romanization,
-      background,
-      duet,
-      startTime,
-      endTime,
-      ignoreInTiming,
-      bookmarked,
-    } = line
-    const syllables = 'syllables' in line ? line.syllables : line.words
+    const dataSyls = 'syllables' in line ? line.syllables : line.words
+    const syllables = dataSyls.map((syl) => ({ ...syl, currentplaceholdingBeat: 0 }))
     return {
-      id,
-      translation,
-      romanization,
-      background,
-      duet,
-      startTime,
-      endTime,
-      ignoreInTiming,
-      bookmarked,
-      syllables: syllables.map((syl) => ({ ...syl, currentplaceholdingBeat: 0 })),
+      ...omitAttrs(line, 'words', 'syllables'),
+      syllables,
     }
   })
   return { metadata, lines: persistLines }
