@@ -32,8 +32,24 @@ const props = defineProps<{
 }
 .pi.empty-tip-icon {
   font-size: 1.8rem;
-  margin-bottom: 1rem;
   opacity: 0.8;
+  padding: 1rem;
+  border-radius: 50%;
+  // EASTER EGG
+  &.pi-asterisk {
+    transition: transform 0.3s;
+    &:hover {
+      animation: rot60deg 0.6s infinite;
+    }
+  }
+}
+@keyframes rot60deg {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(60deg);
+  }
 }
 .empty-tip-title {
   font-size: 1.3rem;
