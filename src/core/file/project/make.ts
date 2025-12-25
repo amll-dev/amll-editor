@@ -35,31 +35,11 @@ export function makeProjectFile({ persist: data, createdAt, audioFile }: ProjPay
 }
 
 function makeProjectData(persist: Persist): LatestProjData {
-  const { metadata, lyricLines: persistLines } = persist
+  const { metadata, lines: persistLines } = persist
   const dataLines: LatestProjData['lines'] = persistLines.map((line) => {
-    const {
-      id,
-      translation,
-      romanization,
-      background,
-      duet,
-      startTime,
-      endTime,
-      ignoreInTiming,
-      bookmarked,
-      words,
-    } = line
     return {
-      id,
-      translation,
-      romanization,
-      background,
-      duet,
-      startTime,
-      endTime,
-      ignoreInTiming,
-      bookmarked,
-      syllables: words.map(
+      ...line,
+      syllables: line.syllables.map(
         ({ id, startTime, endTime, text, romanization, placeholdingBeat, bookmarked }) => ({
           id,
           startTime,

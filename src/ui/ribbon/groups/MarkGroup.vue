@@ -37,7 +37,7 @@ import { tipDesc } from '@utils/generateTooltip'
 const runtimeStore = useRuntimeStore()
 
 const focusingSet = computed(() =>
-  runtimeStore.selectedWords.size > 0 ? runtimeStore.selectedWords : runtimeStore.selectedLines,
+  runtimeStore.selectedSyllables.size > 0 ? runtimeStore.selectedSyllables : runtimeStore.selectedLines,
 )
 const bookmarkAdd = computed(
   () => actionDisabled.value || [...focusingSet.value].some((item) => !item.bookmarked),
@@ -47,7 +47,7 @@ function bookmarkClick() {
   else focusingSet.value.forEach((item) => (item.bookmarked = false))
 }
 const actionDisabled = computed(
-  () => !runtimeStore.selectedLines.size && !runtimeStore.selectedWords.size,
+  () => !runtimeStore.selectedLines.size && !runtimeStore.selectedSyllables.size,
 )
 useGlobalKeyboard('bookmark', () => bookmarkClick())
 
@@ -55,7 +55,7 @@ const coreStore = useCoreStore()
 function removeAllMarks() {
   coreStore.lyricLines.forEach((line) => {
     line.bookmarked = false
-    line.words.forEach((word) => (word.bookmarked = false))
+    line.syllables.forEach((syl) => (syl.bookmarked = false))
   })
 }
 </script>

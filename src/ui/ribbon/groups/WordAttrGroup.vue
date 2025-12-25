@@ -7,8 +7,8 @@
           class="timeinput"
           placeholder="00:00.000"
           size="small"
-          :disabled="wordSelectedEmpty"
-          v-model.lazy="wordStartTime"
+          :disabled="sylSelectionEmpty"
+          v-model.lazy="sylStartTime"
           v-keyfilter="/[0-9:.]/"
         />
         <span>结束时间</span>
@@ -16,8 +16,8 @@
           class="timeinput"
           placeholder="00:00.000"
           size="small"
-          :disabled="wordSelectedEmpty"
-          v-model.lazy="wordEndTime"
+          :disabled="sylSelectionEmpty"
+          v-model.lazy="sylEndTime"
           v-keyfilter="/[0-9:.]/"
         />
         <span>持续时长</span>
@@ -25,9 +25,9 @@
           class="durationinput"
           size="small"
           placeholder="0"
-          :disabled="wordSelectedEmpty"
-          v-model="wordDuration"
-          :invalid="(wordDuration ?? 0) < 0"
+          :disabled="sylSelectionEmpty"
+          v-model="sylDuration"
+          :invalid="(sylDuration ?? 0) < 0"
         />
       </div>
       <div class="vflex" style="gap: 0.5rem; width: 7.5rem">
@@ -45,7 +45,7 @@
               :min="0"
               size="small"
               placeholder="0"
-              :disabled="wordSelectedEmpty"
+              :disabled="sylSelectionEmpty"
               v-model="phBeatInput"
             />
             <InputGroupAddon class="placeholderbeat-applytoall-addon">
@@ -56,7 +56,7 @@
                 variant="text"
                 size="small"
                 fluid
-                :disabled="wordSelectedEmpty || !phBeatApplyToAllEnabled"
+                :disabled="sylSelectionEmpty || !phBeatApplyToAllEnabled"
                 @click="phBeatApplyToAll"
                 v-tooltip="'应用到所有相同音节'"
               />
@@ -66,7 +66,7 @@
         <Slider
           :step="1"
           style="margin: 0.5rem"
-          :disabled="wordSelectedEmpty || !phBeatInput"
+          :disabled="sylSelectionEmpty || !phBeatInput"
           :min="0"
           :max="phBeatInput || 1"
           v-model="currPhBeatInput"
@@ -87,30 +87,30 @@ import { Button, InputGroup, InputGroupAddon, InputNumber, Slider } from 'primev
 const runtimeStore = useRuntimeStore()
 const coreStore = useCoreStore()
 
-const wordSelectedEmpty = computed(() => runtimeStore.selectedWords.size === 0)
+const sylSelectionEmpty = computed(() => runtimeStore.selectedSyllables.size === 0)
 
 const {
-  startTime: wordStartTime,
-  endTime: wordEndTime,
-  duration: wordDuration,
-} = itemTimeInput(runtimeStore.selectedWords)
+  startTime: sylStartTime,
+  endTime: sylEndTime,
+  duration: sylDuration,
+} = itemTimeInput(runtimeStore.selectedSyllables)
 
 function placeholdingBeatInputs() {
-  const setOnlyOne = computed(() => runtimeStore.selectedWords.size === 1)
-  const setFirstItem = computed(() => runtimeStore.selectedWords.values().next().value)
+  const setOnlyOne = computed(() => runtimeStore.selectedSyllables.size === 1)
+  const setFirstItem = computed(() => runtimeStore.selectedSyllables.values().next().value)
   const numericComputed = (key: 'placeholdingBeat' | 'currentplaceholdingBeat') =>
     computed<number | undefined>({
       get() {
         if (!setFirstItem.value) return undefined
         const firstValue = setFirstItem.value[key]
         if (setOnlyOne.value) return firstValue
-        for (const item of runtimeStore.selectedWords)
+        for (const item of runtimeStore.selectedSyllables)
           if (item[key] !== firstValue) return undefined
         return firstValue
       },
       set(value) {
         if (typeof value !== 'number') value = 0
-        runtimeStore.selectedWords.forEach((item) => (item[key] = value))
+        runtimeStore.selectedSyllables.forEach((item) => (item[key] = value))
       },
     })
 
@@ -122,7 +122,7 @@ function placeholdingBeatInputs() {
   const phBeatApplyToAll = () => {
     if (typeof phBeatInput.value !== 'number' || typeof currPhBeatInput.value !== 'number') return
     coreStore.lyricLines.forEach((line) => {
-      line.words.forEach((word) => {
+      line.syllables.forEach((word) => {
         if (word.text !== setFirstItem.value?.text) return
         word.placeholdingBeat = phBeatInput.value!
       })

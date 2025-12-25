@@ -1,7 +1,7 @@
 import { computed, reactive, ref, shallowReactive, watch } from 'vue'
 import { defineStore } from 'pinia'
 import type { SidebarKey } from '@ui/sidebar'
-import { View, type LyricLine, type LyricWord } from '@core/types'
+import { View, type LyricLine, type LyricSyllable } from '@core/types'
 import { useCoreStore } from './core'
 
 export const useRuntimeStore = defineStore('runtime', () => {
@@ -13,14 +13,14 @@ export const useRuntimeStore = defineStore('runtime', () => {
 
   // Selection & drag
   const selectedLines = shallowReactive(new Set<LyricLine>())
-  const selectedWords = shallowReactive(new Set<LyricWord>())
+  const selectedSyllables = shallowReactive(new Set<LyricSyllable>())
 
   const isDragging = ref(false)
   const isDraggingCopy = ref(false)
   const canDrop = ref(false)
-  const isDraggingWord = computed(() => isDragging.value && selectedWords.size > 0)
+  const isDraggingSyl = computed(() => isDragging.value && selectedSyllables.size > 0)
   const isDraggingLine = computed(
-    () => isDragging.value && selectedWords.size === 0 && selectedLines.size > 0,
+    () => isDragging.value && selectedSyllables.size === 0 && selectedLines.size > 0,
   )
 
   const openedSidebars = reactive<SidebarKey[]>([])
@@ -36,24 +36,24 @@ export const useRuntimeStore = defineStore('runtime', () => {
     isTimingView,
     isPreviewView,
     selectedLines: selectedLines as ReadonlySet<LyricLine>,
-    selectedWords: selectedWords as ReadonlySet<LyricWord>,
+    selectedSyllables: selectedSyllables as ReadonlySet<LyricSyllable>,
     clearSelection,
-    clearWordSelection,
+    clearSylSelection,
     selectLine,
-    selectWord,
-    selectLineWord,
-    applyWordSelectToLine,
-    addWordToSelection,
+    selectSyllable,
+    selectLineSyl,
+    applySylSelectToLine,
+    addSylToSelection,
     addLineToSelection,
-    removeWordFromSelection,
-    removeWordFromSelectionWithoutApply,
+    removeSylFromSelection,
+    removeSylFromSelectionWithoutApply,
     removeLineFromSelection,
     getFirstSelectedLine,
-    getFirstSelectedWord,
+    getFirstSelectedSyl,
     isDragging,
     isDraggingCopy,
     canDrop,
-    isDraggingWord,
+    isDraggingSyl,
     isDraggingLine,
     openedSidebars,
     currentSidebarIndex,
@@ -66,66 +66,66 @@ export const useRuntimeStore = defineStore('runtime', () => {
 
   function clearSelection() {
     selectedLines.clear()
-    selectedWords.clear()
+    selectedSyllables.clear()
   }
-  function clearWordSelection() {
-    selectedWords.clear()
+  function clearSylSelection() {
+    selectedSyllables.clear()
   }
-  function selectWord(...words: LyricWord[]) {
-    if (words.length === 1 && selectedWords.has(words[0]!)) {
-      applyWordSelectToLine()
+  function selectSyllable(...syls: LyricSyllable[]) {
+    if (syls.length === 1 && selectedSyllables.has(syls[0]!)) {
+      applySylSelectToLine()
       return
     }
-    clearWordSelection()
-    words.forEach((word) => selectedWords.add(word))
-    applyWordSelectToLine()
+    clearSylSelection()
+    syls.forEach((syl) => selectedSyllables.add(syl))
+    applySylSelectToLine()
   }
   function selectLine(...lines: LyricLine[]) {
     if (lines.length === 1 && selectedLines.has(lines[0]!)) {
-      clearWordSelection()
+      clearSylSelection()
       return
     }
     clearSelection()
     lines.forEach((line) => selectedLines.add(line))
   }
-  function selectLineWord(line: LyricLine, ...words: LyricWord[]) {
+  function selectLineSyl(line: LyricLine, ...syls: LyricSyllable[]) {
     clearSelection()
     selectedLines.add(line)
-    words.forEach((word) => selectedWords.add(word))
+    syls.forEach((syl) => selectedSyllables.add(syl))
   }
-  function addWordToSelection(...words: LyricWord[]) {
-    words.forEach((word) => selectedWords.add(word))
-    applyWordSelectToLine()
+  function addSylToSelection(...syls: LyricSyllable[]) {
+    syls.forEach((syl) => selectedSyllables.add(syl))
+    applySylSelectToLine()
   }
   function addLineToSelection(...lines: LyricLine[]) {
     lines.forEach((line) => selectedLines.add(line))
-    clearWordSelection()
+    clearSylSelection()
   }
-  function removeWordFromSelection(...words: LyricWord[]) {
-    words.forEach((word) => selectedWords.delete(word))
-    applyWordSelectToLine()
+  function removeSylFromSelection(...syls: LyricSyllable[]) {
+    syls.forEach((syl) => selectedSyllables.delete(syl))
+    applySylSelectToLine()
   }
-  function removeWordFromSelectionWithoutApply(...words: LyricWord[]) {
-    words.forEach((word) => selectedWords.delete(word))
+  function removeSylFromSelectionWithoutApply(...syls: LyricSyllable[]) {
+    syls.forEach((syl) => selectedSyllables.delete(syl))
   }
   function removeLineFromSelection(...lines: LyricLine[]) {
     lines.forEach((line) => selectedLines.delete(line))
-    clearWordSelection()
+    clearSylSelection()
   }
-  function applyWordSelectToLine() {
+  function applySylSelectToLine() {
     selectedLines.clear()
-    if (selectedWords.size === 0) return
+    if (selectedSyllables.size === 0) return
     const coreStore = useCoreStore()
     for (const line of coreStore.lyricLines)
-      for (const word of line.words) if (selectedWords.has(word)) selectedLines.add(line)
+      for (const syl of line.syllables) if (selectedSyllables.has(syl)) selectedLines.add(line)
   }
   function getFirstSelectedLine(): LyricLine | null {
     if (selectedLines.size === 0) return null
     return selectedLines.values().next().value!
   }
-  function getFirstSelectedWord(): LyricWord | null {
-    if (selectedWords.size === 0) return null
-    return selectedWords.values().next().value!
+  function getFirstSelectedSyl(): LyricSyllable | null {
+    if (selectedSyllables.size === 0) return null
+    return selectedSyllables.values().next().value!
   }
 
   function openSidebar(key: SidebarKey) {

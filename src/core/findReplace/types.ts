@@ -24,21 +24,21 @@ export namespace FindReplace {
     lineIndex: number
   }
   export interface PosLine extends PosBasic {
-    field: 'translation' | 'roman'
+    field: 'TRANSLATION' | 'ROMAN'
   }
   export interface PosWhole extends PosBasic {
-    field: 'whole'
+    field: 'WHOLE'
   }
-  export interface PosWord extends PosBasic {
-    field: 'word'
-    wordIndex: number
+  export interface PosSyl extends PosBasic {
+    field: 'SYLLABLE'
+    sylIndex: number
   }
   export interface PosMultiWord extends PosBasic {
-    field: 'multiWord'
-    startWordIndex: number
-    endWordIndex: number
+    field: 'MULTISYL'
+    startSylIndex: number
+    endSylIndex: number
   }
-  export type Pos = PosLine | PosWord | PosMultiWord
+  export type Pos = PosLine | PosSyl | PosMultiWord
   export type AbstractPos = PosWhole | Pos
   export type Dir = 'next' | 'prev'
 }

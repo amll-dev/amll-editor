@@ -52,7 +52,7 @@ const playerKey = ref(Symbol())
 const amllLyricLines = computed<AMLLLyricLine[]>(() => {
   playerKey.value = Symbol() // AMLL cannot handle dynamic updates, so force re-mount
   return coreStore.lyricLines.map((line) => ({
-    words: line.words.map((word) => ({
+    words: line.syllables.map((word) => ({
       startTime: word.startTime,
       endTime: word.endTime,
       word: word.text,

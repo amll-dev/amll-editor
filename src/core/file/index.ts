@@ -181,7 +181,7 @@ async function importPersist(data: Persist, name: string = '未命名') {
   })
 }
 async function createBlankProject() {
-  await importPersist({ lyricLines: [], metadata: {} })
+  await importPersist({ lines: [], metadata: {} })
   editHistory.markSaved()
 }
 

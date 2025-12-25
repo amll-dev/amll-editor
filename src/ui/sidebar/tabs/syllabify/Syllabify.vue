@@ -161,11 +161,11 @@ function applyToAllLines() {
 }
 async function applyToLines(lines: LyricLine[]) {
   if (!selectedEngine.value) return
-  runtimeStore.clearWordSelection()
+  runtimeStore.clearSylSelection()
   const processor = selectedEngine.value.processor
   working.value = true
   const results = await processor(
-    lines.map((line) => line.words.map((w) => w.text).join('')),
+    lines.map((line) => line.syllables.map((s) => s.text).join('')),
     customRewrites.filter(({ target }) => target.trim()),
     caseSensitive.value,
   )
@@ -179,23 +179,23 @@ async function applyToLines(lines: LyricLine[]) {
   const filterRegex = /[\s\p{P}]+/gu
   lines.forEach((line, lineIndex) => {
     const result = results[lineIndex]!
-    if (result.length === line.words.length) {
-      const getText = (w: SL.SplittedWord) => (typeof w === 'string' ? w : w.text)
-      const allTheSame = line.words.every(({ text }, i) => text === getText(result[i]!))
+    if (result.length === line.syllables.length) {
+      const getText = (s: SL.SplittedSyl) => (typeof s === 'string' ? s : s.text)
+      const allTheSame = line.syllables.every(({ text }, i) => text === getText(result[i]!))
       if (allTheSame) return // No change
     }
-    const newPartialWords = result.map((word) => (typeof word === 'string' ? { text: word } : word))
+    const newPartialSyls = result.map((s) => (typeof s === 'string' ? { text: s } : s))
     let currOldPos = 0
     type XY = [number, number]
-    const oldPosTime: XY[] = line.words.flatMap((w) => {
-      const text = w.text.replace(filterRegex, '')
+    const oldPosTime: XY[] = line.syllables.flatMap((s) => {
+      const text = s.text.replace(filterRegex, '')
       if (text.length === 0) {
-        // Skip filtered-out words
+        // Skip filtered-out syllables
         return []
       }
       return [
-        [currOldPos, w.startTime],
-        [(currOldPos += text.length), w.endTime],
+        [currOldPos, s.startTime],
+        [(currOldPos += text.length), s.endTime],
       ] as XY[]
     })
     /**
@@ -208,12 +208,12 @@ async function applyToLines(lines: LyricLine[]) {
      * [endN, timeN2]
      */
     const maxOldPos = currOldPos
-    const newMaxPos = newPartialWords
-      .map((w) => w.text.replace(filterRegex, '').length)
+    const newMaxPos = newPartialSyls
+      .map((s) => s.text.replace(filterRegex, '').length)
       .reduce((a, b) => a + b, 0)
     if (!maxOldPos || !newMaxPos) {
       // All filtered out, just reset timings
-      line.words = newPartialWords.map((word) => coreStore.newWord(word))
+      line.syllables = newPartialSyls.map((syl) => coreStore.newSyllable(syl))
       return
     }
     const averagedPosTime: XY[] = []
@@ -227,7 +227,7 @@ async function applyToLines(lines: LyricLine[]) {
       } else {
         lastPoint[1] = (lastY * accumulatedItemCount + currY) / ++accumulatedItemCount
         // handle multiple same positions: last end == curr begin
-        // 0-length words will cause more than 2 points at same position
+        // 0-length syllables will cause more than 2 points at same position
       }
     }
     averagedPosTime.forEach((point) => (point[0] = point[0] / maxOldPos)) // Normalize X to [0,1]
@@ -246,13 +246,13 @@ async function applyToLines(lines: LyricLine[]) {
       const t = (ratio - x1) / (x2 - x1)
       return Math.round(y1 + (y2 - y1) * t)
     }
-    line.words = newPartialWords.map((word) => {
-      const charCount = word.text.replace(filterRegex, '').length
+    line.syllables = newPartialSyls.map((syl) => {
+      const charCount = syl.text.replace(filterRegex, '').length
       const startRatio = currNewPos / newMaxPos
       const startTime = getTimeAtRatio(startRatio)
       const endRatio = (currNewPos += charCount) / newMaxPos
       const endTime = getTimeAtRatio(endRatio)
-      return coreStore.newWord({ ...word, startTime, endTime })
+      return coreStore.newSyllable({ ...syl, startTime, endTime })
     })
   })
   working.value = false
@@ -263,7 +263,7 @@ function handleDragEnter() {
   dragCounter++
 }
 function handleDragOver(e: DragEvent) {
-  if (!runtimeStore.isDraggingWord) return
+  if (!runtimeStore.isDraggingSyl) return
   e.preventDefault()
   runtimeStore.canDrop = true
   runtimeStore.isDraggingCopy = true
@@ -278,27 +278,27 @@ function handleDrop() {
   dragCounter = 0
   runtimeStore.canDrop = false
   runtimeStore.isDraggingCopy = false
-  const words: string[] = []
+  const syls: string[] = []
   let continuity = false
   for (const line of runtimeStore.selectedLines) {
-    for (const word of line.words) {
-      if (!runtimeStore.selectedWords.has(word)) {
+    for (const syl of line.syllables) {
+      if (!runtimeStore.selectedSyllables.has(syl)) {
         continuity = false
         continue
       }
-      if (continuity && words.length) words[words.length - 1] += word.text
-      else words.push(word.text)
+      if (continuity && syls.length) syls[syls.length - 1] += syl.text
+      else syls.push(syl.text)
       continuity = true
     }
     continuity = false
   }
 
   customRewrites.push(
-    ...words
-      .map((w) => w.trim())
-      .filter((w) => w.length)
-      .map((word) => ({
-        target: word,
+    ...syls
+      .map((s) => s.trim())
+      .filter((s) => s.length)
+      .map((syl) => ({
+        target: syl,
         indices: [],
       })),
   )

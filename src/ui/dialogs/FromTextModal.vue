@@ -185,7 +185,7 @@ const coreStore = useCoreStore()
 watch([originalChecked, visible], () => {
   if (!originalChecked.value && visible.value)
     originalInput.value = coreStore.lyricLines
-      .map((l) => l.words.map((w) => w.text).join(''))
+      .map((l) => l.syllables.map((s) => s.text).join(''))
       .join('\n')
 })
 const noItemChecked = computed(

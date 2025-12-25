@@ -2,7 +2,7 @@
 // QRC is a lyric format used by QQ Music
 
 // Format:
-// [line1Start,line1Duration](word1Start,word1Duration)word1(word2Start,word2Duration)word2...\n
+// [line1Start,line1Duration](syl1Start,syl1Duration)syl1(syl2Start,syl2Duration)syl2...\n
 // [line2Start,line2Duration]...
 
 // Example:
@@ -25,21 +25,21 @@ export const qrcReg: CV.Format = {
 }
 
 export function parseQRC(qrc: string) {
-  const lines = qrc
+  const lineStrs = qrc
     .split(/\r?\n/)
     .map((l) => l.trim())
     .filter((l) => l.length > 0)
-  const lyricLines: LyricLine[] = lines
+  const lines: LyricLine[] = lineStrs
     .map((lineStr) => {
       const lineMatch = lineStr.match(/^\[(\d+),(\d+)\]/)
       if (!lineMatch) return null
       const [lMatchStr, lStartStr, lDurStr] = lineMatch
 
-      const wordPattern = /([^\(]*)\((\d+),(\d+)\)/g
-      const wordMatches = lineStr.slice(lMatchStr.length).matchAll(wordPattern)
-      const words = [...wordMatches].map((match) => {
+      const sylPattern = /([^\(]*)\((\d+),(\d+)\)/g
+      const sylMatches = lineStr.slice(lMatchStr.length).matchAll(sylPattern)
+      const syls = [...sylMatches].map((match) => {
         const [, wText, wStartStr, wDurStr] = match
-        return coreCreate.newWord({
+        return coreCreate.newSyllable({
           text: wText,
           startTime: Number(wStartStr),
           endTime: Number(wStartStr) + Number(wDurStr),
@@ -49,30 +49,30 @@ export function parseQRC(qrc: string) {
       return coreCreate.newLine({
         startTime: Number(lStartStr),
         endTime: Number(lStartStr) + Number(lDurStr),
-        words,
+        syllables: syls,
       })
     })
     .filter((line): line is LyricLine => line !== null)
   return {
     metadata: {},
-    lyricLines,
+    lines,
   }
 }
 
 export function stringifyQRC(data: Persist): string {
-  const lines = data.lyricLines
+  const lines = data.lines
   return lines
     .map((line) => {
       const lStart = line.startTime
       const lDur = line.endTime - line.startTime
-      const lWords = line.words
-        .map((w) => {
-          const wStart = w.startTime
-          const wDur = w.endTime - w.startTime
-          return `${w.text}(${wStart},${wDur})`
+      const lSyls = line.syllables
+        .map((s) => {
+          const sStart = s.startTime
+          const sDur = s.endTime - s.startTime
+          return `${s.text}(${sStart},${sDur})`
         })
         .join('')
-      return `[${lStart},${lDur}]${lWords}`
+      return `[${lStart},${lDur}]${lSyls}`
     })
     .join('\n')
 }

@@ -47,7 +47,7 @@ export async function parseProjectFile(file: Blob): Promise<ProjPayload> {
 function parseProjectData(data: SupportedProjData): Persist {
   const { metadata } = data
   const dataLines = 'lyricLines' in data ? data.lyricLines : data.lines
-  const persistLines = dataLines.map((line): Persist['lyricLines'][number] => {
+  const persistLines = dataLines.map((line): Persist['lines'][number] => {
     const {
       id,
       translation,
@@ -59,7 +59,7 @@ function parseProjectData(data: SupportedProjData): Persist {
       ignoreInTiming,
       bookmarked,
     } = line
-    const words = 'syllables' in line ? line.syllables : line.words
+    const syllables = 'syllables' in line ? line.syllables : line.words
     return {
       id,
       translation,
@@ -70,8 +70,8 @@ function parseProjectData(data: SupportedProjData): Persist {
       endTime,
       ignoreInTiming,
       bookmarked,
-      words: words.map((word) => ({ ...word, currentplaceholdingBeat: 0 })),
+      syllables: syllables.map((syl) => ({ ...syl, currentplaceholdingBeat: 0 })),
     }
   })
-  return { metadata, lyricLines: persistLines }
+  return { metadata, lines: persistLines }
 }

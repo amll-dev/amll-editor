@@ -21,18 +21,18 @@
         />
         <Line :line="line" :index="lineIndex" @contextmenu="handleLineContext">
           <WordInsertIndicator :index="0" :parent="line" />
-          <template v-for="(word, wordIndex) in <LyricWord[]>line.words" :key="word.id">
-            <Word
-              :word="word"
-              :index="wordIndex"
+          <template v-for="(syllable, sylIndex) in (<LyricLine>line).syllables" :key="syllable.id">
+            <Syllable
+              :syllable="syllable"
+              :index="sylIndex"
               :parent="line"
               :line-index="lineIndex"
               @contextmenu="handleWordContext"
             />
-            <WordInsertIndicator :index="wordIndex + 1" :parent="line" />
+            <WordInsertIndicator :index="sylIndex + 1" :parent="line" />
           </template>
           <Button
-            class="add-word-button"
+            class="add-syl-button"
             icon="pi pi-plus"
             severity="secondary"
             @click="appendWord(line)"
@@ -56,8 +56,7 @@
 
 <script setup lang="ts">
 import Line from './Line.vue'
-// import LineLazyShell from './LineLazyShell.vue'
-import Word from './Word.vue'
+import Syllable from './Syllable.vue'
 import { Button, ContextMenu } from 'primevue'
 import { nextTick, onBeforeUnmount, onMounted, onUnmounted, shallowRef, useTemplateRef } from 'vue'
 import { forceOutsideBlur } from '@utils/forceOutsideBlur'
@@ -69,10 +68,10 @@ import type { MenuItem } from 'primevue/menuitem'
 import { VList } from 'virtua/vue'
 import { useGlobalKeyboard } from '@core/hotkey'
 import type { ScrollToIndexOpts } from 'virtua/unstable_core'
-import { alignLineEndTime, alignLineTime } from '@utils/alignLineWordTime'
+import { alignLineEndTime, alignLineTime } from '@utils/alignLineSylTime'
 import { tryRaf } from '@utils/tryRaf'
 import { useCoreStore, useRuntimeStore, useStaticStore } from '@states/stores'
-import { View, type LyricLine, type LyricWord } from '@core/types'
+import { View, type LyricLine, type LyricSyllable } from '@core/types'
 import type { EditorComponentActions } from '@states/stores/static'
 
 const coreStore = useCoreStore()
@@ -80,15 +79,15 @@ const runtimeStore = useRuntimeStore()
 const staticStore = useStaticStore()
 
 function appendWord(line: LyricLine) {
-  const newWord = coreStore.newWord(line)
-  line.words.push(newWord)
-  runtimeStore.selectLineWord(line, newWord)
-  nextTick(() => staticStore.wordHooks.get(newWord.id)?.focusInput())
+  const newSyllable = coreStore.newSyllable(line)
+  line.syllables.push(newSyllable)
+  runtimeStore.selectLineSyl(line, newSyllable)
+  nextTick(() => staticStore.syllableHooks.get(newSyllable.id)?.focusInput())
 }
 function handleMouseDown(e: MouseEvent) {
   if (e.ctrlKey || e.metaKey) return
   forceOutsideBlur()
-  staticStore.lastTouchedLine = staticStore.lastTouchedWord = null
+  staticStore.lastTouchedLine = staticStore.lastTouchedSyl = null
   runtimeStore.clearSelection()
 }
 function handleDragOver(e: DragEvent) {
@@ -104,7 +103,7 @@ function handleDragOver(e: DragEvent) {
 }
 
 let contextLineIndex: undefined | number = undefined
-let contextWordIndex: undefined | number = undefined
+let contextSylIndex: undefined | number = undefined
 
 const menu = useTemplateRef('menu')
 
@@ -191,7 +190,7 @@ const lineMenuItems: MenuItem[] = [
       const duplicates = [...runtimeStore.selectedLines].map((line) =>
         coreStore.newLine({
           ...line,
-          words: line.words.map(coreStore.newWord),
+          syllables: line.syllables.map(coreStore.newSyllable),
         }),
       )
       const lastLineIndex = (() => {
@@ -213,53 +212,53 @@ const lineMenuItems: MenuItem[] = [
     },
   },
 ]
-const wordMenuItems: MenuItem[] = [
+const sylMenuItems: MenuItem[] = [
   {
     label: '在前插入音节',
     icon: 'pi pi-arrow-left',
     command: () => {
-      if (contextLineIndex === undefined || contextWordIndex === undefined) return
+      if (contextLineIndex === undefined || contextSylIndex === undefined) return
       const parent = coreStore.lyricLines[contextLineIndex]!
-      const newWord = coreStore.newWord()
-      parent.words.splice(contextWordIndex, 0, newWord)
-      runtimeStore.selectLineWord(parent, newWord)
-      nextTick(() => staticStore.wordHooks.get(newWord.id)?.focusInput())
+      const newSyllable = coreStore.newSyllable()
+      parent.syllables.splice(contextSylIndex, 0, newSyllable)
+      runtimeStore.selectLineSyl(parent, newSyllable)
+      nextTick(() => staticStore.syllableHooks.get(newSyllable.id)?.focusInput())
     },
   },
   {
     label: '在后插入音节',
     icon: 'pi pi-arrow-right',
     command: () => {
-      if (contextLineIndex === undefined || contextWordIndex === undefined) return
+      if (contextLineIndex === undefined || contextSylIndex === undefined) return
       const parent = coreStore.lyricLines[contextLineIndex]!
-      const newWord = coreStore.newWord()
-      parent.words.splice(contextWordIndex + 1, 0, newWord)
-      runtimeStore.selectLineWord(parent, newWord)
-      nextTick(() => staticStore.wordHooks.get(newWord.id)?.focusInput())
+      const newSyllable = coreStore.newSyllable()
+      parent.syllables.splice(contextSylIndex + 1, 0, newSyllable)
+      runtimeStore.selectLineSyl(parent, newSyllable)
+      nextTick(() => staticStore.syllableHooks.get(newSyllable.id)?.focusInput())
     },
   },
   {
     label: '在此拆分行',
     icon: 'pi pi-code',
     command: () => {
-      if (contextLineIndex === undefined || contextWordIndex === undefined) return
+      if (contextLineIndex === undefined || contextSylIndex === undefined) return
       const parent = coreStore.lyricLines[contextLineIndex]!
-      const wordsToMove = parent.words.splice(contextWordIndex)
-      if (wordsToMove.length === 0) return
-      const newLine = coreStore.newLine({ ...parent, words: wordsToMove })
+      const sylsToMove = parent.syllables.splice(contextSylIndex)
+      if (sylsToMove.length === 0) return
+      const newLine = coreStore.newLine({ ...parent, syllables: sylsToMove })
       alignLineEndTime(parent)
       alignLineTime(newLine)
       coreStore.lyricLines.splice(contextLineIndex + 1, 0, newLine)
-      runtimeStore.selectLineWord(newLine, wordsToMove[0]!)
+      runtimeStore.selectLineSyl(newLine, sylsToMove[0]!)
     },
   },
   {
     label: '删除音节',
     icon: 'pi pi-trash',
     command: () => {
-      if (contextLineIndex === undefined || contextWordIndex === undefined) return
+      if (contextLineIndex === undefined || contextSylIndex === undefined) return
       const parent = coreStore.lyricLines[contextLineIndex]!
-      parent.words.splice(contextWordIndex, 1)
+      parent.syllables.splice(contextSylIndex, 1)
     },
   },
 ]
@@ -268,13 +267,13 @@ const menuItemsMap = {
   blank: blankMenuItems,
   line: lineMenuItems,
   lineInsert: lineInsertMenuItems,
-  word: wordMenuItems,
+  syl: sylMenuItems,
 } as const
 const menuItems = shallowRef<MenuItem[]>(blankMenuItems)
 
 const handleContext =
-  (src: 'line' | 'word' | 'lineInsert' | 'blank') =>
-  (e: MouseEvent, lineIndex?: number, wordIndex?: number) => {
+  (src: 'line' | 'syl' | 'lineInsert' | 'blank') =>
+  (e: MouseEvent, lineIndex?: number, sylIndex?: number) => {
     if (
       e.target instanceof HTMLElement &&
       e.target.closest('input[type="text"], textarea, [contenteditable="true"]')
@@ -282,18 +281,18 @@ const handleContext =
       return
     }
     contextLineIndex = lineIndex
-    contextWordIndex = wordIndex
+    contextSylIndex = sylIndex
     menuItems.value = menuItemsMap[src]
     menu.value?.show(e)
   }
 const handleBlankContext = handleContext('blank')
 const handleLineContext = handleContext('line')
 const handleLineInsertContext = handleContext('lineInsert')
-const handleWordContext = handleContext('word')
+const handleWordContext = handleContext('syl')
 
 useGlobalKeyboard('delete', () => {
-  if (runtimeStore.selectedWords.size) {
-    coreStore.deleteWord(...runtimeStore.selectedWords)
+  if (runtimeStore.selectedSyllables.size) {
+    coreStore.deleteSyllable(...runtimeStore.selectedSyllables)
   } else coreStore.deleteLine(...runtimeStore.selectedLines)
 })
 
@@ -339,12 +338,12 @@ onUnmounted(() => {
 
 <style lang="scss">
 .editor.content {
-  --content-word-height: 4.8rem;
+  --content-syl-height: 4.8rem;
 }
 .editor-scroller {
   height: 100%;
 }
-.add-word-button {
-  height: var(--content-word-height);
+.add-syl-button {
+  height: var(--content-syl-height);
 }
 </style>

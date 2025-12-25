@@ -23,7 +23,7 @@ export interface LyricLine {
   /** 该行的结束时间 并不总是等于最后一个单词的开始时间 */
   endTime: number
   /** 该行的所有单词  */
-  words: LyricWord[]
+  syllables: LyricSyllable[]
   /** 在时轴上忽略 */
   ignoreInTiming: boolean
   /** 已添加书签 */
@@ -31,7 +31,7 @@ export interface LyricLine {
 }
 
 /** 单词 */
-export interface LyricWord {
+export interface LyricSyllable {
   id: string
   /** 单词的起始时间 */
   startTime: number
@@ -58,5 +58,5 @@ export interface LyricWord {
 //   /** 内容 */
 //   content: string
 //   /** 目标行或词 */
-//   target: LyricLine | LyricWord
+//   target: LyricLine | LyricSyllable
 // }

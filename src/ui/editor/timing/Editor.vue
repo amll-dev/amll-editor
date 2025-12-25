@@ -9,15 +9,15 @@
       <div
         :key="line.id"
         class="line-item-shell"
-        v-if="(<LyricLine>line).words.some((w) => w.text.trim())"
+        v-if="(<LyricLine>line).syllables.some((s) => s.text.trim())"
       >
         <Line :line="line" :index="lineIndex">
-          <template v-for="word in <LyricWord[]>line.words" :key="word.id">
-            <Word
-              :word="word"
+          <template v-for="syllable in (<LyricLine>line).syllables" :key="syllable.id">
+            <Syllable
+              :syllable="syllable"
               :parent="line"
               :parent-index="lineIndex"
-              v-if="word.text.trim()"
+              v-if="syllable.text.trim()"
               @need-scroll="handleScrollTo"
             />
           </template>
@@ -30,7 +30,7 @@
       tip="使用「打开」菜单加载内容，或右键空白处插入新行"
     />
     <EmptyTip
-      v-else-if="coreStore.lyricLines.every((line) => !line.words.some((w) => w.text.trim()))"
+      v-else-if="coreStore.lyricLines.every((line) => !line.syllables.some((s) => s.text.trim()))"
       title="所有行均为空"
       tip="使用「打开」菜单加载内容，或在内容视图下编辑"
     />
@@ -40,14 +40,14 @@
 <script setup lang="ts">
 import { VList } from 'virtua/vue'
 import Line from './Line.vue'
-import Word from './Word.vue'
+import Syllable from './Syllable.vue'
 import EmptyTip from '@ui/components/EmptyTip.vue'
 import { onBeforeUnmount, onMounted, onUnmounted, useTemplateRef } from 'vue'
 import { useRuntimeStore, useCoreStore, useStaticStore, usePrefStore } from '@states/stores'
 import { useGlobalKeyboard } from '@core/hotkey'
 import type { ScrollToIndexOpts } from 'virtua/unstable_core'
 import { tryRaf } from '@utils/tryRaf'
-import { View, type LyricLine, type LyricWord } from '@core/types'
+import { View, type LyricLine, type LyricSyllable } from '@core/types'
 import type { EditorComponentActions } from '@states/stores/static'
 
 const coreStore = useCoreStore()
@@ -90,63 +90,63 @@ onMounted(() => {
 const shouldIgnore = (line: LyricLine) =>
   line.ignoreInTiming ||
   (prefStore.alwaysIgnoreBackground && line.background) ||
-  !line.words.length ||
-  line.words.every((w) => !w.text.trim())
+  !line.syllables.length ||
+  line.syllables.every((s) => !s.text.trim())
 
-function findNextLineWord(
-  word: LyricWord,
-): [lineIndex: number, line: LyricLine, word: LyricWord] | null {
-  if (!word) return null
+function findNextLineSyl(
+  syl: LyricSyllable,
+): [lineIndex: number, line: LyricLine, syl: LyricSyllable] | null {
+  if (!syl) return null
   let found = false
   for (const [lineIndex, line] of coreStore.lyricLines.entries()) {
     if (!found) {
-      const wordIndex = line.words.indexOf(word)
-      if (wordIndex === -1) continue
-      for (let i = wordIndex + 1; i < line.words.length; i++) {
-        const nextWord = line.words[i]!
-        if (nextWord.text.trim()) return [lineIndex, line, nextWord]
+      const sylIndex = line.syllables.indexOf(syl)
+      if (sylIndex === -1) continue
+      for (let i = sylIndex + 1; i < line.syllables.length; i++) {
+        const nextSyl = line.syllables[i]!
+        if (nextSyl.text.trim()) return [lineIndex, line, nextSyl]
       }
       found = true
     } else {
       if (shouldIgnore(line)) continue
-      if (line.words.length === 0) continue
-      return [lineIndex, line, line.words[0]!]
+      if (line.syllables.length === 0) continue
+      return [lineIndex, line, line.syllables[0]!]
     }
   }
   return null
 }
-function findLastLineWord(
-  word: LyricWord,
-): [lineIndex: number, line: LyricLine, word: LyricWord] | null {
-  if (!word) return null
+function findLastLineSyl(
+  syl: LyricSyllable,
+): [lineIndex: number, line: LyricLine, syl: LyricSyllable] | null {
+  if (!syl) return null
   let found = false
   for (let lineIndex = coreStore.lyricLines.length - 1; lineIndex >= 0; lineIndex--) {
     const line = coreStore.lyricLines[lineIndex]!
     if (!found) {
-      const wordIndex = line.words.indexOf(word)
-      if (wordIndex === -1) continue
-      for (let i = wordIndex - 1; i >= 0; i--) {
-        const prevWord = line.words[i]!
-        if (prevWord.text.trim()) return [lineIndex, line, prevWord]
+      const sylIndex = line.syllables.indexOf(syl)
+      if (sylIndex === -1) continue
+      for (let i = sylIndex - 1; i >= 0; i--) {
+        const prevSyl = line.syllables[i]!
+        if (prevSyl.text.trim()) return [lineIndex, line, prevSyl]
       }
       found = true
     } else {
       if (shouldIgnore(line)) continue
-      if (line.words.length === 0) continue
-      return [lineIndex, line, line.words.at(-1)!]
+      if (line.syllables.length === 0) continue
+      return [lineIndex, line, line.syllables.at(-1)!]
     }
   }
   return null
 }
 
-function isWordFirstOfLine(line: LyricLine, word: LyricWord) {
-  for (const w of line.words) if (w.text.trim()) return w === word
+function isSylFirstOfLine(line: LyricLine, syl: LyricSyllable) {
+  for (const w of line.syllables) if (w.text.trim()) return w === syl
   return false
 }
-function isWordLastOfLine(line: LyricLine, word: LyricWord) {
-  for (let i = line.words.length - 1; i >= 0; i--) {
-    const w = line.words[i]!
-    if (w.text.trim()) return w === word
+function isSylLastOfLine(line: LyricLine, syl: LyricSyllable) {
+  for (let i = line.syllables.length - 1; i >= 0; i--) {
+    const s = line.syllables[i]!
+    if (s.text.trim()) return s === syl
   }
   return false
 }
@@ -155,57 +155,57 @@ const { amendedProgressComputed } = staticStore.audio
 
 const prefStore = usePrefStore()
 useGlobalKeyboard('markBegin', () => {
-  if (runtimeStore.selectedWords.size !== 1) return
+  if (runtimeStore.selectedSyllables.size !== 1) return
   prefStore.scrollWithPlayback = false
-  const word = runtimeStore.getFirstSelectedWord()!
+  const syl = runtimeStore.getFirstSelectedSyl()!
   const line = runtimeStore.getFirstSelectedLine()!
-  word.startTime = amendedProgressComputed.value
-  word.currentplaceholdingBeat = 0
-  if (isWordFirstOfLine(line, word)) line.startTime = word.startTime
+  syl.startTime = amendedProgressComputed.value
+  syl.currentplaceholdingBeat = 0
+  if (isSylFirstOfLine(line, syl)) line.startTime = syl.startTime
   const lineIndex = coreStore.lyricLines.indexOf(runtimeStore.getFirstSelectedLine()!)
   if (lineIndex === -1) return
   handleScrollTo(lineIndex)
 })
 useGlobalKeyboard('markEnd', () => {
-  if (runtimeStore.selectedWords.size !== 1) return
+  if (runtimeStore.selectedSyllables.size !== 1) return
   prefStore.scrollWithPlayback = false
-  const word = runtimeStore.getFirstSelectedWord()!
+  const syl = runtimeStore.getFirstSelectedSyl()!
   const line = runtimeStore.getFirstSelectedLine()!
-  word.endTime = amendedProgressComputed.value
-  if (isWordLastOfLine(line, word)) line.endTime = word.endTime
-  const next = findNextLineWord(word)
+  syl.endTime = amendedProgressComputed.value
+  if (isSylLastOfLine(line, syl)) line.endTime = syl.endTime
+  const next = findNextLineSyl(syl)
   if (!next) return
-  const [nextWordLineIndex, nextWordLine, nextWord] = next
-  runtimeStore.selectLineWord(nextWordLine, nextWord)
-  handleScrollTo(nextWordLineIndex)
+  const [nextSylLineIndex, nextSylLine, nextSyl] = next
+  runtimeStore.selectLineSyl(nextSylLine, nextSyl)
+  handleScrollTo(nextSylLineIndex)
 })
 useGlobalKeyboard('markEndBegin', () => {
-  if (runtimeStore.selectedWords.size !== 1) return
+  if (runtimeStore.selectedSyllables.size !== 1) return
   prefStore.scrollWithPlayback = false
-  const word = runtimeStore.getFirstSelectedWord()!
+  const syl = runtimeStore.getFirstSelectedSyl()!
   const line = runtimeStore.getFirstSelectedLine()!
-  if (word.currentplaceholdingBeat < word.placeholdingBeat) {
-    word.currentplaceholdingBeat++
+  if (syl.currentplaceholdingBeat < syl.placeholdingBeat) {
+    syl.currentplaceholdingBeat++
     return
   }
-  word.currentplaceholdingBeat = 0
+  syl.currentplaceholdingBeat = 0
   const progress = amendedProgressComputed.value
-  word.endTime = progress
-  if (isWordLastOfLine(line, word)) line.endTime = word.endTime
-  const next = findNextLineWord(word)
+  syl.endTime = progress
+  if (isSylLastOfLine(line, syl)) line.endTime = syl.endTime
+  const next = findNextLineSyl(syl)
   if (!next) return
-  const [nextWordLineIndex, nextWordLine, nextWord] = next
-  nextWord.startTime = progress
-  nextWord.currentplaceholdingBeat = 0
-  if (isWordFirstOfLine(nextWordLine, nextWord)) nextWordLine.startTime = progress
-  runtimeStore.selectLineWord(nextWordLine, nextWord)
-  handleScrollTo(nextWordLineIndex)
+  const [nextSylLineIndex, nextSylLine, nextSyl] = next
+  nextSyl.startTime = progress
+  nextSyl.currentplaceholdingBeat = 0
+  if (isSylFirstOfLine(nextSylLine, nextSyl)) nextSylLine.startTime = progress
+  runtimeStore.selectLineSyl(nextSylLine, nextSyl)
+  handleScrollTo(nextSylLineIndex)
 })
 
 function shiftLine(shift: 1 | -1): LyricLine | undefined {
   const line = runtimeStore.getFirstSelectedLine()
-  const word = runtimeStore.getFirstSelectedWord()
-  if (!line || !word) return
+  const syl = runtimeStore.getFirstSelectedSyl()
+  if (!line || !syl) return
   let nextLineIndex = coreStore.lyricLines.indexOf(line) + shift
   while (
     nextLineIndex >= 0 &&
@@ -215,12 +215,12 @@ function shiftLine(shift: 1 | -1): LyricLine | undefined {
     nextLineIndex += shift
   const nextLine = coreStore.lyricLines[nextLineIndex]
   if (!nextLine) return
-  const lastWordFilteredIndex = line.words.filter((w) => w.text.trim()).indexOf(word)
-  const filteredTargetWords = nextLine.words.filter((w) => w.text.trim())
-  if (filteredTargetWords.length === 0) return
-  const targetWord = filteredTargetWords[lastWordFilteredIndex] ?? filteredTargetWords.at(-1)
-  if (!targetWord) return
-  runtimeStore.selectLineWord(nextLine, targetWord)
+  const lastSylFilteredIndex = line.syllables.filter((s) => s.text.trim()).indexOf(syl)
+  const filteredTargetSyls = nextLine.syllables.filter((s) => s.text.trim())
+  if (filteredTargetSyls.length === 0) return
+  const targetSyl = filteredTargetSyls[lastSylFilteredIndex] ?? filteredTargetSyls.at(-1)
+  if (!targetSyl) return
+  runtimeStore.selectLineSyl(nextLine, targetSyl)
   handleScrollTo(nextLineIndex)
   return nextLine
 }
@@ -231,33 +231,33 @@ useGlobalKeyboard('goPrevLine', () => {
   shiftLine(-1)
 })
 
-const shiftWord = (delta: 1 | -1): LyricWord | undefined => {
-  const currWord = runtimeStore.getFirstSelectedWord()
-  if (!currWord) return
-  const result = delta === 1 ? findNextLineWord(currWord) : findLastLineWord(currWord)
+const shiftSyl = (delta: 1 | -1): LyricSyllable | undefined => {
+  const currSyl = runtimeStore.getFirstSelectedSyl()
+  if (!currSyl) return
+  const result = delta === 1 ? findNextLineSyl(currSyl) : findLastLineSyl(currSyl)
   if (!result) return
-  const [lineIndex, line, word] = result
-  runtimeStore.selectLineWord(line, word)
+  const [lineIndex, line, syl] = result
+  runtimeStore.selectLineSyl(line, syl)
   handleScrollTo(lineIndex)
-  return word
+  return syl
 }
-useGlobalKeyboard('goNextWord', () => {
-  shiftWord(1)
+useGlobalKeyboard('goNextSyl', () => {
+  shiftSyl(1)
 })
-useGlobalKeyboard('goNextWordnPlay', () => {
-  const word = shiftWord(1)
-  if (word && word.startTime) staticStore.audio.seek(word.startTime)
+useGlobalKeyboard('goNextSylnPlay', () => {
+  const syl = shiftSyl(1)
+  if (syl && syl.startTime) staticStore.audio.seek(syl.startTime)
 })
-useGlobalKeyboard('goPrevWord', () => {
-  shiftWord(-1)
+useGlobalKeyboard('goPrevSyl', () => {
+  shiftSyl(-1)
 })
-useGlobalKeyboard('goPrevWordnPlay', () => {
-  const word = shiftWord(-1)
-  if (word && word.startTime) staticStore.audio.seek(word.startTime)
+useGlobalKeyboard('goPrevSylnPlay', () => {
+  const syl = shiftSyl(-1)
+  if (syl && syl.startTime) staticStore.audio.seek(syl.startTime)
 })
-useGlobalKeyboard('playCurrWord', () => {
-  const word = runtimeStore.getFirstSelectedWord()
-  if (word && word.startTime) staticStore.audio.seek(word.startTime)
+useGlobalKeyboard('playCurrSyl', () => {
+  const syl = runtimeStore.getFirstSelectedSyl()
+  if (syl && syl.startTime) staticStore.audio.seek(syl.startTime)
 })
 
 function handleMouseDown(e: MouseEvent) {

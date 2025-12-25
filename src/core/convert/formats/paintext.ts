@@ -12,8 +12,8 @@ export function parseSeparatePlainText(
   ).filter(([orig, trans, roman]) => orig || trans || roman)
   const lyricLines = lineStrs.map(([orig, trans, roman]) => {
     return coreCreate.newLine({
-      words: [
-        coreCreate.newWord({
+      syllables: [
+        coreCreate.newSyllable({
           text: orig || '',
         }),
       ],
@@ -21,7 +21,7 @@ export function parseSeparatePlainText(
       romanization: roman || '',
     })
   })
-  return { metadata: {}, lyricLines }
+  return { metadata: {}, lines: lyricLines }
 }
 
 interface InterleaveConfig {
@@ -46,8 +46,8 @@ export function parseInterleavedPlainText(
     const romanization = romanIndex === undefined ? '' : rawLines[i + romanIndex] || ''
     lyricLines.push(
       coreCreate.newLine({
-        words: [
-          coreCreate.newWord({
+        syllables: [
+          coreCreate.newSyllable({
             text: original,
           }),
         ],
@@ -56,5 +56,5 @@ export function parseInterleavedPlainText(
       }),
     )
   }
-  return { metadata: {}, lyricLines }
+  return { metadata: {}, lines: lyricLines }
 }

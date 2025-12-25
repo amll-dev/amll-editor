@@ -84,7 +84,7 @@
 </template>
 
 <script setup lang="ts">
-import { sortIndex } from '@utils/sortLineWords'
+import { sortIndex } from '@utils/sortLineSyls'
 import { forceOutsideBlur } from '@utils/forceOutsideBlur'
 import { Button, FloatLabel } from 'primevue'
 import { computed, onMounted, onUnmounted, useTemplateRef } from 'vue'
@@ -138,7 +138,7 @@ function handleMouseDown(e: MouseEvent) {
     else affectedLines.forEach((line) => runtimeStore.addLineToSelection(line))
   } else {
     touch()
-    runtimeStore.clearWordSelection()
+    runtimeStore.clearSylSelection()
     if (isSelected.value) return
     runtimeStore.selectLine(props.line)
   }
@@ -256,7 +256,7 @@ onUnmounted(() => {
   border-radius: 0.5rem;
   --c-border-color: var(--p-button-secondary-background);
   --c-bg-color: transparent;
-  --c-word-gap: 0.5rem;
+  --c-syl-gap: 0.5rem;
   opacity: 0.8;
   transition: transform 0.2s;
   // animation: fade 0.2s;
@@ -368,7 +368,7 @@ onUnmounted(() => {
 .cline-content {
   flex: 1;
   display: flex;
-  padding: var(--c-word-gap);
+  padding: var(--c-syl-gap);
   padding-right: 0;
   flex-wrap: wrap;
   row-gap: 0.5rem;

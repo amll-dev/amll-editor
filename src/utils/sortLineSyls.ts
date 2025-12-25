@@ -1,4 +1,4 @@
-import type { LyricLine, LyricWord } from '@core/types'
+import type { LyricLine, LyricSyllable } from '@core/types'
 import { useCoreStore } from '@states/stores'
 
 export function sortIndex(a: number, b: number): [number, number] {
@@ -6,14 +6,14 @@ export function sortIndex(a: number, b: number): [number, number] {
   return a < b ? [a, b] : [b, a]
 }
 
-export function sortWords(...words: LyricWord[]): LyricWord[] {
-  if (words.length <= 1) return words
+export function sortSyllables(...syls: LyricSyllable[]): LyricSyllable[] {
+  if (syls.length <= 1) return syls
   const coreStore = useCoreStore()
-  const indexMap = new WeakMap<LyricWord, number>()
+  const indexMap = new WeakMap<LyricSyllable, number>()
   let index = 0
   for (const line of coreStore.lyricLines)
-    for (const word of line.words) indexMap.set(word, index++)
-  return words.sort((a, b) => indexMap.get(a)! - indexMap.get(b)!)
+    for (const syl of line.syllables) indexMap.set(syl, index++)
+  return syls.sort((a, b) => indexMap.get(a)! - indexMap.get(b)!)
 }
 
 export function sortLines(...lines: LyricLine[]): LyricLine[] {

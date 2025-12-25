@@ -96,7 +96,7 @@ function handleMouseDown() {
   margin: 0.2rem 0.5rem;
   --timestamp-space: 0.5rem;
   --tline-border-color: var(--p-content-border-color);
-  --word-height: 7.5rem;
+  --syl-height: 7.5rem;
   &:hover,
   &.selected {
     --t-bg-color: var(--p-content-background);

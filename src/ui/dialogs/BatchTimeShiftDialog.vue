@@ -24,7 +24,7 @@
         icon="pi pi-ellipsis-h"
         fluid
         severity="secondary"
-        :disabled="!shiftMs || !runtimeStore.selectedWords.size"
+        :disabled="!shiftMs || !runtimeStore.selectedSyllables.size"
         @click="handleApplyToSelectedWords"
       />
       <Button
@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import type { LyricLine, LyricWord } from '@core/types'
+import type { LyricLine, LyricSyllable } from '@core/types'
 import { useCoreStore, useRuntimeStore } from '@states/stores'
 import { Button, Dialog, InputNumber } from 'primevue'
 import { ref } from 'vue'
@@ -60,20 +60,20 @@ const shiftMs = ref<number | null>(0)
 const coreStore = useCoreStore()
 const runtimeStore = useRuntimeStore()
 
-function applyToWord(ms: number, word: LyricWord) {
-  word.startTime = Math.max(0, word.startTime + ms)
-  word.endTime = Math.max(0, word.endTime + ms)
+function applyToSyl(ms: number, syl: LyricSyllable) {
+  syl.startTime = Math.max(0, syl.startTime + ms)
+  syl.endTime = Math.max(0, syl.endTime + ms)
 }
 function applyToLine(ms: number, line: LyricLine) {
   line.startTime = Math.max(0, line.startTime + ms)
   line.endTime = Math.max(0, line.endTime + ms)
-  line.words.forEach((word) => applyToWord(ms, word))
+  line.syllables.forEach((syl) => applyToSyl(ms, syl))
 }
 
 function handleApplyToSelectedWords() {
   if (!shiftMs.value) return
   const shift = shiftMs.value
-  runtimeStore.selectedWords.forEach((word) => applyToWord(shift, word))
+  runtimeStore.selectedSyllables.forEach((syl) => applyToSyl(shift, syl))
 }
 function handleApplyToSelectedLines() {
   if (!shiftMs.value) return

@@ -14,7 +14,7 @@ export function applyPersist(data: Persist) {
     const key = k as MetadataKey
     coreStore.metadata.push({ key, values })
   }
-  coreStore.lyricLines.splice(0, coreStore.lyricLines.length, ...data.lyricLines)
+  coreStore.lyricLines.splice(0, coreStore.lyricLines.length, ...data.lines)
   editHistory.init()
 }
 
@@ -25,7 +25,7 @@ export function collectPersist(): Persist {
       (obj, { key, values }) => ((obj[key] = [...values]), obj),
       {} as Record<MetadataKey, string[]>,
     ),
-    lyricLines: cloneDeep(coreStore.lyricLines),
+    lines: cloneDeep(coreStore.lyricLines),
   }
   return outputData
 }

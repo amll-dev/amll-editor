@@ -2,14 +2,14 @@ import { reactive } from 'vue'
 import { defineStore } from 'pinia'
 import { useRuntimeStore } from './runtime'
 import { nanoid } from 'nanoid'
-import { alignLineEndTime, alignLineStartTime } from '@utils/alignLineWordTime'
-import type { LyricLine, LyricWord, Metadata } from '@core/types'
+import { alignLineEndTime, alignLineStartTime } from '@utils/alignLineSylTime'
+import type { LyricLine, LyricSyllable, Metadata } from '@core/types'
 
 const newLine = (attrs: Partial<LyricLine> = {}) =>
   reactive<LyricLine>({
     startTime: 0,
     endTime: 0,
-    words: [],
+    syllables: [],
     ignoreInTiming: false,
     bookmarked: false,
     translation: '',
@@ -20,8 +20,8 @@ const newLine = (attrs: Partial<LyricLine> = {}) =>
     id: nanoid(),
   })
 
-const newWord = (attrs: Partial<LyricWord> = {}) =>
-  reactive<LyricWord>({
+const newSyllable = (attrs: Partial<LyricSyllable> = {}) =>
+  reactive<LyricSyllable>({
     startTime: 0,
     endTime: 0,
     text: '',
@@ -45,10 +45,10 @@ export const useCoreStore = defineStore('core', () => {
     lyricLines,
     // comments,
     newLine,
-    newWord,
+    newSyllable,
     deleteLine,
-    deleteWord,
-    deleteWordFromLine,
+    deleteSyllable,
+    deleteSylFromLine,
   }
 
   function deleteLine(...lines: LyricLine[]) {
@@ -58,28 +58,28 @@ export const useCoreStore = defineStore('core', () => {
     lyricLines.length = 0
     lyricLines.push(...filtered)
     const runtimeStore = useRuntimeStore()
-    runtimeStore.clearWordSelection()
+    runtimeStore.clearSylSelection()
     lineSet.forEach((line) => runtimeStore.removeLineFromSelection(line))
   }
-  function deleteWord(...words: LyricWord[]) {
-    const wordSet = new Set(words)
-    for (const line of lyricLines) _deleteWordSetFromLine(line, wordSet)
+  function deleteSyllable(...syls: LyricSyllable[]) {
+    const sylSet = new Set(syls)
+    for (const line of lyricLines) _deleteSylSetFromLine(line, sylSet)
     const runtimeStore = useRuntimeStore()
-    wordSet.forEach((word) => runtimeStore.removeWordFromSelectionWithoutApply(word))
+    sylSet.forEach((syl) => runtimeStore.removeSylFromSelectionWithoutApply(syl))
   }
-  function deleteWordFromLine(line: LyricLine, ...words: LyricWord[]) {
-    const wordSet = new Set(words)
-    _deleteWordSetFromLine(line, wordSet)
+  function deleteSylFromLine(line: LyricLine, ...syls: LyricSyllable[]) {
+    const sylSet = new Set(syls)
+    _deleteSylSetFromLine(line, sylSet)
     const runtimeStore = useRuntimeStore()
-    wordSet.forEach((word) => runtimeStore.removeWordFromSelectionWithoutApply(word))
+    sylSet.forEach((syl) => runtimeStore.removeSylFromSelectionWithoutApply(syl))
   }
-  function _deleteWordSetFromLine(line: LyricLine, wordSet: Set<LyricWord>) {
-    const original = line.words
-    const filtered = original.filter((word) => !wordSet.has(word))
+  function _deleteSylSetFromLine(line: LyricLine, sylSet: Set<LyricSyllable>) {
+    const original = line.syllables
+    const filtered = original.filter((syl) => !sylSet.has(syl))
     if (filtered.length === original.length) return
-    line.words = filtered
+    line.syllables = filtered
     if (original[0] !== filtered[0]) alignLineStartTime(line)
     if (original.at(-1) !== filtered.at(-1)) alignLineEndTime(line)
   }
 })
-export const coreCreate = { newLine, newWord }
+export const coreCreate = { newLine, newSyllable }

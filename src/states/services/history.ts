@@ -1,7 +1,7 @@
 import { computed, nextTick, reactive, ref, toRaw, watch } from 'vue'
 import cloneDeep from 'lodash-es/cloneDeep'
 import { tryRaf } from '@utils/tryRaf'
-import type { LyricLine, LyricWord, RuntimeSnapShot, Snapshot } from '@core/types'
+import type { LyricLine, LyricSyllable, RuntimeSnapShot, Snapshot } from '@core/types'
 import { useCoreStore, useRuntimeStore, useStaticStore } from '@states/stores'
 const staticStore = useStaticStore()
 
@@ -55,7 +55,7 @@ function init() {
     [
       () => runtimeStore.currentView,
       () => runtimeStore.selectedLines,
-      () => runtimeStore.selectedWords,
+      () => runtimeStore.selectedSyllables,
     ],
     () => {
       if (stopRecording || isTakingSnapshot) return
@@ -82,9 +82,9 @@ function takeRuntime(): RuntimeSnapShot {
   return {
     currentView: toRaw(runtimeStore.currentView),
     selectedLineIds: [...runtimeStore.selectedLines].map((l) => l.id),
-    selectedWordIds: [...runtimeStore.selectedWords].map((w) => w.id),
+    selectedWordIds: [...runtimeStore.selectedSyllables].map((s) => s.id),
     lastTouchedLineId: staticStore.lastTouchedLine?.id,
-    lastTouchedWordId: staticStore.lastTouchedWord?.id,
+    lastTouchedWordId: staticStore.lastTouchedSyl?.id,
   }
 }
 function take() {
@@ -124,9 +124,9 @@ function wayback(snapshot: Readonly<Snapshot>, isRedo = false) {
   coreStore.lyricLines.splice(0, coreStore.lyricLines.length, ...snapshotCore.lyricLines)
   runtimeStore.currentView = snapshotRuntime.currentView
   const selectedLines: LyricLine[] = []
-  const selectedWords: LyricWord[] = []
+  const selectedWords: LyricSyllable[] = []
   let lastTouchedLine: LyricLine | null = null
-  let lastTouchedWord: LyricWord | null = null
+  let lastTouchedWord: LyricSyllable | null = null
   let firstLineIndex: number | undefined = undefined
   for (const [index, line] of coreStore.lyricLines.entries()) {
     // Use coreStore.lyricLines instead of snapshotCore.lyricLines:
@@ -136,15 +136,15 @@ function wayback(snapshot: Readonly<Snapshot>, isRedo = false) {
       firstLineIndex ??= index
     }
     if (snapshotRuntime.lastTouchedLineId === line.id) lastTouchedLine = line
-    for (const word of line.words) {
-      if (snapshotRuntime.selectedWordIds.includes(word.id)) selectedWords.push(word)
-      if (snapshotRuntime.lastTouchedWordId === word.id) lastTouchedWord = word
+    for (const syl of line.syllables) {
+      if (snapshotRuntime.selectedWordIds.includes(syl.id)) selectedWords.push(syl)
+      if (snapshotRuntime.lastTouchedWordId === syl.id) lastTouchedWord = syl
     }
   }
-  if (selectedWords.length) runtimeStore.selectWord(...selectedWords)
+  if (selectedWords.length) runtimeStore.selectSyllable(...selectedWords)
   else runtimeStore.selectLine(...selectedLines)
   staticStore.lastTouchedLine = lastTouchedLine
-  staticStore.lastTouchedWord = lastTouchedWord
+  staticStore.lastTouchedSyl = lastTouchedWord
   if (firstLineIndex !== undefined)
     tryRaf(() => {
       const hook = staticStore.editorHook

@@ -23,7 +23,7 @@ const pointerX = ref(0)
 const pointerY = ref(0)
 const runtimeStore = useRuntimeStore()
 const dragCount = computed(() =>
-  runtimeStore.isDraggingLine ? runtimeStore.selectedLines.size : runtimeStore.selectedWords.size,
+  runtimeStore.isDraggingLine ? runtimeStore.selectedLines.size : runtimeStore.selectedSyllables.size,
 )
 const dragText = computed(
   () =>

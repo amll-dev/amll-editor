@@ -14,8 +14,8 @@
 <script setup lang="ts">
 import type { LyricLine } from '@core/types'
 import { useRuntimeStore, useCoreStore, useStaticStore } from '@states/stores'
-import { alignLineTime } from '@utils/alignLineWordTime'
-import { sortLines, sortWords } from '@utils/sortLineWords'
+import { alignLineTime } from '@utils/alignLineSylTime'
+import { sortLines, sortSyllables } from '@utils/sortLineSyls'
 import { ref } from 'vue'
 const runtimeStore = useRuntimeStore()
 const coreStore = useCoreStore()
@@ -40,7 +40,7 @@ function handleDrop(e: DragEvent) {
       const duplicatedLines = pendingLines.map((oldLine) => {
         const newLine = coreStore.newLine({
           ...oldLine,
-          words: oldLine.words.map(coreStore.newWord),
+          syllables: oldLine.syllables.map(coreStore.newSyllable),
         })
         return newLine
       })
@@ -62,16 +62,16 @@ function handleDrop(e: DragEvent) {
       coreStore.lyricLines.splice(insertIndex, 1, ...pendingLines)
       runtimeStore.selectLine(...pendingLines)
     }
-  } else if (runtimeStore.isDraggingWord) {
-    const pendingWords = sortWords(...runtimeStore.selectedWords)
+  } else if (runtimeStore.isDraggingSyl) {
+    const pendingWords = sortSyllables(...runtimeStore.selectedSyllables)
     const isCopy = e.ctrlKey || e.metaKey
-    const newLine = coreStore.newLine({ words: pendingWords })
+    const newLine = coreStore.newLine({ syllables: pendingWords })
     alignLineTime(newLine)
-    if (isCopy) newLine.words = pendingWords.map(coreStore.newWord)
-    else coreStore.deleteWord(...pendingWords)
+    if (isCopy) newLine.syllables = pendingWords.map(coreStore.newSyllable)
+    else coreStore.deleteSyllable(...pendingWords)
     coreStore.lyricLines.splice(props.index, 0, newLine)
-    runtimeStore.selectLineWord(newLine, ...newLine.words)
-    staticStore.touchLineWord(newLine, newLine.words.at(-1)!)
+    runtimeStore.selectLineSyl(newLine, ...newLine.syllables)
+    staticStore.touchLineWord(newLine, newLine.syllables.at(-1)!)
   }
 }
 

@@ -4,7 +4,7 @@
 // See https://www.w3.org/TR/2018/REC-ttml1-20181108/
 
 import { ms2str, str2ms as nullableStr2ms } from '@utils/formatTime'
-import type { LyricLine, LyricWord, Metadata, Persist } from '@core/types'
+import type { LyricLine, LyricSyllable, Metadata, Persist } from '@core/types'
 import { coreCreate } from '@states/stores/core'
 import type { Convert as CV } from '../types'
 
@@ -44,7 +44,7 @@ interface WordRomanMetadata {
   bg: RomanWord[]
 }
 
-const { newLine, newWord } = coreCreate
+const { newLine, newSyllable } = coreCreate
 
 function str2ms(str: string): number {
   const ms = nullableStr2ms(str)
@@ -276,8 +276,8 @@ export function parseTTML(ttmlText: string): Persist {
     for (const wordNode of Array.from(lineEl.childNodes)) {
       if (wordNode.nodeType === Node.TEXT_NODE) {
         const text = wordNode.textContent ?? ''
-        line.words.push(
-          newWord({
+        line.syllables.push(
+          newSyllable({
             text,
             startTime: text.trim() ? line.startTime : 0,
             endTime: text.trim() ? line.endTime : 0,
@@ -305,7 +305,7 @@ export function parseTTML(ttmlText: string): Persist {
           const wordStartTime = str2ms(wordEl.getAttribute('begin') ?? '')
           const wordEndTime = str2ms(wordEl.getAttribute('end') ?? '')
 
-          const word = newWord({
+          const word = newSyllable({
             text: wordEl.textContent ?? '',
             startTime: wordStartTime,
             endTime: wordEndTime,
@@ -322,7 +322,7 @@ export function parseTTML(ttmlText: string): Persist {
             }
           }
 
-          line.words.push(word)
+          line.syllables.push(word)
         }
       }
     }
@@ -331,28 +331,28 @@ export function parseTTML(ttmlText: string): Persist {
       line.startTime = str2ms(startTime)
       line.endTime = str2ms(endTime)
     } else {
-      line.startTime = line.words
+      line.startTime = line.syllables
         .filter((w) => w.text.trim().length > 0)
         .reduce((pv, cv) => Math.min(pv, cv.startTime), Number.POSITIVE_INFINITY)
-      line.endTime = line.words
+      line.endTime = line.syllables
         .filter((w) => w.text.trim().length > 0)
         .reduce((pv, cv) => Math.max(pv, cv.endTime), 0)
     }
 
     if (line.background) {
-      const firstWord = line.words[0]
+      const firstWord = line.syllables[0]
       if (firstWord && /^[（(]/.test(firstWord.text)) {
         firstWord.text = firstWord.text.substring(1)
         if (firstWord.text.length === 0) {
-          line.words.shift()
+          line.syllables.shift()
         }
       }
 
-      const lastWord = line.words[line.words.length - 1]
+      const lastWord = line.syllables[line.syllables.length - 1]
       if (lastWord && /[)）]$/.test(lastWord.text)) {
         lastWord.text = lastWord.text.substring(0, lastWord.text.length - 1)
         if (lastWord.text.length === 0) {
-          line.words.pop()
+          line.syllables.pop()
         }
       }
     }
@@ -376,17 +376,17 @@ export function parseTTML(ttmlText: string): Persist {
   }
   return {
     metadata: persistMetadata,
-    lyricLines: lyricLines,
+    lines: lyricLines,
   }
 }
 
 export function stringifyTTML(ttmlLyric: Persist): string {
   const params: LyricLine[][] = []
-  const lyric = ttmlLyric.lyricLines
+  const lyric = ttmlLyric.lines
 
   let tmp: LyricLine[] = []
   for (const line of lyric) {
-    if (line.words.length === 0 && tmp.length > 0) {
+    if (line.syllables.length === 0 && tmp.length > 0) {
       params.push(tmp)
       tmp = []
     } else {
@@ -400,7 +400,7 @@ export function stringifyTTML(ttmlLyric: Persist): string {
 
   const doc = new Document()
 
-  function createWordElement(word: LyricWord): Element {
+  function createWordElement(word: LyricSyllable): Element {
     const span = doc.createElement('span')
     span.setAttribute('begin', ms2str(word.startTime))
     span.setAttribute('end', ms2str(word.endTime))
@@ -409,7 +409,7 @@ export function stringifyTTML(ttmlLyric: Persist): string {
     return span
   }
 
-  function createRomanizationSpan(word: LyricWord): Element {
+  function createRomanizationSpan(word: LyricSyllable): Element {
     const span = doc.createElement('span')
     span.setAttribute('begin', ms2str(word.startTime))
     span.setAttribute('end', ms2str(word.endTime))
@@ -461,12 +461,12 @@ export function stringifyTTML(ttmlLyric: Persist): string {
 
   let i = 0
 
-  const romanizationMap = new Map<string, { main: LyricWord[]; bg: LyricWord[] }>()
+  const romanizationMap = new Map<string, { main: LyricSyllable[]; bg: LyricSyllable[] }>()
 
   const guessDuration = lyric[lyric.length - 1]?.endTime ?? 0
   body.setAttribute('dur', ms2str(guessDuration))
   const isDynamicLyric = lyric.some(
-    (line) => line.words.filter((v) => v.text.trim().length > 0).length > 1,
+    (line) => line.syllables.filter((v) => v.text.trim().length > 0).length > 1,
   )
 
   for (const param of params) {
@@ -495,13 +495,13 @@ export function stringifyTTML(ttmlLyric: Persist): string {
       const itunesKey = `L${++i}`
       lineP.setAttribute('itunes:key', itunesKey)
 
-      const mainWords = line.words
-      let bgWords: LyricWord[] = []
+      const mainWords = line.syllables
+      let bgWords: LyricSyllable[] = []
 
       if (isDynamicLyric) {
         let beginTime = Number.POSITIVE_INFINITY
         let endTime = 0
-        for (const word of line.words) {
+        for (const word of line.syllables) {
           if (word.text.trim().length === 0) {
             lineP.appendChild(doc.createTextNode(word.text))
           } else {
@@ -514,7 +514,7 @@ export function stringifyTTML(ttmlLyric: Persist): string {
         lineP.setAttribute('begin', ms2str(line.startTime))
         lineP.setAttribute('end', ms2str(line.endTime))
       } else {
-        const word = line.words[0]!
+        const word = line.syllables[0]!
         lineP.appendChild(doc.createTextNode(word.text))
         lineP.setAttribute('begin', ms2str(word.startTime))
         lineP.setAttribute('end', ms2str(word.endTime))
@@ -524,7 +524,7 @@ export function stringifyTTML(ttmlLyric: Persist): string {
       if (nextLine?.background) {
         skip = true
         const bgLine = nextLine
-        bgWords = bgLine.words
+        bgWords = bgLine.syllables
 
         const bgLineSpan = doc.createElement('span')
         bgLineSpan.setAttribute('ttm:role', 'x-bg')
@@ -533,19 +533,19 @@ export function stringifyTTML(ttmlLyric: Persist): string {
           let beginTime = Number.POSITIVE_INFINITY
           let endTime = 0
 
-          const firstWordIndex = bgLine.words.findIndex((w) => w.text.trim().length > 0)
-          const lastWordIndex = bgLine.words.map((w) => w.text.trim().length > 0).lastIndexOf(true)
+          const firstWordIndex = bgLine.syllables.findIndex((w) => w.text.trim().length > 0)
+          const lastWordIndex = bgLine.syllables.map((w) => w.text.trim().length > 0).lastIndexOf(true)
 
-          for (const [wordIndex, word] of bgLine.words.entries()) {
+          for (const [sylIndex, word] of bgLine.syllables.entries()) {
             if (word.text.trim().length === 0) {
               bgLineSpan.appendChild(doc.createTextNode(word.text))
             } else {
               const span = createWordElement(word)
 
-              if (wordIndex === firstWordIndex && span.firstChild) {
+              if (sylIndex === firstWordIndex && span.firstChild) {
                 span.firstChild.nodeValue = `(${span.firstChild.nodeValue}`
               }
-              if (wordIndex === lastWordIndex && span.firstChild) {
+              if (sylIndex === lastWordIndex && span.firstChild) {
                 span.firstChild.nodeValue = `${span.firstChild.nodeValue})`
               }
 
@@ -557,7 +557,7 @@ export function stringifyTTML(ttmlLyric: Persist): string {
           bgLineSpan.setAttribute('begin', ms2str(beginTime))
           bgLineSpan.setAttribute('end', ms2str(endTime))
         } else {
-          const word = bgLine.words[0]!
+          const word = bgLine.syllables[0]!
           bgLineSpan.appendChild(doc.createTextNode(`(${word.text})`))
           bgLineSpan.setAttribute('begin', ms2str(word.startTime))
           bgLineSpan.setAttribute('end', ms2str(word.endTime))
@@ -636,13 +636,13 @@ export function stringifyTTML(ttmlLyric: Persist): string {
 
         const romanBgWords = bg.filter((w) => w.romanization && w.romanization.trim().length > 0)
 
-        for (const [wordIndex, word] of romanBgWords.entries()) {
+        for (const [sylIndex, word] of romanBgWords.entries()) {
           const span = createRomanizationSpan(word)
 
-          if (wordIndex === 0 && span.firstChild) {
+          if (sylIndex === 0 && span.firstChild) {
             span.firstChild.nodeValue = `(${span.firstChild.nodeValue}`
           }
-          if (wordIndex === romanBgWords.length - 1 && span.firstChild) {
+          if (sylIndex === romanBgWords.length - 1 && span.firstChild) {
             span.firstChild.nodeValue = `${span.firstChild.nodeValue})`
           }
 

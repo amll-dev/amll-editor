@@ -1,7 +1,7 @@
 // Basic LRC parser and stringifier
 // LRC is a common lyric format used by many music players
-// By 'basic', we mean it only supports line-level timestamps, not word-level timestamps
-// For word-level extensions, see LRC A2, etc.
+// By 'basic', we mean it only supports line-level timestamps, not syllable-level timestamps
+// For syllable-level extensions, see LRC A2, etc.
 
 // Format:
 // [mm:ss.xx]lyric line1
@@ -65,7 +65,7 @@ export function parseLRC(lrc: string): Persist {
         coreCreate.newLine({
           startTime: ts,
           endTime: ts,
-          words: [coreCreate.newWord({ text: lineStr, startTime: ts, endTime: ts })],
+          syllables: [coreCreate.newSyllable({ text: lineStr, startTime: ts, endTime: ts })],
         }),
       )
     })
@@ -75,29 +75,29 @@ export function parseLRC(lrc: string): Persist {
     const line = lyricLines[i]!
     const prevLine = lyricLines[i - 1]!
     prevLine.endTime = line.startTime
-    prevLine.words[0]!.endTime = line.startTime
+    prevLine.syllables[0]!.endTime = line.startTime
   }
   if (lyricLines.length && metadata.length && metadata.length.length) {
     const length = str2ms(metadata.length[0]!)
     if (length) {
       lyricLines[lyricLines.length - 1]!.endTime = length
-      lyricLines[lyricLines.length - 1]!.words[0]!.endTime = length
+      lyricLines[lyricLines.length - 1]!.syllables[0]!.endTime = length
     }
   }
   return {
     metadata,
-    lyricLines,
+    lines: lyricLines,
   }
 }
 
 export function stringifyLRC(data: Persist): string {
-  const lines = data.lyricLines
+  const lines = data.lines
   return lines
     .map((line) => {
       const min = Math.floor(line.startTime / 60000)
       const sec = Math.floor((line.startTime % 60000) / 1000)
       const ms = line.startTime % 1000
-      const text = line.words.map((w) => w.text).join('')
+      const text = line.syllables.map((s) => s.text).join('')
       return `[${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}.${String(
         ms,
       ).padStart(3, '0')}]${text}`

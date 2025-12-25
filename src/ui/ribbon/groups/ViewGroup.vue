@@ -2,23 +2,23 @@
   <RibbonGroup label="视图">
     <div class="kvgrid">
       <Checkbox
-        inputId="ribbon-hlt-lineoverlap"
-        value="hlt-lineoverlap"
+        inputId="ribbon-hlt-line-overlap"
+        value="hlt-line-overlap"
         size="small"
         binary
         v-model="prefStore.hltLineTimeConflicts"
         disabled
       />
-      <label for="ribbon-hlt-lineoverlap">高亮行时间冲突</label>
+      <label for="ribbon-hlt-line-overlap">高亮行时间冲突</label>
       <Checkbox
-        inputId="ribbon-hlt-wordoverlap"
-        value="hlt-wordoverlap"
+        inputId="ribbon-hlt-syl-overlap"
+        value="hlt-syl-overlap"
         size="small"
         binary
         v-model="prefStore.hltWordTimeConflicts"
         disabled
       />
-      <label for="ribbon-hlt-wordoverlap">高亮音节时间冲突</label>
+      <label for="ribbon-hlt-syl-overlap">高亮音节时间冲突</label>
       <Checkbox
         inputId="ribbon-auto-scroll"
         value="auto-scroll"

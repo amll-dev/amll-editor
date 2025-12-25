@@ -1,6 +1,6 @@
 <template>
   <div
-    class="cword"
+    class="csyl"
     :class="{
       selected: isSelected,
       removing: isSelected && runtimeStore.isDragging && !runtimeStore.isDraggingCopy,
@@ -10,9 +10,9 @@
     @contextmenu.stop="handleContext"
     @dragstart.stop
   >
-    <div class="cword-drag-ghost" ref="dragGhostEl"></div>
+    <div class="csyl-drag-ghost" ref="dragGhostEl"></div>
     <div
-      class="cword-head"
+      class="csyl-head"
       draggable="true"
       @mousedown="handleMousedown"
       @click="handleClick"
@@ -21,28 +21,28 @@
       @dragend="handleDragEnd"
     >
       &ZeroWidthSpace;
-      <i v-if="props.word.bookmarked" class="cword-head-bookmark pi pi-bookmark-fill"></i>
-      <i v-else class="cword-head-bars pi pi-bars"></i>
-      <div v-if="props.word.placeholdingBeat" class="cword-head-placeholding-beat">
-        {{ props.word.placeholdingBeat }}
+      <i v-if="props.syllable.bookmarked" class="csyl-head-bookmark pi pi-bookmark-fill"></i>
+      <i v-else class="csyl-head-bars pi pi-bars"></i>
+      <div v-if="props.syllable.placeholdingBeat" class="csyl-head-placeholding-beat">
+        {{ props.syllable.placeholdingBeat }}
       </div>
     </div>
-    <div class="cword-input-shell" :class="{ focused: focused }">
-      <div class="cword-input-widthcontrol cword-input-alike">
+    <div class="csyl-input-shell" :class="{ focused: focused }">
+      <div class="csyl-input-widthcontrol csyl-input-alike">
         {{ widthController }}
       </div>
-      <div class="cword-input-placeholder cword-input-alike">
+      <div class="csyl-input-placeholder csyl-input-alike">
         {{ placeholder }}
       </div>
       <InputText
-        ref="wordInputComponent"
-        class="cword-input"
+        ref="sylInputComponent"
+        class="csyl-input"
         v-model="inputModel"
         size="large"
         @keydown="handleKeydown"
         @focus="handleFocus"
         @compositionend="handleCompositionEnd"
-        @blur="props.word.text = inputModel"
+        @blur="props.syllable.text = inputModel"
       />
     </div>
   </div>
@@ -60,43 +60,43 @@ import {
   useTemplateRef,
   watch,
 } from 'vue'
-import { sortIndex } from '@utils/sortLineWords'
+import { sortIndex } from '@utils/sortLineSyls'
 import { forceOutsideBlur } from '@utils/forceOutsideBlur'
 import { digit2Sup } from '@utils/toSupSub'
 import type { TimeoutHandle } from '@utils/types'
 import { useRuntimeStore, useCoreStore, useStaticStore } from '@states/stores'
-import type { LyricLine, LyricWord } from '@core/types'
-import type { WordComponentActions } from '@states/stores/static'
+import type { LyricLine, LyricSyllable } from '@core/types'
+import type { SylComponentActions as SylComponentActions } from '@states/stores/static'
 const runtimeStore = useRuntimeStore()
 const coreStore = useCoreStore()
 const staticStore = useStaticStore()
 const props = defineProps<{
-  word: LyricWord
+  syllable: LyricSyllable
   index: number
   parent: LyricLine
   lineIndex: number
 }>()
 
 // Input Element
-const inputComponent = useTemplateRef('wordInputComponent')
+const inputComponent = useTemplateRef('sylInputComponent')
 const inputEl = shallowRef<HTMLInputElement | null | undefined>(null)
 const { focused } = useFocus(inputEl)
 onMounted(() => (inputEl.value = inputComponent.value?.input))
-const inputModel = ref(props.word.text)
+const inputModel = ref(props.syllable.text)
 watch(
-  () => props.word.text,
+  () => props.syllable.text,
   (val) => (inputModel.value = val),
 )
 watch(inputModel, (val) => {
-  if (!focused.value) props.word.text = val
+  if (!focused.value) props.syllable.text = val
 })
 
 // Selection
 const touch = () => {
   forceOutsideBlur()
-  staticStore.touchLineWord(props.parent, props.word)
+  staticStore.touchLineWord(props.parent, props.syllable)
 }
-const isSelected = computed(() => runtimeStore.selectedWords.has(props.word))
+const isSelected = computed(() => runtimeStore.selectedSyllables.has(props.syllable))
 let leftForClick = false
 function handleMousedown(e: MouseEvent) {
   if (e.button > 2) return
@@ -104,38 +104,38 @@ function handleMousedown(e: MouseEvent) {
   if (e.ctrlKey || e.metaKey) {
     touch()
     if (!isSelected.value) {
-      runtimeStore.addWordToSelection(props.word)
+      runtimeStore.addSylToSelection(props.syllable)
     } else leftForClick = true
-  } else if (e.shiftKey && staticStore.lastTouchedWord) {
-    const { lastTouchedWord, lastTouchedLine } = staticStore
+  } else if (e.shiftKey && staticStore.lastTouchedSyl) {
+    const { lastTouchedSyl: lastTouchedWord, lastTouchedLine } = staticStore
     touch()
     if (!lastTouchedLine || !lastTouchedWord) return
     if (lastTouchedLine !== props.parent) {
       const [start, end] = sortIndex(coreStore.lyricLines.indexOf(lastTouchedLine), props.lineIndex)
       runtimeStore.selectLine(...coreStore.lyricLines.slice(start, end + 1))
     } else {
-      const [start, end] = sortIndex(lastTouchedLine.words.indexOf(lastTouchedWord), props.index)
-      const affectedWords = props.parent.words.slice(start, end + 1)
-      if (isSelected.value) runtimeStore.removeWordFromSelection(...affectedWords)
-      else runtimeStore.addWordToSelection(...affectedWords)
+      const [start, end] = sortIndex(lastTouchedLine.syllables.indexOf(lastTouchedWord), props.index)
+      const affectedWords = props.parent.syllables.slice(start, end + 1)
+      if (isSelected.value) runtimeStore.removeSylFromSelection(...affectedWords)
+      else runtimeStore.addSylToSelection(...affectedWords)
     }
   } else {
     if (isSelected.value) return
     touch()
-    runtimeStore.selectLineWord(props.parent, props.word)
+    runtimeStore.selectLineSyl(props.parent, props.syllable)
   }
 }
 function handleClick(e: MouseEvent) {
-  if (leftForClick && (e.ctrlKey || e.metaKey)) runtimeStore.removeWordFromSelection(props.word)
+  if (leftForClick && (e.ctrlKey || e.metaKey)) runtimeStore.removeSylFromSelection(props.syllable)
   leftForClick = false
 }
 function handleDbClick() {
   inputEl.value?.select()
 }
 function handleFocus() {
-  if (isSelected.value && runtimeStore.selectedWords.size === 1) return
+  if (isSelected.value && runtimeStore.selectedSyllables.size === 1) return
   touch()
-  runtimeStore.selectLineWord(props.parent, props.word)
+  runtimeStore.selectLineSyl(props.parent, props.syllable)
 }
 const dragGhostEl = useTemplateRef('dragGhostEl')
 function handleDragStart(e: DragEvent) {
@@ -160,7 +160,7 @@ function handleDragEnd(_e: DragEvent) {
 
 // Context menu
 const emit = defineEmits<{
-  (name: 'contextmenu', e: MouseEvent, lineIndex: number, wordIndex: number): void
+  (name: 'contextmenu', e: MouseEvent, lineIndex: number, sylIndex: number): void
 }>()
 function handleContext(e: MouseEvent) {
   handleFocus()
@@ -170,19 +170,19 @@ function handleContext(e: MouseEvent) {
 // Placeholder and input width control
 const placeholder = computed(() => {
   if (focused.value) return ''
-  const word = inputModel.value
-  if (!word) return '/'
-  if (word.match(/^\s+$/)) {
-    if (word.length === 1) return '␣'
-    const upperCount = [...word.length.toString()].map(digit2Sup).join('')
+  const sylText = inputModel.value
+  if (!sylText) return '/'
+  if (sylText.match(/^\s+$/)) {
+    if (sylText.length === 1) return '␣'
+    const upperCount = [...sylText.length.toString()].map(digit2Sup).join('')
     return `␣${upperCount}`
   }
 })
 const widthController = computed(() => {
-  const word = inputModel.value
-  if (!word) return '/'
-  if (word === ' ') return '␣'
-  return placeholder.value || word
+  const sylText = inputModel.value
+  if (!sylText) return '/'
+  if (sylText === ' ') return '␣'
+  return placeholder.value || sylText
 })
 
 // Hotkeys
@@ -191,59 +191,59 @@ function handleKeydown(event: KeyboardEvent) {
   const el = inputEl.value
   switch (event.code) {
     case 'Backspace': {
-      // Combine with previous word
+      // Combine with previous syllable
       if (props.index === 0 || el.selectionStart !== 0 || el.selectionEnd !== 0) return
       event.preventDefault()
-      const prevWord = props.parent.words[props.index - 1]
-      if (!prevWord) return
-      const cursorPos = prevWord.text.length
-      prevWord.text += el.value
-      if (props.word.startTime && props.word.endTime) {
-        prevWord.endTime = props.word.endTime
+      const prevSyl = props.parent.syllables[props.index - 1]
+      if (!prevSyl) return
+      const cursorPos = prevSyl.text.length
+      prevSyl.text += el.value
+      if (props.syllable.startTime && props.syllable.endTime) {
+        prevSyl.endTime = props.syllable.endTime
       }
-      props.parent.words.splice(props.index, 1)
-      runtimeStore.selectLineWord(props.parent, prevWord)
-      nextTick(() => staticStore.wordHooks.get(prevWord.id)?.focusInput(cursorPos))
+      props.parent.syllables.splice(props.index, 1)
+      runtimeStore.selectLineSyl(props.parent, prevSyl)
+      nextTick(() => staticStore.syllableHooks.get(prevSyl.id)?.focusInput(cursorPos))
       return
     }
     case 'ArrowLeft': {
-      // If at start, focus previous word
+      // If at start, focus previous syllable
       if (el.selectionStart !== 0 || props.index === 0) return
       event.preventDefault()
-      const prevWord = props.parent.words[props.index - 1]
-      if (!prevWord) return
-      nextTick(() => staticStore.wordHooks.get(prevWord.id)?.focusInput(-1))
+      const prevSyl = props.parent.syllables[props.index - 1]
+      if (!prevSyl) return
+      nextTick(() => staticStore.syllableHooks.get(prevSyl.id)?.focusInput(-1))
       return
     }
     case 'ArrowRight': {
-      // If at end, focus next word
-      if (el.selectionStart !== el.value.length || props.index === props.parent.words.length - 1)
+      // If at end, focus next syllable
+      if (el.selectionStart !== el.value.length || props.index === props.parent.syllables.length - 1)
         return
       event.preventDefault()
-      const nextWord = props.parent.words[props.index + 1]
-      if (!nextWord) return
-      nextTick(() => staticStore.wordHooks.get(nextWord.id)?.focusInput(0))
+      const nextSyl = props.parent.syllables[props.index + 1]
+      if (!nextSyl) return
+      nextTick(() => staticStore.syllableHooks.get(nextSyl.id)?.focusInput(0))
       return
     }
     case 'Backquote': {
-      // Break word at cursor
+      // Break syllable at cursor
       if (event.shiftKey || event.ctrlKey || event.metaKey || event.altKey) return
       event.preventDefault()
       // preventDefault won't work with IME!
       // handle later in compositionend
       const breakIndex = el.selectionStart || 0
-      const totDuration = props.word.endTime - props.word.startTime
-      const breakTime = props.word.startTime + (totDuration * breakIndex) / (el.value.length || 1)
-      const newWord = coreStore.newWord({
+      const totDuration = props.syllable.endTime - props.syllable.startTime
+      const breakTime = props.syllable.startTime + (totDuration * breakIndex) / (el.value.length || 1)
+      const newSyllable = coreStore.newSyllable({
         text: el.value.slice(breakIndex),
         startTime: breakTime,
-        endTime: props.word.endTime,
+        endTime: props.syllable.endTime,
       })
-      props.word.endTime = breakTime
-      props.word.text = el.value.slice(0, breakIndex)
-      props.parent.words.splice(props.index + 1, 0, newWord)
-      runtimeStore.selectLineWord(props.parent, newWord)
-      nextTick(() => staticStore.wordHooks.get(newWord.id)?.focusInput(0))
+      props.syllable.endTime = breakTime
+      props.syllable.text = el.value.slice(0, breakIndex)
+      props.parent.syllables.splice(props.index + 1, 0, newSyllable)
+      runtimeStore.selectLineSyl(props.parent, newSyllable)
+      nextTick(() => staticStore.syllableHooks.get(newSyllable.id)?.focusInput(0))
       return
     }
   }
@@ -259,7 +259,7 @@ function handleCompositionEnd(_e: CompositionEvent) {
 
 // Register hooks
 let highlightTimeout: TimeoutHandle | undefined = undefined
-const hooks: WordComponentActions = {
+const hooks: SylComponentActions = {
   focusInput: (position = undefined) => {
     focused.value = true
     if (!inputEl.value) {
@@ -268,7 +268,7 @@ const hooks: WordComponentActions = {
     }
     if (position === undefined || Number.isNaN(position)) inputEl.value.select()
     else if (position < 0) {
-      const length = props.word.text.length
+      const length = props.syllable.text.length
       const cursor = length + position + 1
       inputEl.value.setSelectionRange(cursor, cursor)
     } else inputEl.value.setSelectionRange(position, position)
@@ -290,23 +290,23 @@ const hooks: WordComponentActions = {
   },
 }
 onMounted(() => {
-  staticStore.wordHooks.set(props.word.id, hooks)
+  staticStore.syllableHooks.set(props.syllable.id, hooks)
 })
 onUnmounted(() => {
-  if (staticStore.wordHooks.get(props.word.id) === hooks)
-    staticStore.wordHooks.delete(props.word.id)
+  if (staticStore.syllableHooks.get(props.syllable.id) === hooks)
+    staticStore.syllableHooks.delete(props.syllable.id)
 })
 </script>
 
 <style lang="scss">
-.cword {
-  height: var(--content-word-height);
+.csyl {
+  height: var(--content-syl-height);
   --head-height: 1.8rem;
-  --body-height: calc(var(--content-word-height) - var(--head-height));
+  --body-height: calc(var(--content-syl-height) - var(--head-height));
   --p-inputtext-lg-font-size: 1.3rem;
   --w-bg-color: var(--c-border-color);
   position: relative;
-  margin-right: var(--c-word-gap);
+  margin-right: var(--c-syl-gap);
   transition:
     transform 0.1s,
     opacity 0.1s;
@@ -320,7 +320,7 @@ onUnmounted(() => {
     transform: scale(0.9);
   }
 }
-.cword-head {
+.csyl-head {
   flex: 1;
   font-size: 1rem;
   height: var(--head-height);
@@ -331,34 +331,34 @@ onUnmounted(() => {
   font-family: var(--font-monospace);
   position: relative;
 }
-.cword-head-bookmark,
-.cword-head-bars,
-.cword-head-placeholding-beat {
+.csyl-head-bookmark,
+.csyl-head-bars,
+.csyl-head-placeholding-beat {
   position: absolute;
   top: 0.1rem;
   bottom: 0;
   margin: auto 0.2rem;
   height: fit-content;
 }
-.cword-head-bookmark {
+.csyl-head-bookmark {
   left: 0;
   font-size: 0.8rem;
   color: var(--p-button-text-warn-color);
-  .cword.selected & {
+  .csyl.selected & {
     color: inherit;
   }
 }
-.cword-head-bars {
+.csyl-head-bars {
   left: 0;
   font-size: 0.8rem;
   transform: scaleX(0.8);
   opacity: 0.4;
 }
-.cword-head-placeholding-beat {
+.csyl-head-placeholding-beat {
   right: 0.1rem;
   font-weight: bold;
 }
-.cword-input-shell {
+.csyl-input-shell {
   height: var(--body-height);
   --p-inputtext-lg-padding-x: 0.6rem;
   --p-inputtext-lg-padding-y: 0.5rem;
@@ -367,7 +367,7 @@ onUnmounted(() => {
   border-bottom-left-radius: var(--p-inputtext-border-radius);
   border-bottom-right-radius: var(--p-inputtext-border-radius);
   font-size: var(--p-inputtext-lg-font-size);
-  .cword.selected & {
+  .csyl.selected & {
     background-color: color-mix(
       in srgb,
       var(--p-primary-color) 10%,
@@ -375,38 +375,38 @@ onUnmounted(() => {
     );
   }
 }
-.cword-input-alike {
+.csyl-input-alike {
   padding: var(--p-inputtext-lg-padding-y) var(--p-inputtext-lg-padding-x);
   border: 1px solid transparent;
   white-space: pre;
 }
-.cword-input-widthcontrol {
+.csyl-input-widthcontrol {
   visibility: hidden;
 }
-.cword-input,
-.cword-input-placeholder {
+.csyl-input,
+.csyl-input-placeholder {
   position: absolute;
   left: 0;
   right: 0;
   top: 0;
   bottom: 0;
 }
-.cword-input.cword-input {
+.csyl-input.csyl-input {
   padding-inline: 0;
   text-align: center;
   background: transparent;
   transition: none;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
-  .cword.selected & {
+  .csyl.selected & {
     border-color: var(--p-primary-color);
   }
 }
-.cword-input-placeholder {
+.csyl-input-placeholder {
   color: var(--p-inputtext-placeholder-color);
   font-weight: 300;
 }
-.cword-drag-ghost {
+.csyl-drag-ghost {
   position: absolute;
   top: 0;
   left: 0;

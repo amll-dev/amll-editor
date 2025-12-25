@@ -1,15 +1,15 @@
 import { useAudioCtrl } from '@core/audio'
-import type { LyricLine, LyricWord, View } from '@core/types'
+import type { LyricLine, LyricSyllable, View } from '@core/types'
 import type { ScrollToIndexOpts } from 'virtua/unstable_core'
 
 const staticStore = {
   lineHooks: new Map<string, LineComponentActions>(),
-  wordHooks: new Map<string, WordComponentActions>(),
+  syllableHooks: new Map<string, SylComponentActions>(),
   editorHook: null as null | EditorComponentActions,
   closeContext: null as null | (() => void),
   audio: useAudioCtrl(),
   lastTouchedLine: null as LyricLine | null,
-  lastTouchedWord: null as LyricWord | null,
+  lastTouchedSyl: null as LyricSyllable | null,
   touchLineWord,
   touchLineOnly,
   touchClear,
@@ -25,7 +25,7 @@ export interface LineComponentActions {
   hightLightRoman: () => void
   hightLightTranslation: () => void
 }
-export interface WordComponentActions {
+export interface SylComponentActions {
   focusInput: (position?: number) => void
   hightLightInput: () => void
 }
@@ -35,17 +35,17 @@ export interface EditorComponentActions {
 }
 export type WaitForConfirmHook = () => Promise<boolean>
 
-function touchLineWord(line: LyricLine, word: LyricWord) {
+function touchLineWord(line: LyricLine, syl: LyricSyllable) {
   staticStore.lastTouchedLine = line
-  staticStore.lastTouchedWord = word
+  staticStore.lastTouchedSyl = syl
 }
 function touchLineOnly(line: LyricLine) {
   staticStore.lastTouchedLine = line
-  staticStore.lastTouchedWord = null
+  staticStore.lastTouchedSyl = null
 }
 function touchClear() {
   staticStore.lastTouchedLine = null
-  staticStore.lastTouchedWord = null
+  staticStore.lastTouchedSyl = null
 }
 
 type ScrollTo = (index: number, options?: ScrollToIndexOpts) => void

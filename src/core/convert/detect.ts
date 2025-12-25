@@ -15,8 +15,8 @@ export function detectFormat(extension: string, content: string): Convert.Format
 }
 
 function detectLrcVariants(content: string): Convert.Format {
-  const hasWordLevel = /(?<!^(\[[^\]+]\])*)[<[][>\]]/.test(content)
-  if (!hasWordLevel) return lrcReg
+  const hasSylLevel = /(?<!^(\[[^\]+]\])*)[<[][>\]]/.test(content)
+  if (!hasSylLevel) return lrcReg
   const sqBracketEnding = /(?<!\])\[\d{1,3}:\d{1,2}\.\d{1,3}\d{0,3}\]$/.test(content)
   if (sqBracketEnding) return splReg
   return lrcA2Reg

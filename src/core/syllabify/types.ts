@@ -1,4 +1,4 @@
-import type { LyricWord } from '@core/types'
+import type { LyricSyllable } from '@core/types'
 import type { Prettify } from '@utils/types'
 
 export namespace Syllabify {
@@ -6,12 +6,12 @@ export namespace Syllabify {
     target: string
     indices: number[]
   }
-  export type SplittedWord = string | Prettify<Partial<LyricWord> & { text: LyricWord['text'] }>
+  export type SplittedSyl = string | Prettify<Partial<LyricSyllable> & { text: LyricSyllable['text'] }>
   export type Splitter = (
     strs: string[],
     rewrites: Readonly<Rewrite>[],
     caseSensitive: boolean,
-  ) => SplittedWord[][] | Promise<SplittedWord[][]>
+  ) => SplittedSyl[][] | Promise<SplittedSyl[][]>
 
   export interface Engine {
     name: string

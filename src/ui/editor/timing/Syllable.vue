@@ -1,26 +1,26 @@
 <template>
   <div
-    class="tword"
+    class="tsyl"
     @mousedown.stop="handleMouseDown"
     :class="{ selected: isSelected, active: isActive }"
   >
     <Timestamp
-      class="tword-timestamp"
+      class="tsyl-timestamp"
       begin
-      v-model="props.word.startTime"
+      v-model="props.syllable.startTime"
       v-tooltip="'音节起始时间'"
     />
-    <div class="tword-content">
+    <div class="tsyl-content">
       <i
-        v-if="props.word.bookmarked"
+        v-if="props.syllable.bookmarked"
         class="pi pi-bookmark-fill"
         style="color: var(--p-button-text-warn-color); margin-right: 0.3em"
       ></i>
-      <span class="tword-text" @dblclick="handleTextDbClick">
-        {{ props.word.text }}
+      <span class="tsyl-text" @dblclick="handleTextDbClick">
+        {{ props.syllable.text }}
       </span>
     </div>
-    <Timestamp class="tword-timestamp" end v-model="props.word.endTime" v-tooltip="'音节结束时间'" />
+    <Timestamp class="tsyl-timestamp" end v-model="props.syllable.endTime" v-tooltip="'音节结束时间'" />
   </div>
 </template>
 
@@ -28,29 +28,29 @@
 import Timestamp from './Timestamp.vue'
 import { computed, nextTick, watch } from 'vue'
 import { tryRaf } from '@utils/tryRaf'
-import { View, type LyricLine, type LyricWord } from '@core/types'
+import { View, type LyricLine, type LyricSyllable } from '@core/types'
 import { usePrefStore, useRuntimeStore, useStaticStore } from '@states/stores'
 
 const props = defineProps<{
-  word: LyricWord
+  syllable: LyricSyllable
   parent: LyricLine
   parentIndex: number
 }>()
 const runtimeStore = useRuntimeStore()
 const prefStore = usePrefStore()
 function handleMouseDown() {
-  runtimeStore.selectLineWord(props.parent, props.word)
+  runtimeStore.selectLineSyl(props.parent, props.syllable)
 }
 const isSelected = computed(() => {
-  return runtimeStore.selectedWords.has(props.word)
+  return runtimeStore.selectedSyllables.has(props.syllable)
 })
 
 const audio = useStaticStore().audio
 const isActive = computed(
   () =>
-    (props.word.startTime || props.word.endTime) &&
-    audio.amendedProgressComputed.value >= props.word.startTime &&
-    audio.amendedProgressComputed.value <= props.word.endTime,
+    (props.syllable.startTime || props.syllable.endTime) &&
+    audio.amendedProgressComputed.value >= props.syllable.startTime &&
+    audio.amendedProgressComputed.value <= props.syllable.endTime,
 )
 
 const emit = defineEmits<{
@@ -66,9 +66,9 @@ watch([isActive, () => prefStore.scrollWithPlayback], () => {
 
 function handleTextDbClick() {
   runtimeStore.currentView = View.Content
-  const id = props.word.id
+  const id = props.syllable.id
   tryRaf(() => {
-    const hooks = useStaticStore().wordHooks.get(id)
+    const hooks = useStaticStore().syllableHooks.get(id)
     if (hooks) {
       hooks.focusInput()
       return true
@@ -78,29 +78,29 @@ function handleTextDbClick() {
 </script>
 
 <style lang="scss">
-.tword {
-  height: var(--word-height);
+.tsyl {
+  height: var(--syl-height);
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: var(--timestamp-space) 0.5rem;
   justify-content: space-between;
-  --tword-border-color: var(--tline-border-color);
-  --tword-thick-border-color: transparent;
+  --tsyl-border-color: var(--tline-border-color);
+  --tsyl-thick-border-color: transparent;
   box-shadow:
-    -1px -1px 0 var(--tword-border-color),
-    inset -1px -1px 0 var(--tword-border-color),
-    var(--tword-thick-border-color) inset -1px -1px 0 3px,
-    var(--tword-thick-border-color) inset 0 0 0 3px;
+    -1px -1px 0 var(--tsyl-border-color),
+    inset -1px -1px 0 var(--tsyl-border-color),
+    var(--tsyl-thick-border-color) inset -1px -1px 0 3px,
+    var(--tsyl-thick-border-color) inset 0 0 0 3px;
   &:hover {
-    --tword-thick-border-color: color-mix(in srgb, var(--p-primary-color), transparent 75%);
+    --tsyl-thick-border-color: color-mix(in srgb, var(--p-primary-color), transparent 75%);
   }
   &.selected {
-    --tword-thick-border-color: var(--p-primary-color);
-    .tword-timestamp {
+    --tsyl-thick-border-color: var(--p-primary-color);
+    .tsyl-timestamp {
       opacity: 1;
     }
-    .tword-content {
+    .tsyl-content {
       color: color-mix(in srgb, var(--p-primary-color), var(--p-button-text-plain-color) 50%);
     }
   }
@@ -108,14 +108,14 @@ function handleTextDbClick() {
     background-color: color-mix(in srgb, var(--p-primary-color), transparent 75%);
   }
 }
-.tword-timestamp {
+.tsyl-timestamp {
   opacity: 0.7;
 }
-.tword-content {
+.tsyl-content {
   text-align: center;
   font-size: 1.5rem;
 }
-.tword-text {
+.tsyl-text {
   white-space: pre;
 }
 </style>

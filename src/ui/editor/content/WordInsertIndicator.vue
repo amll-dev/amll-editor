@@ -2,7 +2,7 @@
   <div
     class="winsert-indicator"
     :class="{
-      dragging: runtimeStore.isDraggingWord,
+      dragging: runtimeStore.isDraggingSyl,
       dragover,
       beginning: props.index === 0,
     }"
@@ -13,10 +13,10 @@
 </template>
 
 <script setup lang="ts">
-import type { LyricLine, LyricWord } from '@core/types'
+import type { LyricLine, LyricSyllable } from '@core/types'
 import { useRuntimeStore, useCoreStore, useStaticStore } from '@states/stores'
-import { alignLineEndTime, alignLineStartTime } from '@utils/alignLineWordTime'
-import { sortWords } from '@utils/sortLineWords'
+import { alignLineEndTime, alignLineStartTime } from '@utils/alignLineSylTime'
+import { sortSyllables } from '@utils/sortLineSyls'
 import { ref } from 'vue'
 const runtimeStore = useRuntimeStore()
 const coreStore = useCoreStore()
@@ -25,7 +25,7 @@ const dragover = ref(false)
 const props = defineProps<{ parent: LyricLine; index: number }>()
 
 function handleDragOver(e: DragEvent) {
-  if (!runtimeStore.isDraggingWord) return
+  if (!runtimeStore.isDraggingSyl) return
   e.preventDefault()
   dragover.value = true
   runtimeStore.canDrop = true
@@ -35,21 +35,21 @@ function handleDragLeave() {
   runtimeStore.canDrop = false
 }
 function handleDrop(e: DragEvent) {
-  if (!runtimeStore.isDraggingWord) return
+  if (!runtimeStore.isDraggingSyl) return
   dragover.value = false
   runtimeStore.canDrop = false
-  const pendingWords = sortWords(...runtimeStore.selectedWords)
+  const pendingSyls = sortSyllables(...runtimeStore.selectedSyllables)
   if (e.ctrlKey || e.metaKey) {
-    const duplicatedWords = pendingWords.map(coreStore.newWord)
+    const duplicatedWords = pendingSyls.map(coreStore.newSyllable)
     const isBegin = props.index === 0
-    const isEnd = props.index === props.parent.words.length
-    props.parent.words.splice(props.index, 0, ...duplicatedWords)
+    const isEnd = props.index === props.parent.syllables.length
+    props.parent.syllables.splice(props.index, 0, ...duplicatedWords)
     if (isBegin) alignLineStartTime(props.parent)
     if (isEnd) alignLineEndTime(props.parent)
-    runtimeStore.selectLineWord(props.parent, ...duplicatedWords)
+    runtimeStore.selectLineSyl(props.parent, ...duplicatedWords)
     staticStore.touchLineWord(props.parent, duplicatedWords.at(-1)!)
   } else {
-    const continuity = checkWordContinuity(pendingWords)
+    const continuity = checkSylsContinuity(pendingSyls)
     if (continuity && runtimeStore.getFirstSelectedLine() === props.parent) {
       const [start, end] = continuity
       if (props.index >= start && props.index <= end + 1)
@@ -57,28 +57,28 @@ function handleDrop(e: DragEvent) {
         return
     }
     const isBegin = props.index === 0
-    const isEnd = props.index === props.parent.words.length
-    const placeholder = coreStore.newWord({ text: '#PLACEHOLDER#', bookmarked: true })
-    props.parent.words.splice(props.index, 0, placeholder)
-    coreStore.deleteWord(...pendingWords)
-    const insertIndex = props.parent.words.indexOf(placeholder)
-    props.parent.words.splice(insertIndex, 1, ...pendingWords)
+    const isEnd = props.index === props.parent.syllables.length
+    const placeholder = coreStore.newSyllable({ text: '#PLACEHOLDER#', bookmarked: true })
+    props.parent.syllables.splice(props.index, 0, placeholder)
+    coreStore.deleteSyllable(...pendingSyls)
+    const insertIndex = props.parent.syllables.indexOf(placeholder)
+    props.parent.syllables.splice(insertIndex, 1, ...pendingSyls)
     if (isBegin) alignLineStartTime(props.parent)
     if (isEnd) alignLineEndTime(props.parent)
-    runtimeStore.selectLineWord(props.parent, ...pendingWords)
+    runtimeStore.selectLineSyl(props.parent, ...pendingSyls)
   }
 }
 
-function checkWordContinuity(words: Readonly<LyricWord[]>): null | [number, number] {
-  if (words.length === 0) return null
-  const parentWords = props.parent.words
-  if (words.length === 1) {
-    const index = parentWords.indexOf(words[0]!)
+function checkSylsContinuity(syls: Readonly<LyricSyllable[]>): null | [number, number] {
+  if (syls.length === 0) return null
+  const parentSyls = props.parent.syllables
+  if (syls.length === 1) {
+    const index = parentSyls.indexOf(syls[0]!)
     return [index, index]
   }
   const indices: number[] = []
-  for (const [index, word] of parentWords.entries()) {
-    if (!words.includes(word)) continue
+  for (const [index, syl] of parentSyls.entries()) {
+    if (!syls.includes(syl)) continue
     if (indices.length === 0) indices.push(index)
     else if (indices.at(-1) === index - 1) indices.push(index)
     else return null
@@ -94,8 +94,8 @@ function checkWordContinuity(words: Readonly<LyricWord[]>): null | [number, numb
   position: relative;
   --extra-width: 0.85rem;
   margin: -0.2rem 0;
-  margin-left: calc(var(--c-word-gap) / -2 - var(--extra-width));
-  margin-right: calc(var(--c-word-gap) / 2 - var(--extra-width));
+  margin-left: calc(var(--c-syl-gap) / -2 - var(--extra-width));
+  margin-right: calc(var(--c-syl-gap) / 2 - var(--extra-width));
   padding: 0.1rem calc(var(--extra-width));
   z-index: 1;
   pointer-events: none;
@@ -126,7 +126,7 @@ function checkWordContinuity(words: Readonly<LyricWord[]>): null | [number, numb
   &.beginning {
     margin: -0.1rem -0.5rem;
     padding: 0.1rem 0.5rem 0.1rem 0;
-    width: var(--c-word-gap);
+    width: var(--c-syl-gap);
     &::after {
       transform: translateX(-0.2rem);
     }

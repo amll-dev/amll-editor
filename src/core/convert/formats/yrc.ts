@@ -2,7 +2,7 @@
 // YRC is a lyric format used by NetEase Cloud Music
 
 // Format:
-// [line1Start,line1Duration](word1Start,word1Duration,0)word1(word2Start,word2Duration,0)word2...\n
+// [line1Start,line1Duration](syl1Start,syl1Duration,0)syl1(syl2Start,syl2Duration,0)syl2...\n
 // [line2Start,line2Duration]...
 
 // Example:
@@ -35,11 +35,11 @@ export function parseYRC(yrc: string): Persist {
       if (!lineMatch) return null
       const [lMatchStr, lStartStr, lDurStr] = lineMatch
 
-      const wordPattern = /\((\d+),(\d+),0\)([^\(]*)/g
-      const wordMatches = lineStr.slice(lMatchStr.length).matchAll(wordPattern)
-      const words = [...wordMatches].map((match) => {
+      const sylPattern = /\((\d+),(\d+),0\)([^\(]*)/g
+      const sylMatches = lineStr.slice(lMatchStr.length).matchAll(sylPattern)
+      const syls = [...sylMatches].map((match) => {
         const [, wStartStr, wDurStr, wText] = match
-        return coreCreate.newWord({
+        return coreCreate.newSyllable({
           text: wText,
           startTime: Number(wStartStr),
           endTime: Number(wStartStr) + Number(wDurStr),
@@ -49,30 +49,30 @@ export function parseYRC(yrc: string): Persist {
       return coreCreate.newLine({
         startTime: Number(lStartStr),
         endTime: Number(lStartStr) + Number(lDurStr),
-        words,
+        syllables: syls,
       })
     })
     .filter((line): line is LyricLine => line !== null)
   return {
     metadata: {},
-    lyricLines,
+    lines: lyricLines,
   }
 }
 
 export function stringifyYRC(data: Persist): string {
-  const lines = data.lyricLines
+  const lines = data.lines
   return lines
     .map((line) => {
       const lStart = line.startTime
       const lDur = line.endTime - line.startTime
-      const lWords = line.words
-        .map((w) => {
-          const wStart = w.startTime
-          const wDur = w.endTime - w.startTime
-          return `(${wStart},${wDur},0)${w.text}`
+      const lSyls = line.syllables
+        .map((s) => {
+          const sStart = s.startTime
+          const sDur = s.endTime - s.startTime
+          return `(${sStart},${sDur},0)${s.text}`
         })
         .join('')
-      return `[${lStart},${lDur}]${lWords}`
+      return `[${lStart},${lDur}]${lSyls}`
     })
     .join('\n')
 }

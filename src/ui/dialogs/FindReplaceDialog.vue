@@ -194,7 +194,7 @@ import { useFindReplaceEngine } from '@core/findReplace'
 import { useGlobalKeyboard } from '@core/hotkey'
 import { tryRaf } from '@utils/tryRaf'
 import type { TimeoutHandle } from '@utils/types'
-import { sortWords } from '@utils/sortLineWords'
+import { sortSyllables } from '@utils/sortLineSyls'
 import InputText from '@ui/components/InputText.vue'
 
 const [visible] = defineModel<boolean>({ required: true })
@@ -352,7 +352,7 @@ function handleDragOver(e: DragEvent) {
   if (crossWordMatch.value) {
     if (!runtimeStore.isDragging) return
   } else {
-    if (!runtimeStore.isDraggingWord || runtimeStore.selectedWords.size !== 1) return
+    if (!runtimeStore.isDraggingSyl || runtimeStore.selectedSyllables.size !== 1) return
   }
   e.preventDefault()
   runtimeStore.canDrop = true
@@ -374,17 +374,17 @@ function handleDrop(where: 'find' | 'replace') {
     if (runtimeStore.isDraggingLine)
       text = runtimeStore
         .getFirstSelectedLine()!
-        .words.map((w) => w.text)
+        .syllables.map((s) => s.text)
         .join('')
         .trim()
     else
-      text = sortWords(...runtimeStore.selectedWords)
-        .map((w) => w.text)
+      text = sortSyllables(...runtimeStore.selectedSyllables)
+        .map((s) => s.text)
         .join('')
         .trim()
   } else {
-    if (!runtimeStore.isDraggingWord || runtimeStore.selectedWords.size !== 1) return
-    text = (runtimeStore.getFirstSelectedWord()?.text || '').trim()
+    if (!runtimeStore.isDraggingSyl || runtimeStore.selectedSyllables.size !== 1) return
+    text = (runtimeStore.getFirstSelectedSyl()?.text || '').trim()
   }
   if (!text.length) return
   if (where === 'find') findInput.value = useRegex.value ? escapeRegExp(text) : text
