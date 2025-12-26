@@ -246,7 +246,7 @@ hr {
   --e-bg-active-background: color-mix(in srgb, var(--p-blue-400), transparent 80%);
 }
 
-.v-popper--theme-tooltip .v-popper__inner {
+.v-popper--theme-tooltip .v-popper__inner.v-popper__inner {
   background: color-mix(in srgb, var(--global-background), transparent 10%);
   border: 1px solid var(--p-form-field-border-color);
   color: var(--p-text-color);
