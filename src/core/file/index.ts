@@ -155,7 +155,7 @@ async function handleTTMLFile(result: FileReadResult) {
   applyPersist(data)
   setFileState({
     handle,
-    currBackingFmt: BackingFmt.ALP,
+    currBackingFmt: BackingFmt.TTML,
     createdAt: new Date(),
     displayFilename: filename,
   })
