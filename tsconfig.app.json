@@ -13,7 +13,6 @@
     "paths": {
       "@core/*": ["./src/core/*"],
       "@assets/*": ["./src/assets/*"],
-      "@components/*": ["./src/components/*"],
       "@ui/*": ["./src/ui/*"],
       "@utils/*": ["./src/utils/*"],
       "@states/*": ["./src/states/*"],

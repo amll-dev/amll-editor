@@ -57,6 +57,7 @@
     "wavesurfer.js": "^7.12.1"
   },
   "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^6.0.0",
     "@tsconfig/node22": "^22.0.5",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^22.19.1",

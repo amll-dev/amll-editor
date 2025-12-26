@@ -10,7 +10,6 @@ import { manifestPlugin } from './pipelines/webManifest/plugin'
 const aliasRelMap: Record<string, string> = {
   '@core': './src/core',
   '@assets': './src/assets',
-  '@components': './src/components',
   '@ui': './src/ui',
   '@utils': './src/utils',
   '@states': './src/states',
