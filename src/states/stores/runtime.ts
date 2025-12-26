@@ -84,7 +84,7 @@ export const useRuntimeStore = defineStore('runtime', () => {
     applySylSelectToLine()
   }
   function selectLine(...lines: LyricLine[]) {
-    if (lines.length === 1 && selectedLines.has(lines[0]!)) {
+    if (lines.length === 1 && selectedLines.size === 1 && selectedLines.has(lines[0]!)) {
       clearSylSelection()
       return
     }
