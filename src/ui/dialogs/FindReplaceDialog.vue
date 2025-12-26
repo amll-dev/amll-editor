@@ -58,113 +58,104 @@
             />
             <label for="findInput">查找内容</label>
           </IftaLabel>
-          <!-- <Button
-            v-if="showOptions"
-            icon="pi pi-hammer"
-            size="small"
-            severity="secondary"
-            v-tooltip="'设置查找目标属性'"
-            class="findreplace-format-btn"
-          /> -->
         </div>
-        <div
-          class="findreplace-replace-input findreplace-input"
-          :class="{ showformatbtn: showOptions, regex: useRegex }"
-          v-if="showReplace"
-          @dragenter="handleDragEnter"
-          @dragleave="handleDragLeave"
-          @dragover="handleDragOver"
-          @drop="() => handleDrop('replace')"
-        >
-          <IftaLabel>
-            <InputText
-              id="replaceInput"
-              v-model.escapeEnter="replaceInput"
-              fluid
-              ref="replaceInputComponent"
-              @keydown="handleReplaceInputKeydown"
-            />
-            <label for="replaceInput">替换为</label>
-          </IftaLabel>
-          <!-- <Button
-            v-if="showOptions"
-            icon="pi pi-hammer"
-            size="small"
-            severity="secondary"
-            v-tooltip="'设置替换属性'"
-            class="findreplace-format-btn"
-          /> -->
-        </div>
+        <AnimatedFold :folded="!showReplace">
+          <div
+            class="findreplace-replace-input findreplace-input"
+            :class="{ showformatbtn: showOptions, regex: useRegex }"
+            @dragenter="handleDragEnter"
+            @dragleave="handleDragLeave"
+            @dragover="handleDragOver"
+            @drop="() => handleDrop('replace')"
+          >
+            <IftaLabel>
+              <InputText
+                id="replaceInput"
+                v-model.escapeEnter="replaceInput"
+                fluid
+                ref="replaceInputComponent"
+                @keydown="handleReplaceInputKeydown"
+              />
+              <label for="replaceInput">替换为</label>
+            </IftaLabel>
+          </div>
+        </AnimatedFold>
       </div>
-      <div class="findreplace-range">
-        <div class="findreplace-range-title">匹配范围</div>
-        <div class="findreplace-range-options">
-          <div class="findreplace-range-option-item">
-            <Checkbox v-model="findInWords" inputId="findInWords" binary />
-            <label for="findInWords" class="findreplace-range-option-label">音节内容</label>
-          </div>
-          <div class="findreplace-range-option-item">
-            <Checkbox v-model="findInTranslations" inputId="findInTranslations" binary />
-            <label for="findInTranslations" class="findreplace-range-option-label">翻译</label>
-          </div>
-          <div class="findreplace-range-option-item">
-            <Checkbox v-model="findInRoman" inputId="findInRoman" binary />
-            <label for="findInRoman" class="findreplace-range-option-label">音译</label>
-          </div>
-        </div>
-      </div>
-      <div class="findreplace-options" v-if="showOptions">
-        <div class="findreplace-options-title">匹配选项</div>
-        <div class="findreplace-options-list">
-          <div class="findreplace-option-item">
-            <Checkbox v-model="matchCase" inputId="matchCase" binary />
-            <label for="matchCase" class="findreplace-option-label">区分大小写</label>
-          </div>
-          <div class="findreplace-option-item">
-            <Checkbox v-model="matchWholeWord" inputId="matchWholeWord" binary />
-            <label for="matchWholeWord" class="findreplace-option-label">全字匹配</label>
-          </div>
-          <div class="findreplace-option-item">
-            <Checkbox v-model="matchFullField" inputId="matchFullField" binary />
-            <label for="matchFullField" class="findreplace-option-label">整字段匹配</label>
-          </div>
-          <div class="findreplace-option-item">
-            <Checkbox
-              v-model="crossWordMatch"
-              inputId="crossWordMatch"
-              binary
-              :disabled="showReplace"
-            />
-            <label for="crossWordMatch" class="findreplace-option-label">跨音节匹配</label>
-          </div>
-          <div class="findreplace-option-item">
-            <Checkbox v-model="useRegex" inputId="useRegex" binary />
-            <label for="useRegex" class="findreplace-option-label">使用正则</label>
-          </div>
-          <div class="findreplace-option-item">
-            <Checkbox v-model="wrapSearch" inputId="wrapSearch" binary />
-            <label for="wrapSearch" class="findreplace-option-label">循环搜索</label>
+      <div class="findreplace-params">
+        <div class="findreplace-range">
+          <div class="findreplace-range-title">匹配范围</div>
+          <div class="findreplace-range-options">
+            <div class="findreplace-range-option-item">
+              <Checkbox v-model="findInWords" inputId="findInWords" binary />
+              <label for="findInWords" class="findreplace-range-option-label">音节内容</label>
+            </div>
+            <div class="findreplace-range-option-item">
+              <Checkbox v-model="findInTranslations" inputId="findInTranslations" binary />
+              <label for="findInTranslations" class="findreplace-range-option-label">翻译</label>
+            </div>
+            <div class="findreplace-range-option-item">
+              <Checkbox v-model="findInRoman" inputId="findInRoman" binary />
+              <label for="findInRoman" class="findreplace-range-option-label">音译</label>
+            </div>
           </div>
         </div>
+        <AnimatedFold :folded="!showOptions">
+          <div class="findreplace-options" v-if="showOptions">
+            <div class="findreplace-options-title">匹配选项</div>
+            <div class="findreplace-options-list">
+              <div class="findreplace-option-item">
+                <Checkbox v-model="matchCase" inputId="matchCase" binary />
+                <label for="matchCase" class="findreplace-option-label">区分大小写</label>
+              </div>
+              <div class="findreplace-option-item">
+                <Checkbox v-model="matchWholeWord" inputId="matchWholeWord" binary />
+                <label for="matchWholeWord" class="findreplace-option-label">全字匹配</label>
+              </div>
+              <div class="findreplace-option-item">
+                <Checkbox v-model="matchFullField" inputId="matchFullField" binary />
+                <label for="matchFullField" class="findreplace-option-label">整字段匹配</label>
+              </div>
+              <div class="findreplace-option-item">
+                <Checkbox
+                  v-model="crossWordMatch"
+                  inputId="crossWordMatch"
+                  binary
+                  :disabled="showReplace"
+                />
+                <label for="crossWordMatch" class="findreplace-option-label">跨音节匹配</label>
+              </div>
+              <div class="findreplace-option-item">
+                <Checkbox v-model="useRegex" inputId="useRegex" binary />
+                <label for="useRegex" class="findreplace-option-label">使用正则</label>
+              </div>
+              <div class="findreplace-option-item">
+                <Checkbox v-model="wrapSearch" inputId="wrapSearch" binary />
+                <label for="wrapSearch" class="findreplace-option-label">循环搜索</label>
+              </div>
+            </div>
+          </div>
+        </AnimatedFold>
       </div>
+
       <div class="findreplace-actions">
-        <template v-if="showReplace">
-          <Button
-            icon="pi pi-reply"
-            label="替换"
-            severity="secondary"
-            :disabled="actionDisabled"
-            @click="handleReplace"
-          />
-          <Button
-            icon="pi pi-angle-double-right"
-            v-tooltip="'全部替换'"
-            severity="secondary"
-            :disabled="actionDisabled"
-            @click="handleReplaceAll"
-          />
-          <div style="flex: 1"></div>
-        </template>
+        <Transition name="fade">
+          <div class="replace-actions" v-if="showReplace">
+            <Button
+              icon="pi pi-reply"
+              label="替换"
+              severity="secondary"
+              :disabled="actionDisabled"
+              @click="handleReplace"
+            />
+            <Button
+              icon="pi pi-angle-double-right"
+              v-tooltip="'全部替换'"
+              severity="secondary"
+              :disabled="actionDisabled"
+              @click="handleReplaceAll"
+            />
+          </div>
+        </Transition>
         <Button
           icon="pi pi-arrow-up"
           v-tooltip="'查找上一项'"
@@ -198,6 +189,7 @@ import { tryRaf } from '@utils/tryRaf'
 import type { TimeoutHandle } from '@utils/types'
 
 import InputText from '@ui/components/InputText.vue'
+import AnimatedFold from '@ui/components/animatedFold.vue'
 import { Button, Checkbox, Dialog, IftaLabel, RadioButton, ToggleSwitch } from 'primevue'
 import { useToast } from 'primevue/usetoast'
 
@@ -444,7 +436,6 @@ function handleDrop(where: 'find' | 'replace') {
 .findreplace-inputs {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
 }
 .findreplace-input {
   position: relative;
@@ -458,6 +449,9 @@ function handleDrop(where: 'find' | 'replace') {
     }
   }
 }
+.findreplace-replace-input {
+  margin-top: 0.5rem;
+}
 // .findreplace-format-btn {
 //   position: absolute !important;
 //   bottom: 0.5rem;
@@ -468,6 +462,9 @@ function handleDrop(where: 'find' | 'replace') {
   display: flex;
   gap: 2rem;
   align-items: flex-start;
+}
+.findreplace-options {
+  margin-top: 0.5rem;
 }
 .findreplace-range-title,
 .findreplace-options-title {
@@ -489,6 +486,12 @@ function handleDrop(where: 'find' | 'replace') {
 .findreplace-actions {
   display: flex;
   justify-content: flex-end;
+  gap: 0.5rem;
+}
+.replace-actions {
+  width: 0;
+  flex: 1;
+  display: flex;
   gap: 0.5rem;
 }
 
