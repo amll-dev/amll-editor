@@ -21,6 +21,7 @@
           @click="audio.togglePlay()"
           :disabled="!activatedRef"
           v-tooltip="tipHotkey(playingComputed ? '暂停' : '播放', 'playPauseAudio')"
+          ref="playPauseButton"
         />
         <div class="audio-progress-canvas-wrapper" ref="audioProgressWrapperEl">
           <canvas
@@ -74,6 +75,7 @@ import { Button, Card, Popover } from 'primevue'
 
 const { audio } = useStaticStore()
 const { amendedProgressComputed, lengthComputed, playingComputed, activatedRef } = audio
+const playPauseButton = useTemplateRef('playPauseButton')
 
 const { open: handleSelectFile, onChange: onFileChange } = useFileDialog({
   accept: 'audio/*,.ncm',
@@ -93,6 +95,7 @@ onUnmounted(() => audio.offLoaded(refresh))
 useGlobalKeyboard('chooseMedia', () => handleSelectFile())
 useGlobalKeyboard('playPauseAudio', () => {
   if (activatedRef.value) audio.togglePlay()
+  if (playPauseButton.value) ((playPauseButton.value as any).$el as HTMLButtonElement).focus()
 })
 useGlobalKeyboard('seekBackward', () => {
   audio.seekBy(-5000)
