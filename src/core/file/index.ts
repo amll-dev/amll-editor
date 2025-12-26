@@ -265,12 +265,29 @@ async function saveAsProjectFile() {
   return await __saveAsFile(alpPickerType)
 }
 
-let dragListenerInitialized = false
 type Notifier = (
   summary: string,
   detail: string,
   severity?: 'info' | 'warn' | 'error' | 'success',
 ) => void
+
+const possibleAudioExts = new Set([
+  'mp3',
+  'wav',
+  'flac',
+  'ncm',
+  'opus',
+  'webm',
+  'weba',
+  'ogg',
+  'm4a',
+  'oga',
+  'mid',
+  'aiff',
+  'wma',
+  'au',
+])
+let dragListenerInitialized = false
 function initDragListener(notifier: Notifier) {
   if (dragListenerInitialized) return
   dragListenerInitialized = true
@@ -286,6 +303,10 @@ function initDragListener(notifier: Notifier) {
     if (!file) return
     e.preventDefault()
     const [, ext] = breakExtension(file.name)
+    if (possibleAudioExts.has(ext)) {
+      useStaticStore().audio.mount(file)
+      return
+    }
     if (!allSupportedExt.has(`.${ext}`))
       return notifier('文件打开失败', `不支持的文件类型: .${ext}`, 'error')
 
