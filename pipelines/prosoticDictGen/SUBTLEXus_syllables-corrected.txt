@@ -58,7 +58,7 @@ mother: mo-ther
 wouldn: woul-dn
 trying: try-ing
 someone: some-one
-morning: morn-ing
+morning: mor-ning
 woman: wo-man
 yourself: your-self
 today: to-day
