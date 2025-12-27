@@ -85,7 +85,7 @@ const staticStore = useStaticStore()
 const prefStore = usePrefStore()
 
 function appendWord(line: LyricLine) {
-  const newSyllable = coreStore.newSyllable(line)
+  const newSyllable = coreStore.newSyllable()
   line.syllables.push(newSyllable)
   runtimeStore.selectLineSyl(line, newSyllable)
   nextTick(() => staticStore.syllableHooks.get(newSyllable.id)?.focusInput())
