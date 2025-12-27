@@ -478,9 +478,9 @@ function handleDrop(where: 'find' | 'replace') {
 }
 .findreplace-input {
   position: relative;
-  &.showformatbtn {
-    --p-inputtext-padding-x: 0.75rem 3rem;
-  }
+  // &.showformatbtn {
+  //   --p-inputtext-padding-x: 0.75rem 3rem;
+  // }
   &.regex .p-inputtext {
     font-family: var(--font-monospace);
     &::placeholder {
