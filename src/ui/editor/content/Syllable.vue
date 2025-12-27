@@ -7,6 +7,7 @@
     }"
     @mousedown.stop
     @click.stop
+    @dblclick.stop
     @contextmenu.stop="handleContext"
     @dragstart.stop
   >
@@ -16,7 +17,7 @@
       draggable="true"
       @mousedown="handleMousedown"
       @click="handleClick"
-      @dblclick.stop="handleDbClick"
+      @dblclick="handleDbClick"
       @dragstart="handleDragStart"
       @dragend="handleDragEnd"
     >
