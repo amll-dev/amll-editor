@@ -240,12 +240,10 @@ function findNextSolidSyl(sameLine = false) {
 function findPrevSolidSyl(sameLine = false) {
   let lineIndex = props.lineIndex
   let sylIndex = props.index
-  console.log(1, lineIndex, sylIndex)
   while (lineIndex >= 0) {
     const line = coreStore.lyricLines[lineIndex]!
     if (sylIndex === Infinity) sylIndex = line.syllables.length
     while (--sylIndex >= 0) {
-      console.log(2, lineIndex, sylIndex)
       const syl = line.syllables[sylIndex]!
       if (syl.text.trim()) return syl
     }
@@ -381,8 +379,9 @@ function handleRomanKeydown(event: KeyboardEvent) {
       const el = romanInputEl.value
       if (!el) return
       if (romanModel.value.split(' ').length <= props.syllable.placeholdingBeat) return
-      event.preventDefault()
       const cursorPos = el.selectionStart || 0
+      if (cursorPos !== el.value.length) return
+      event.preventDefault()
       if (cursorPos === romanModel.value.length) {
         const nextSyl = findNextSolidSyl()
         if (!nextSyl) return
