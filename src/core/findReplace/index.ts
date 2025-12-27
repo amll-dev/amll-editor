@@ -74,7 +74,7 @@ export function useFindReplaceEngine(
   watch(
     [() => runtimeStore.selectedLines, () => runtimeStore.selectedSyllables],
     () => (currPos.value = getCurrPos()),
-    { immediate: true },
+    { immediate: true, deep: true },
   )
 
   function getNextPos(nullablePos: FR.AbstractPos | null): FR.Pos | null {
@@ -425,7 +425,7 @@ export function useFindReplaceEngine(
       currPos.value = matchedPos
       return
     }
-    runtimeStore.clearSelection()
+    // runtimeStore.clearSelection()
     if (!noAlert)
       notifier({
         severity: 'warn',
