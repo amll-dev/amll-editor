@@ -6,6 +6,7 @@
     @contextmenu="handleBlankContext"
     data-escape-auto-blur
     spellcheck="false"
+    :class="{ 'syl-roman-enabled': prefStore.showSylLvlRoman }"
   >
     <VList
       :data="coreStore.lyricLines"
@@ -62,7 +63,7 @@ import { nextTick, onBeforeUnmount, onMounted, onUnmounted, shallowRef, useTempl
 import { useGlobalKeyboard } from '@core/hotkey'
 import { type LyricLine, type LyricSyllable, View } from '@core/types'
 
-import { useCoreStore, useRuntimeStore, useStaticStore } from '@states/stores'
+import { useCoreStore, usePrefStore, useRuntimeStore, useStaticStore } from '@states/stores'
 import type { EditorComponentActions } from '@states/stores/static'
 
 import { alignLineEndTime, alignLineTime } from '@utils/alignLineSylTime'
@@ -81,6 +82,7 @@ import type { MenuItem } from 'primevue/menuitem'
 const coreStore = useCoreStore()
 const runtimeStore = useRuntimeStore()
 const staticStore = useStaticStore()
+const prefStore = usePrefStore()
 
 function appendWord(line: LyricLine) {
   const newSyllable = coreStore.newSyllable(line)
@@ -342,12 +344,20 @@ onUnmounted(() => {
 
 <style lang="scss">
 .editor.content {
-  --content-syl-height: 4.8rem;
+  --csyl-height: calc(var(--csyl-head-height) + var(--csyl-body-height));
+  --csyl-head-height: 1.8rem;
+  --csyl-body-height: 3rem;
+  --csyl-roman-height: 2rem;
+  &.syl-roman-enabled {
+    --csyl-height: calc(
+      var(--csyl-head-height) + var(--csyl-body-height) + var(--csyl-roman-height)
+    );
+  }
 }
 .editor-scroller {
   height: 100%;
 }
 .add-syl-button {
-  height: var(--content-syl-height);
+  height: var(--csyl-height);
 }
 </style>

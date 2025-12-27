@@ -43,7 +43,22 @@
         @keydown="handleKeydown"
         @focus="handleFocus"
         @compositionend="handleCompositionEnd"
-        @blur="props.syllable.text = inputModel"
+        @blur="flushInputModel"
+        data-syllable-field
+      />
+    </div>
+    <div class="csyl-roman-shell" v-if="prefStore.showSylLvlRoman">
+      <div class="csyl-roman-widthcontrol csyl-roman-input-alike">
+        {{ romanModel }}
+      </div>
+      <InputText
+        ref="romanInputComponent"
+        class="csyl-roman-input"
+        size="small"
+        v-model="romanModel"
+        @keydown="handleKeydown"
+        @focus="handleFocus"
+        @blur="flushRomanModel"
         data-syllable-field
       />
     </div>
@@ -58,17 +73,19 @@ import {
   onUnmounted,
   ref,
   shallowRef,
+  toRef,
   useTemplateRef,
   watch,
 } from 'vue'
 
 import type { LyricLine, LyricSyllable } from '@core/types'
 
-import { useCoreStore, useRuntimeStore, useStaticStore } from '@states/stores'
+import { useCoreStore, usePrefStore, useRuntimeStore, useStaticStore } from '@states/stores'
 import type { SylComponentActions } from '@states/stores/static'
 
 import { forceOutsideBlur } from '@utils/forceOutsideBlur'
 import { sortIndex } from '@utils/sortLineSyls'
+import { toLazyModel } from '@utils/toLazyModel'
 import { digit2Sup } from '@utils/toSupSub'
 import type { TimeoutHandle } from '@utils/types'
 
@@ -77,6 +94,7 @@ import InputText from '@ui/components/InputText.vue'
 const runtimeStore = useRuntimeStore()
 const coreStore = useCoreStore()
 const staticStore = useStaticStore()
+const prefStore = usePrefStore()
 const props = defineProps<{
   syllable: LyricSyllable
   index: number
@@ -86,17 +104,27 @@ const props = defineProps<{
 
 // Input Element
 const inputComponent = useTemplateRef('sylInputComponent')
-const inputEl = shallowRef<HTMLInputElement | null | undefined>(null)
+const inputEl = computed(() => inputComponent.value?.input)
+const romanInputComponent = useTemplateRef('romanInputComponent')
+const romanInputEl = computed(() => romanInputComponent.value?.input)
 const { focused } = useFocus(inputEl)
-onMounted(() => (inputEl.value = inputComponent.value?.input))
-const inputModel = ref(props.syllable.text)
-watch(
-  () => props.syllable.text,
-  (val) => (inputModel.value = val),
+const { focused: romanFocused } = useFocus(romanInputEl)
+
+const [inputModel, flushInputModel] = toLazyModel(
+  computed({
+    get: () => props.syllable.text,
+    set: (val: string) => (props.syllable.text = val),
+  }),
+  () => !focused.value,
 )
-watch(inputModel, (val) => {
-  if (!focused.value) props.syllable.text = val
-})
+const [romanModel, flushRomanModel] = toLazyModel(
+  computed({
+    get: () => props.syllable.romanization,
+    set: (val: string) => (props.syllable.romanization = val),
+  }),
+  () => !romanFocused.value,
+)
+
 function handleDbClick() {
   inputEl.value?.select()
 }
@@ -314,18 +342,35 @@ onUnmounted(() => {
 
 <style lang="scss">
 .csyl {
-  height: var(--content-syl-height);
-  --head-height: 1.8rem;
-  --body-height: calc(var(--content-syl-height) - var(--head-height));
+  height: var(--csyl-height);
   --p-inputtext-lg-font-size: 1.3rem;
-  --w-bg-color: var(--c-border-color);
+  --p-inputtext-sm-font-size: 0.95rem;
+  --p-inputtext-lg-padding-x: 0.6rem;
+  --p-inputtext-lg-padding-y: 0.5rem;
+  --p-inputtext-sm-padding-x: 0.4rem;
+  --p-inputtext-sm-padding-y: 0.3rem;
+  --csyl-border-color: var(--p-inputtext-border-color);
+  --csyl-head-bg: var(--c-border-color);
   position: relative;
   margin-right: var(--c-syl-gap);
+  border-radius: var(--p-inputtext-border-radius);
+  background-color: var(--p-inputtext-background);
+  box-shadow: var(--csyl-border-color) 0 0 0 1px inset;
   transition:
     transform 0.1s,
     opacity 0.1s;
+  &:hover {
+    --csyl-head-bg: var(--p-inputtext-border-color);
+    --csyl-border-color: var(--p-inputtext-hover-border-color);
+  }
   &.selected {
-    --w-bg-color: var(--p-primary-color);
+    --csyl-head-bg: var(--p-primary-color);
+    --csyl-border-color: var(--p-primary-color);
+    background-color: color-mix(
+      in srgb,
+      var(--p-primary-color) 10%,
+      var(--p-inputtext-background) 90%
+    );
     color: var(--p-primary-contrast-color);
     z-index: 3;
   }
@@ -337,11 +382,12 @@ onUnmounted(() => {
 .csyl-head {
   flex: 1;
   font-size: 1rem;
-  height: var(--head-height);
+  height: var(--csyl-head-height);
   cursor: move;
-  background-color: var(--w-bg-color);
+  background-color: var(--csyl-head-bg);
   border-top-left-radius: var(--p-inputtext-border-radius);
   border-top-right-radius: var(--p-inputtext-border-radius);
+  box-shadow: var(--csyl-border-color) 0 1px 0;
   font-family: var(--font-monospace);
   position: relative;
 }
@@ -372,49 +418,64 @@ onUnmounted(() => {
   right: 0.1rem;
   font-weight: bold;
 }
-.csyl-input-shell {
-  height: var(--body-height);
-  --p-inputtext-lg-padding-x: 0.6rem;
-  --p-inputtext-lg-padding-y: 0.5rem;
+.csyl-input-shell,
+.csyl-roman-shell {
+  height: var(--csyl-body-height);
   position: relative;
-  background-color: var(--p-inputtext-background);
   border-bottom-left-radius: var(--p-inputtext-border-radius);
   border-bottom-right-radius: var(--p-inputtext-border-radius);
   font-size: var(--p-inputtext-lg-font-size);
-  .csyl.selected & {
-    background-color: color-mix(
-      in srgb,
-      var(--p-primary-color) 10%,
-      var(--p-inputtext-background) 90%
-    );
-  }
 }
-.csyl-input-alike {
+.csyl-roman-shell {
+  font-size: var(--p-inputtext-sm-font-size);
+  height: var(--csyl-roman-height);
+  box-shadow: 0 -1px 0 color-mix(in srgb, var(--csyl-border-color), transparent 30%);
+}
+.syl-roman-enabled .csyl-input-shell {
+  border-radius: 0;
+}
+
+.csyl-input-alike,
+.csyl-roman-input-alike {
   padding: var(--p-inputtext-lg-padding-y) var(--p-inputtext-lg-padding-x);
   border: 1px solid transparent;
   white-space: pre;
+  text-align: center;
 }
-.csyl-input-widthcontrol {
+.csyl-roman-input-alike {
+  padding: var(--p-inputtext-sm-padding-y) var(--p-inputtext-sm-padding-x);
+}
+
+.csyl-input-widthcontrol,
+.csyl-roman-widthcontrol {
+  color: red;
   visibility: hidden;
 }
 .csyl-input,
-.csyl-input-placeholder {
+.csyl-input-placeholder,
+.csyl-roman-input {
   position: absolute;
   left: 0;
   right: 0;
   top: 0;
   bottom: 0;
 }
-.csyl-input.csyl-input {
+.csyl-input.csyl-input,
+.csyl-roman-input.csyl-roman-input {
   padding-inline: 0;
-  text-align: center;
   background: transparent;
   transition: none;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
-  .csyl.selected & {
-    border-color: var(--p-primary-color);
-  }
+  border-color: transparent !important;
+  text-align: center;
+}
+.syl-roman-enabled .csyl-input.csyl-input {
+  border-radius: 0;
+  border-bottom: none;
+}
+.csyl-roman-input.csyl-roman-input {
+  border-top: none;
 }
 .csyl-input-placeholder {
   color: var(--p-inputtext-placeholder-color);
