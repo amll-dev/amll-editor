@@ -415,16 +415,18 @@ onUnmounted(() => {
 <style lang="scss">
 .csyl {
   height: var(--csyl-height);
+  margin-right: var(--c-syl-gap);
   --p-inputtext-lg-font-size: 1.3rem;
   --p-inputtext-sm-font-size: 0.95rem;
   --p-inputtext-lg-padding-x: 0.6rem;
   --p-inputtext-lg-padding-y: 0.5rem;
   --p-inputtext-sm-padding-x: 0.4rem;
   --p-inputtext-sm-padding-y: 0.3rem;
+
+  position: relative;
+
   --csyl-border-color: var(--p-inputtext-border-color);
   --csyl-head-bg: var(--c-border-color);
-  position: relative;
-  margin-right: var(--c-syl-gap);
   border-radius: var(--p-inputtext-border-radius);
   background-color: var(--p-inputtext-background);
   box-shadow: var(--csyl-border-color) 0 0 0 1px inset;
@@ -490,6 +492,7 @@ onUnmounted(() => {
   right: 0.1rem;
   font-weight: bold;
 }
+
 .csyl-input-shell,
 .csyl-roman-shell {
   height: var(--csyl-body-height);
