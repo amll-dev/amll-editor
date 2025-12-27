@@ -187,6 +187,12 @@ const lineMenuItems: MenuItem[] = [
         coreStore.lyricLines.splice(lineIndex + 1, 0, newLine)
       }
       runtimeStore.selectLine(...newLines)
+      nextTick(() =>
+        vscroll.value?.scrollToIndex(
+          newLines.reduce((acc, line) => Math.max(acc, coreStore.lyricLines.indexOf(line)), 0),
+          { align: 'nearest' },
+        ),
+      )
     },
   },
   {
@@ -207,6 +213,9 @@ const lineMenuItems: MenuItem[] = [
       if (lastLineIndex === -1) return
       coreStore.lyricLines.splice(lastLineIndex + 1, 0, ...duplicates)
       runtimeStore.selectLine(...duplicates)
+      nextTick(() =>
+        vscroll.value?.scrollToIndex(lastLineIndex + duplicates.length, { align: 'nearest' }),
+      )
     },
   },
   {
