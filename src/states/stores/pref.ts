@@ -14,7 +14,7 @@ export const usePrefStore = defineStore('preference', () => {
   const hotkeyMap = reactive(getDefaultHotkeyMap())
   const isMac = ref(isAppleDevice())
   const packAudioToProject = ref(true)
-  const showSylLvlRoman = ref(true)
+  const showSylLvlRoman = ref(false)
 
   return {
     globalLatency,
