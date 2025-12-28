@@ -11,7 +11,7 @@
     "^@utils/",
     "^@ui/(?!.+\\.[a-z]+$)",
     "\\.vue$|^primevue|@primeuix",
-    "^@assets/$|\\.css$|\\.scss$",
+    "^@assets/|\\.css$|\\.scss$",
     "^[./]"
   ],
   "importOrderSeparation": true,

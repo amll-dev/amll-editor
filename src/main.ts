@@ -10,10 +10,13 @@ import FocusTrap from 'primevue/focustrap'
 import KeyFilter from 'primevue/keyfilter'
 import ToastService from 'primevue/toastservice'
 
+import consoleArt from '@assets/consoleArt.txt?raw'
 import '@assets/fonts/index.scss'
 import '@ui/common.scss'
 import 'floating-vue/dist/style.css'
 import 'primeicons/primeicons.css'
+
+console.log(consoleArt)
 
 const app = createApp(App)
 
