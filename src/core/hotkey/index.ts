@@ -69,20 +69,20 @@ const keyRewrites: Record<string, string> = {
   Comma: ',',
   Period: '.',
 }
-export function hotkeyToString(hotkey: HK.Key, isMac: boolean = false) {
+export function hotkeyToString(hotkey: HK.Key, macStyle: boolean = false) {
   const parts: string[] = []
-  if (hotkey.ctrl) parts.push(isMac ? '⌘' : 'Ctrl')
-  if (hotkey.alt) parts.push(isMac ? '⌥' : 'Alt')
-  if (hotkey.shift) parts.push(isMac ? '⇧' : 'Shift')
+  if (hotkey.ctrl) parts.push(macStyle ? '⌘' : 'Ctrl')
+  if (hotkey.alt) parts.push(macStyle ? '⌥' : 'Alt')
+  if (hotkey.shift) parts.push(macStyle ? '⇧' : 'Shift')
   const key = (keyRewrites[hotkey.code] ?? hotkey.code).replace(/^Key/, '').replace(/^Digit/, '')
   parts.push(key)
-  return parts.join(isMac ? '' : '+')
+  return parts.join(macStyle ? '' : '+')
 }
 
 export function getHotkeyStr(hotkeyCmd: HK.Command) {
   const prefStore = usePrefStore()
   const hotkey = prefStore.hotkeyMap[hotkeyCmd][0]
   if (!hotkey) return undefined
-  const hotkeyStr = hotkeyToString(hotkey, prefStore.isMac)
+  const hotkeyStr = hotkeyToString(hotkey, prefStore.macStyleShortcuts)
   return hotkeyStr
 }

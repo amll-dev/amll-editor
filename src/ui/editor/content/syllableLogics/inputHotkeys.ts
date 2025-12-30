@@ -57,7 +57,7 @@ export function handleSylInputKeydown(event: KeyboardEvent, state: SyllableState
     }
     case 'ArrowDown': {
       // Focus romanization input
-      if (!prefStore.showSylLvlRoman) return
+      if (!prefStore.sylRomanEnabled) return
       event.preventDefault()
       nextTick(() => state.romanInputEl?.select())
       return

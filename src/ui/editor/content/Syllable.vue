@@ -47,7 +47,7 @@
         data-syllable-field
       />
     </div>
-    <div class="csyl-roman-shell" v-if="prefStore.showSylLvlRoman">
+    <div class="csyl-roman-shell" v-if="prefStore.sylRomanEnabled">
       <div class="csyl-roman-widthcontrol csyl-roman-input-alike">
         {{ romanModel }}
       </div>

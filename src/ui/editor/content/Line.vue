@@ -77,7 +77,7 @@
                 @dragstart.stop
                 :data-line-field-key="f.key"
               />
-              <template v-if="f.key === 'roman' && prefStore.showSylLvlRoman">
+              <template v-if="f.key === 'roman' && prefStore.sylRomanEnabled">
                 <InputGroupAddon>
                   <Button
                     icon="pi pi-sort-amount-up"
@@ -273,7 +273,7 @@ onUnmounted(() => {
 })
 
 function handleRomanApply() {
-  if (!prefStore.showSylLvlRoman || !props.line.syllables.length) return
+  if (!prefStore.sylRomanEnabled || !props.line.syllables.length) return
   const romans = props.line.romanization.split(/[\s,']+/)
   for (const syl of props.line.syllables) {
     if (!romans.length || !syl.text.trim()) {
@@ -286,7 +286,7 @@ function handleRomanApply() {
   if (romans.length > 0) props.line.syllables.at(-1)!.romanization += ' ' + romans.join(' ')
 }
 function handleRomanGenerate() {
-  if (!prefStore.showSylLvlRoman || !props.line.syllables.length) return
+  if (!prefStore.sylRomanEnabled || !props.line.syllables.length) return
   const generatedRomans = props.line.syllables
     .map((syl) => syl.romanization)
     .filter((r) => r.trim())

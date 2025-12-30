@@ -84,12 +84,12 @@
       <div class="findreplace-params">
         <div class="findreplace-range">
           <div class="findreplace-range-title">匹配范围</div>
-          <div class="findreplace-range-options" :class="{ 'two-cols': prefStore.showSylLvlRoman }">
+          <div class="findreplace-range-options" :class="{ 'two-cols': prefStore.sylRomanEnabled }">
             <div class="findreplace-range-option-item">
               <Checkbox v-model="findInSyls" inputId="findInWords" binary />
               <label for="findInWords" class="findreplace-range-option-label">音节内容</label>
             </div>
-            <div class="findreplace-range-option-item" v-if="prefStore.showSylLvlRoman">
+            <div class="findreplace-range-option-item" v-if="prefStore.sylRomanEnabled">
               <Checkbox v-model="findInSylRomanModel" inputId="findInSylRoman" binary />
               <label for="findInSylRoman" class="findreplace-range-option-label">音节音译</label>
             </div>
@@ -100,7 +100,7 @@
             <div class="findreplace-range-option-item">
               <Checkbox v-model="findInRoman" inputId="findInRoman" binary />
               <label for="findInRoman" class="findreplace-range-option-label">{{
-                prefStore.showSylLvlRoman ? '行音译' : '音译'
+                prefStore.sylRomanEnabled ? '行音译' : '音译'
               }}</label>
             </div>
           </div>
@@ -216,7 +216,7 @@ const findInSyls = ref(true)
 const findInSylRomanModel = ref(false)
 const findInTranslations = ref(false)
 const findInRoman = ref(false)
-const findInSylRoman = computed(() => prefStore.showSylLvlRoman && findInSylRomanModel.value)
+const findInSylRoman = computed(() => prefStore.sylRomanEnabled && findInSylRomanModel.value)
 
 const matchCase = ref(false)
 const matchWholeWord = ref(false)

@@ -6,7 +6,7 @@
         value="show-syl-roman"
         size="small"
         binary
-        v-model="prefStore.showSylLvlRoman"
+        v-model="prefStore.sylRomanEnabled"
       />
       <label for="ribbon-show-syl-roman">启用逐字音译</label>
       <Checkbox

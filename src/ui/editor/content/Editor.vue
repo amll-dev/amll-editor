@@ -6,7 +6,7 @@
     @contextmenu="handleBlankContext"
     data-escape-auto-blur
     spellcheck="false"
-    :class="{ 'syl-roman-enabled': prefStore.showSylLvlRoman }"
+    :class="{ 'syl-roman-enabled': prefStore.sylRomanEnabled }"
   >
     <VList
       :data="coreStore.lyricLines"

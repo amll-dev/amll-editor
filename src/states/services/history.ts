@@ -106,7 +106,7 @@ function take() {
   if (state.current < state.head)
     for (let i = state.head; i > state.current; --i) snapshotList.delete(i)
   state.head = state.current
-  if (snapshotList.size > maxLength) snapshotList.delete(state.tail++)
+  while (snapshotList.size > maxLength) snapshotList.delete(state.tail++)
 }
 
 function wayback(snapshot: Readonly<Snapshot>, isRedo = false) {
