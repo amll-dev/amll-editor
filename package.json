@@ -38,6 +38,7 @@
     "compromise-speech": "^0.1.1",
     "compromise-syllables": "^0.0.6",
     "floating-vue": "^5.2.2",
+    "json-stable-stringify": "^1.3.0",
     "jss": "^10.10.0",
     "jss-preset-default": "^10.10.0",
     "jszip": "^3.10.1",

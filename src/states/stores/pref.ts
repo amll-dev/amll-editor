@@ -1,9 +1,14 @@
 import { defineStore } from 'pinia'
-import { reactive, toRefs } from 'vue'
+import { reactive, toRefs, watch } from 'vue'
 
-import { getDefaultPref } from '@core/pref'
+import { loadPreference, savePreference } from '@core/pref'
 
 export const usePrefStore = defineStore('preference', () => {
-  const state = reactive(getDefaultPref())
+  const state = reactive(loadPreference())
+  watch(
+    () => state,
+    (newVal) => savePreference(newVal),
+    { deep: true },
+  )
   return { ...toRefs(state) }
 })
