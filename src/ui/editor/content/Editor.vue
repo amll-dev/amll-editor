@@ -58,16 +58,24 @@
 <script setup lang="ts">
 import type { ScrollToIndexOpts } from 'virtua/unstable_core'
 import { VList } from 'virtua/vue'
-import { nextTick, onBeforeUnmount, onMounted, onUnmounted, shallowRef, useTemplateRef } from 'vue'
+import {
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  onUnmounted,
+  ref,
+  shallowRef,
+  useTemplateRef,
+} from 'vue'
 
 import { useGlobalKeyboard } from '@core/hotkey'
-import { type LyricLine, type LyricSyllable, View } from '@core/types'
+import { type LyricLine, View } from '@core/types'
 
 import { useCoreStore, usePrefStore, useRuntimeStore, useStaticStore } from '@states/stores'
 import type { EditorComponentActions } from '@states/stores/static'
 
-import { alignLineEndTime, alignLineTime } from '@utils/alignLineSylTime'
 import { forceOutsideBlur } from '@utils/forceOutsideBlur'
+import { isInputEl } from '@utils/isInputEl'
 import { tryRaf } from '@utils/tryRaf'
 
 import DragGhost from './DragGhost.vue'
@@ -79,10 +87,14 @@ import EmptyTip from '@ui/components/EmptyTip.vue'
 import { Button, ContextMenu } from 'primevue'
 import type { MenuItem } from 'primevue/menuitem'
 
+import { useContentCtxItems } from './context'
+
 const coreStore = useCoreStore()
 const runtimeStore = useRuntimeStore()
 const staticStore = useStaticStore()
 const prefStore = usePrefStore()
+
+const vscroll = useTemplateRef('vscroll')
 
 function appendWord(line: LyricLine) {
   const newSyllable = coreStore.newSyllable()
@@ -108,195 +120,22 @@ function handleDragOver(e: DragEvent) {
   }
 }
 
-let contextLineIndex: undefined | number = undefined
-let contextSylIndex: undefined | number = undefined
+const contextLineIndex = ref<number | undefined>(undefined)
+const contextSylIndex = ref<number | undefined>(undefined)
 
 const menu = useTemplateRef('menu')
 
-const blankMenuItems: MenuItem[] = [
-  {
-    label: '插入行',
-    icon: 'pi pi-plus',
-    command: () => {
-      const newLine = coreStore.newLine()
-      coreStore.lyricLines.push(newLine)
-      runtimeStore.selectLine(newLine)
-    },
-  },
-]
-const lineInsertMenuItems: MenuItem[] = [
-  {
-    label: '插入行',
-    icon: 'pi pi-plus',
-    command: () => {
-      if (contextLineIndex === undefined) return
-      const newLine = coreStore.newLine()
-      coreStore.lyricLines.splice(contextLineIndex, 0, newLine)
-      runtimeStore.selectLine(newLine)
-    },
-  },
-]
-const lineMenuItems: MenuItem[] = [
-  {
-    label: '设为对唱',
-    icon: 'pi pi-align-right',
-    command: () => {
-      runtimeStore.selectedLines.forEach((l) => (l.duet = true))
-    },
-  },
-  {
-    label: '设为背景',
-    icon: 'pi pi-expand',
-    command: () => {
-      runtimeStore.selectedLines.forEach((l) => (l.background = true))
-    },
-  },
-  {
-    label: '清除属性',
-    icon: 'pi pi-ban',
-    command: () => {
-      runtimeStore.selectedLines.forEach((l) => (l.duet = l.background = false))
-    },
-  },
-  { separator: true },
-  {
-    label: '在前插入行',
-    icon: 'pi pi-arrow-up',
-    command: () => {
-      const newLines: LyricLine[] = []
-      for (const line of runtimeStore.selectedLines) {
-        const newLine = coreStore.newLine()
-        newLines.push(newLine)
-        const lineIndex = coreStore.lyricLines.indexOf(line)
-        if (lineIndex === -1) continue
-        coreStore.lyricLines.splice(lineIndex, 0, newLine)
-      }
-      runtimeStore.selectLine(...newLines)
-    },
-  },
-  {
-    label: '在后插入行',
-    icon: 'pi pi-arrow-down',
-    command: () => {
-      const newLines: LyricLine[] = []
-      for (const line of runtimeStore.selectedLines) {
-        const newLine = coreStore.newLine()
-        newLines.push(newLine)
-        const lineIndex = coreStore.lyricLines.indexOf(line)
-        if (lineIndex === -1) continue
-        coreStore.lyricLines.splice(lineIndex + 1, 0, newLine)
-      }
-      runtimeStore.selectLine(...newLines)
-      nextTick(() =>
-        vscroll.value?.scrollToIndex(
-          newLines.reduce((acc, line) => Math.max(acc, coreStore.lyricLines.indexOf(line)), 0),
-          { align: 'nearest' },
-        ),
-      )
-    },
-  },
-  {
-    label: '克隆行',
-    icon: 'pi pi-clone',
-    command: () => {
-      const duplicates = [...runtimeStore.selectedLines].map((line) =>
-        coreStore.newLine({
-          ...line,
-          syllables: line.syllables.map(coreStore.newSyllable),
-        }),
-      )
-      const lastLineIndex = (() => {
-        for (let i = coreStore.lyricLines.length - 1; i >= 0; i--)
-          if (runtimeStore.selectedLines.has(coreStore.lyricLines[i]!)) return i
-        return -1
-      })()
-      if (lastLineIndex === -1) return
-      coreStore.lyricLines.splice(lastLineIndex + 1, 0, ...duplicates)
-      runtimeStore.selectLine(...duplicates)
-      nextTick(() =>
-        vscroll.value?.scrollToIndex(lastLineIndex + duplicates.length, { align: 'nearest' }),
-      )
-    },
-  },
-  {
-    label: '删除行',
-    icon: 'pi pi-trash',
-    command: () => {
-      coreStore.deleteLine(...runtimeStore.selectedLines)
-      runtimeStore.clearSelection()
-    },
-  },
-]
-const sylMenuItems: MenuItem[] = [
-  {
-    label: '在前插入音节',
-    icon: 'pi pi-arrow-left',
-    command: () => {
-      if (contextLineIndex === undefined || contextSylIndex === undefined) return
-      const parent = coreStore.lyricLines[contextLineIndex]!
-      const newSyllable = coreStore.newSyllable()
-      parent.syllables.splice(contextSylIndex, 0, newSyllable)
-      runtimeStore.selectLineSyl(parent, newSyllable)
-      nextTick(() => staticStore.syllableHooks.get(newSyllable.id)?.focusInput())
-    },
-  },
-  {
-    label: '在后插入音节',
-    icon: 'pi pi-arrow-right',
-    command: () => {
-      if (contextLineIndex === undefined || contextSylIndex === undefined) return
-      const parent = coreStore.lyricLines[contextLineIndex]!
-      const newSyllable = coreStore.newSyllable()
-      parent.syllables.splice(contextSylIndex + 1, 0, newSyllable)
-      runtimeStore.selectLineSyl(parent, newSyllable)
-      nextTick(() => staticStore.syllableHooks.get(newSyllable.id)?.focusInput())
-    },
-  },
-  {
-    label: '在此拆分行',
-    icon: 'pi pi-code',
-    command: () => {
-      if (contextLineIndex === undefined || contextSylIndex === undefined) return
-      const parent = coreStore.lyricLines[contextLineIndex]!
-      const sylsToMove = parent.syllables.splice(contextSylIndex)
-      if (sylsToMove.length === 0) return
-      const newLine = coreStore.newLine({ ...parent, syllables: sylsToMove })
-      alignLineEndTime(parent)
-      alignLineTime(newLine)
-      coreStore.lyricLines.splice(contextLineIndex + 1, 0, newLine)
-      runtimeStore.selectLineSyl(newLine, sylsToMove[0]!)
-    },
-  },
-  {
-    label: '删除音节',
-    icon: 'pi pi-trash',
-    command: () => {
-      if (contextLineIndex === undefined || contextSylIndex === undefined) return
-      const parent = coreStore.lyricLines[contextLineIndex]!
-      parent.syllables.splice(contextSylIndex, 1)
-    },
-  },
-]
-
-const menuItemsMap = {
-  blank: blankMenuItems,
-  line: lineMenuItems,
-  lineInsert: lineInsertMenuItems,
-  syl: sylMenuItems,
-} as const
-const menuItems = shallowRef<MenuItem[]>(blankMenuItems)
+const menuItemsMap = useContentCtxItems({
+  lineIndex: contextLineIndex,
+  sylIndex: contextSylIndex,
+})
+const menuItems = shallowRef<MenuItem[]>(menuItemsMap.blank)
 
 const handleContext =
-  (src: 'line' | 'syl' | 'lineInsert' | 'blank') =>
-  (e: MouseEvent, lineIndex?: number, sylIndex?: number) => {
-    if (
-      e.target instanceof HTMLElement &&
-      e.target.closest('input[type="text"], textarea, [contenteditable="true"]')
-    ) {
-      return
-    }
-    contextLineIndex = lineIndex
-    contextSylIndex = sylIndex
+  (src: keyof typeof menuItemsMap) => (e: MouseEvent, lineIndex?: number, sylIndex?: number) => {
+    if (isInputEl(e.target as HTMLElement)) return
+    contextLineIndex.value = lineIndex
+    contextSylIndex.value = sylIndex
     menuItems.value = menuItemsMap[src]
     menu.value?.show(e)
   }
@@ -311,7 +150,6 @@ useGlobalKeyboard('delete', () => {
   } else coreStore.deleteLine(...runtimeStore.selectedLines)
 })
 
-const vscroll = useTemplateRef('vscroll')
 // onBeforeUnmounted instead of onUnmounted: vscroll quits at unmounted phase
 onBeforeUnmount(() => {
   if (runtimeStore.currentView !== View.Timing || !vscroll.value) return
@@ -328,9 +166,8 @@ onBeforeUnmount(() => {
   })
 })
 onMounted(() => {
-  const scrollToHook = (index: number, options?: ScrollToIndexOpts) => {
+  const scrollToHook = (index: number, options?: ScrollToIndexOpts) =>
     vscroll.value?.scrollToIndex(index, options)
-  }
   staticStore.scrollToHook = scrollToHook
   onUnmounted(() => {
     if (staticStore.scrollToHook === scrollToHook) staticStore.scrollToHook = null
