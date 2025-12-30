@@ -2,10 +2,12 @@ import JSZip from 'jszip'
 
 import type { Persist } from '@core/types'
 
-import { omitAttrs } from '@utils/omitAttrs'
-
 import type { ProjPayload } from '.'
-import { type SupportedProjData, supportedProjDataVersions } from './dataVer'
+import {
+  type SupportedProjData,
+  migrateToLatestProjData,
+  supportedProjDataVersions,
+} from './dataVer'
 import { type SupportedProjManifest, supportedProjManifestVersions } from './fileVer'
 
 export async function parseProjectFile(file: Blob): Promise<ProjPayload> {
@@ -49,15 +51,14 @@ export async function parseProjectFile(file: Blob): Promise<ProjPayload> {
 }
 
 function parseProjectData(data: SupportedProjData): Persist {
-  const { metadata } = data
-  const dataLines = 'lyricLines' in data ? data.lyricLines : data.lines
-  const persistLines = dataLines.map((line): Persist['lines'][number] => {
-    const dataSyls = 'syllables' in line ? line.syllables : line.words
-    const syllables = dataSyls.map((syl) => ({ ...syl, currentplaceholdingBeat: 0 }))
-    return {
-      ...omitAttrs(line, 'words', 'syllables'),
-      syllables,
-    }
-  })
+  const latestData = migrateToLatestProjData(data)
+  const { metadata } = latestData
+  const persistLines = latestData.lines.map((line) => ({
+    ...line,
+    syllables: line.syllables.map((syllable) => ({
+      ...syllable,
+      currentplaceholdingBeat: 0,
+    })),
+  }))
   return { metadata, lines: persistLines }
 }

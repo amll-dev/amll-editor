@@ -27,3 +27,5 @@ export interface ProjData_0_0 {
     bookmarked: boolean
   }[]
 }
+
+export type ProjDataTill_0_0 = ProjData_0_0
