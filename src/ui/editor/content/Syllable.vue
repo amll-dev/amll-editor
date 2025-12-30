@@ -82,6 +82,10 @@ import type { Maybe, TimeoutHandle } from '@utils/types'
 
 import InputText from '@ui/components/InputText.vue'
 
+import { handleSylInputKeydown } from './syllableLogics/inputHotkeys'
+import { handleSylRomanInputKeydown } from './syllableLogics/romanHotkeys'
+import { type SyllableState, hijackCompositionBackquote } from './syllableLogics/shared'
+
 const runtimeStore = useRuntimeStore()
 const coreStore = useCoreStore()
 const staticStore = useStaticStore()
@@ -213,261 +217,21 @@ const widthController = computed(() => {
   if (sylText === ' ') return '␣'
   return placeholder.value || sylText
 })
-function findNextSyl() {
-  if (props.index === props.parent.syllables.length - 1)
-    return coreStore.lyricLines[props.lineIndex + 1]?.syllables[0] || null
-  return props.parent.syllables[props.index + 1] || null
-}
-function findPrevSyl() {
-  if (props.index === 0) return coreStore.lyricLines[props.lineIndex - 1]?.syllables.at(-1) || null
-  return props.parent.syllables[props.index - 1] || null
-}
-function findNextSolidSyl(sameLine = false) {
-  let lineIndex = props.lineIndex
-  let sylIndex = props.index
-  while (lineIndex < coreStore.lyricLines.length) {
-    const line = coreStore.lyricLines[lineIndex]!
-    while (++sylIndex < line.syllables.length) {
-      const syl = line.syllables[sylIndex]!
-      if (syl.text.trim()) return syl
-    }
-    if (sameLine) return null
-    lineIndex++
-    sylIndex = -1
-  }
-  return null
-}
-function findPrevSolidSyl(sameLine = false) {
-  let lineIndex = props.lineIndex
-  let sylIndex = props.index
-  while (lineIndex >= 0) {
-    const line = coreStore.lyricLines[lineIndex]!
-    if (sylIndex === Infinity) sylIndex = line.syllables.length
-    while (--sylIndex >= 0) {
-      const syl = line.syllables[sylIndex]!
-      if (syl.text.trim()) return syl
-    }
-    if (sameLine) return null
-    lineIndex--
-    sylIndex = Infinity
-  }
-  return null
-}
 
 // Hotkeys
-function handleKeydown(event: KeyboardEvent) {
-  if (!inputEl.value || !focused.value) return
-  const el = inputEl.value
-  switch (event.code) {
-    case 'Backspace': {
-      // Combine with previous syllable
-      if (props.index === 0 || el.selectionStart !== 0 || el.selectionEnd !== 0) return
-      event.preventDefault()
-      const prevSyl = props.parent.syllables[props.index - 1]
-      if (!prevSyl) return
-      const cursorPos = prevSyl.text.length
-      prevSyl.text += el.value
-      prevSyl.romanization = [prevSyl.romanization, props.syllable.romanization].join(' ').trim()
-      if (props.syllable.startTime && props.syllable.endTime) {
-        prevSyl.endTime = props.syllable.endTime
-      }
-      props.parent.syllables.splice(props.index, 1)
-      runtimeStore.selectLineSyl(props.parent, prevSyl)
-      nextTick(() => staticStore.syllableHooks.get(prevSyl.id)?.focusInput(cursorPos))
-      return
-    }
-    case 'ArrowLeft': {
-      // If at start, focus previous syllable
-      if (el.selectionStart !== 0) return
-      event.preventDefault()
-      const prevSyl = findPrevSyl()
-      if (!prevSyl) return
-      nextTick(() => staticStore.syllableHooks.get(prevSyl.id)?.focusInput(-1))
-      return
-    }
-    case 'ArrowRight': {
-      // If at end, focus next syllable
-      if (el.selectionStart !== el.value.length) return
-      event.preventDefault()
-      const nextSyl = findNextSyl()
-      if (!nextSyl) return
-      nextTick(() => staticStore.syllableHooks.get(nextSyl.id)?.focusInput(0))
-      return
-    }
-    case 'Tab': {
-      // Focus next/prev syllable
-      event.preventDefault()
-      const nextSyl = event.shiftKey ? findPrevSyl() : findNextSyl()
-      if (!nextSyl) return
-      nextTick(() => staticStore.syllableHooks.get(nextSyl.id)?.focusInput())
-      return
-    }
-    case 'ArrowDown': {
-      // Focus romanization input
-      if (!prefStore.showSylLvlRoman) return
-      event.preventDefault()
-      nextTick(() => romanInputEl.value?.select())
-      return
-    }
-    case 'Backquote': {
-      // Break syllable at cursor
-      if (event.shiftKey || event.ctrlKey || event.metaKey || event.altKey) return
-      event.preventDefault()
-      // preventDefault won't work with IME!
-      // handle later in compositionend
-      const breakIndex = el.selectionStart || 0
-      const totDuration = props.syllable.endTime - props.syllable.startTime
-      const breakTime =
-        props.syllable.startTime + (totDuration * breakIndex) / (el.value.length || 1)
-      const newSyllable = coreStore.newSyllable({
-        text: el.value.slice(breakIndex),
-        startTime: breakTime,
-        endTime: props.syllable.endTime,
-      })
-      props.syllable.endTime = breakTime
-      props.syllable.text = el.value.slice(0, breakIndex)
-      props.parent.syllables.splice(props.index + 1, 0, newSyllable)
-      runtimeStore.selectLineSyl(props.parent, newSyllable)
-      nextTick(() => staticStore.syllableHooks.get(newSyllable.id)?.focusInput(0))
-      return
-    }
-    case 'Escape': {
-      // Blur input
-      event.preventDefault()
-      el.blur()
-      return
-    }
-  }
+const makeState = (): SyllableState => ({
+  index: props.index,
+  lineIndex: props.lineIndex,
+  parent: props.parent,
+  syllable: props.syllable,
+  inputEl: inputEl.value,
+  romanInputEl: romanInputEl.value,
+})
+function handleKeydown(e: KeyboardEvent) {
+  handleSylInputKeydown(e, makeState())
 }
-function handleRomanKeydown(event: KeyboardEvent) {
-  const el = romanInputEl.value
-  if (!el || !romanFocused.value) return
-  switch (event.code) {
-    case 'ArrowUp': {
-      // Focus syllable input
-      event.preventDefault()
-      nextTick(() => inputEl.value?.select())
-      return
-    }
-    case 'ArrowLeft': {
-      // If at start, focus previous syllable's romanization
-      if (el.selectionStart !== 0) return
-      event.preventDefault()
-      const prevSyl = findPrevSolidSyl()
-      if (!prevSyl) return
-      nextTick(() => staticStore.syllableHooks.get(prevSyl.id)?.focusRomanInput(-1))
-      return
-    }
-    case 'ArrowRight': {
-      // If at end, focus next syllable's romanization
-      if (el.selectionStart !== romanModel.value.length) return
-      event.preventDefault()
-      const nextSyl = findNextSolidSyl()
-      if (!nextSyl) return
-      nextTick(() => staticStore.syllableHooks.get(nextSyl.id)?.focusRomanInput(0))
-      return
-    }
-    case 'Tab': {
-      // Focus next/prev syllable's romanization
-      event.preventDefault()
-      const nextSyl = event.shiftKey ? findPrevSolidSyl() : findNextSolidSyl()
-      if (!nextSyl) return
-      nextTick(() => staticStore.syllableHooks.get(nextSyl.id)?.focusRomanInput())
-      return
-    }
-    case 'Space': {
-      const el = romanInputEl.value
-      if (!el) return
-      if (romanModel.value.split(' ').length <= props.syllable.placeholdingBeat) return
-      const cursorPos = el.selectionStart || 0
-      if (cursorPos !== el.value.length) return
-      event.preventDefault()
-      if (cursorPos === romanModel.value.length) {
-        const nextSyl = findNextSolidSyl()
-        if (!nextSyl) return
-        nextTick(() => staticStore.syllableHooks.get(nextSyl.id)?.focusRomanInput())
-      }
-    }
-    case 'Backspace': {
-      const el = romanInputEl.value
-      if (!el || el.selectionStart !== 0) return
-      const prevSyl = findPrevSolidSyl(true)
-      if (!prevSyl) return
-      event.preventDefault()
-      const shiftedRoman = shiftRoman(props.parent, props.index)
-      if (!shiftedRoman) return
-      prevSyl.romanization += shiftedRoman
-      nextTick(() =>
-        staticStore.syllableHooks.get(prevSyl.id)?.focusRomanInput(-shiftedRoman.length - 1),
-      )
-      return
-    }
-    case 'Backquote': {
-      event.preventDefault()
-      const el = romanInputEl.value
-      if (!el) return
-      const cursorPos = el.selectionStart || 0
-      const romanToUnshift = el.value.slice(cursorPos)
-      const nextSyl = findNextSolidSyl(true)
-      if (!nextSyl) return
-      unshiftRoman(props.parent, props.index + 1, romanToUnshift)
-      romanModel.value = romanModel.value.slice(0, cursorPos).trim()
-      nextTick(() => staticStore.syllableHooks.get(nextSyl.id)?.focusRomanInput(0))
-      return
-    }
-    case 'Escape': {
-      event.preventDefault()
-      el.blur()
-      return
-    }
-  }
-}
-function shiftRoman(line: LyricLine, fromSylIndex: number) {
-  const syls = line.syllables.slice(fromSylIndex)
-  const romans = syls.flatMap((syl) => syl.romanization.split(' ')).filter((r) => r.trim())
-  const shifted = romans.shift()
-  if (!shifted) return
-  for (const syl of syls) {
-    if (!romans.length) {
-      syl.romanization = ''
-      continue
-    }
-    const count = syl.romanization.split(' ').filter((r) => r.trim()).length
-    const pending = romans.splice(0, count)
-    syl.romanization = pending.join(' ')
-  }
-  if (romans.length > 0) {
-    const lastSyl = syls.at(-1)
-    if (lastSyl) lastSyl.romanization = [lastSyl.romanization, romans.join(' ')].join(' ').trim()
-  }
-  return shifted
-}
-function unshiftRoman(line: LyricLine, toSylIndex: number, roman: string) {
-  const syls = line.syllables.slice(toSylIndex)
-  const romans = syls.flatMap((syl) => syl.romanization.split(' ')).filter((r) => r.trim())
-  romans.unshift(roman)
-  for (const syl of syls) {
-    if (!romans.length) {
-      syl.romanization = ''
-      continue
-    }
-    const count = syl.romanization.split(' ').filter((r) => r.trim()).length
-    const pending = romans.splice(0, count)
-    syl.romanization = pending.join(' ')
-  }
-  if (romans.length > 0) {
-    const lastSyl = syls.at(-1)
-    if (lastSyl) lastSyl.romanization = [lastSyl.romanization, romans.join(' ')].join(' ').trim()
-  }
-}
-function hijackCompositionBackquote(e: CompositionEvent) {
-  const el = e.target as HTMLInputElement
-  const pos = el.selectionStart || 0
-  const lastChar = el.value.charAt(pos - 1)
-  if (lastChar === '·') {
-    el.value = el.value.slice(0, pos - 1) + el.value.slice(pos)
-    nextTick(() => inputEl.value?.setSelectionRange(pos - 1, pos - 1))
-  }
+function handleRomanKeydown(e: KeyboardEvent) {
+  handleSylRomanInputKeydown(e, makeState())
 }
 
 // Register hooks
