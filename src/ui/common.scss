@@ -322,3 +322,18 @@ hr {
 .p-floatlabel-on > label {
   z-index: 3;
 }
+
+.pi.pi-color {
+  &-danger {
+    color: var(--p-button-danger-background);
+  }
+  &-success {
+    color: var(--p-button-success-background);
+  }
+  &-warn {
+    color: var(--p-button-warn-background);
+  }
+  &-info {
+    color: var(--p-button-info-background);
+  }
+}

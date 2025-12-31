@@ -8,6 +8,7 @@ import { definePreset } from '@primeuix/themes'
 import Aura from '@primeuix/themes/aura'
 import App from '@ui/App.vue'
 import PrimeVue from 'primevue/config'
+import ConfirmationService from 'primevue/confirmationservice'
 import FocusTrap from 'primevue/focustrap'
 import KeyFilter from 'primevue/keyfilter'
 import ToastService from 'primevue/toastservice'
@@ -45,6 +46,7 @@ app.use(PrimeVue, {
 app.directive('focustrap', FocusTrap)
 app.directive('keyfilter', KeyFilter)
 app.use(ToastService)
+app.use(ConfirmationService)
 
 app.use(FloatingVue, {
   themes: {

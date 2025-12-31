@@ -13,8 +13,8 @@
   </main>
   <Player />
   <Toast />
+  <ConfirmDialog />
   <FontLoader />
-  <DropDataConfirmModal />
 </template>
 
 <script setup lang="ts">
@@ -25,12 +25,11 @@ import { fileState } from '@core/file'
 import { View } from '@core/types'
 
 import { editHistory } from '@states/services/history'
-import { useCoreStore, usePrefStore, useRuntimeStore } from '@states/stores'
+import { useCoreStore, usePrefStore, useRuntimeStore, useStaticStore } from '@states/stores'
 
 import { isInputEl } from '@utils/isInputEl'
 
 import FontLoader from './components/FontLoader.vue'
-import DropDataConfirmModal from './dialogs/DropDataConfirmModal.vue'
 import ContentEditor from './editor/content/Editor.vue'
 import Preview from './editor/preview/Preview.vue'
 import TimingEditor from './editor/timing/Editor.vue'
@@ -38,7 +37,7 @@ import Player from './player/Player.vue'
 import Ribbon from './ribbon/Ribbon.vue'
 import Sidebar from './sidebar/Sidebar.vue'
 import Titlebar from './titlebar/Titlebar.vue'
-import { Toast, type ToastMessageOptions, useToast } from 'primevue'
+import { ConfirmDialog, Toast, type ToastMessageOptions, useConfirm, useToast } from 'primevue'
 
 import {
   emitGlobalKeyboard,
@@ -53,6 +52,7 @@ editHistory.markSaved() // Empty state is considered saved
 const prefStore = usePrefStore()
 const runtimeStore = useRuntimeStore()
 const coreStore = useCoreStore()
+const staticStore = useStaticStore()
 
 const toast = useToast()
 const notifier = (summary: string, detail: string, severity: ToastMessageOptions['severity']) =>
@@ -146,6 +146,32 @@ onMounted(() => {
 })
 onUnmounted(() => {
   window.removeEventListener('keydown', handleRootKeydown)
+})
+
+const confirm = useConfirm()
+onMounted(() => {
+  staticStore.waitForConfirmHook = (optn) =>
+    new Promise((resolve) =>
+      confirm.require({
+        header: optn.header,
+        message: optn.message,
+        icon: `${optn.icon || 'pi pi-exclamation-triangle'} pi-color-${optn.severity || 'danger'}`,
+        rejectProps: {
+          label: optn.rejectLabel || '取消',
+          severity: 'secondary',
+          icon: optn.rejectIcon || 'pi pi-times',
+        },
+        acceptProps: {
+          label: optn.acceptLabel || '继续',
+          severity: optn.severity || 'danger',
+          icon: optn.acceptIcon || 'pi pi-arrow-right',
+          autofocus: true,
+        },
+        accept: () => resolve(true),
+        reject: () => resolve(false),
+        onHide: () => resolve(false),
+      }),
+    )
 })
 </script>
 
