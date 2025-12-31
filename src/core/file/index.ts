@@ -368,6 +368,15 @@ function initPwaLaunch(notifier: Notifier) {
   })
 }
 
+function init(notifier: Notifier) {
+  setFileState({
+    createdAt: new Date(),
+    ...useDefaultFormat('未命名'),
+  })
+  initDragListener(notifier)
+  initPwaLaunch(notifier)
+}
+
 export const fileState = {
   openFile,
   openProjFile,
@@ -379,8 +388,7 @@ export const fileState = {
   importPersist,
   createBlankProject,
   suggestName,
-  initDragListener,
-  initPwaLaunch,
+  init,
   createdAtComputed: readonly(createdAtRef),
   displayFilenameComputed: readonly(displayFilenameRef),
   readonlyComputed: readonly(readonlyRef),
