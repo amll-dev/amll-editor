@@ -133,7 +133,8 @@ const displayName = __APP_DISPLAY_NAME__
       <PrefSwitchItem
         pref-key="sylRomanEnabled"
         label="启用逐字音译"
-        desc="在音节框下方显示逐字音译"
+        desc="在音节框下方显示逐字音译，并支持查找替换"
+        experimental
       />
     </div>
     <div class="pref-group">
