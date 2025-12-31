@@ -3,7 +3,7 @@ import { computed, nextTick, reactive, ref, toRaw, watch } from 'vue'
 
 import type { LyricLine, LyricSyllable, RuntimeSnapShot, Snapshot } from '@core/types'
 
-import { useCoreStore, useRuntimeStore, useStaticStore } from '@states/stores'
+import { useCoreStore, usePrefStore, useRuntimeStore, useStaticStore } from '@states/stores'
 
 import { tryRaf } from '@utils/tryRaf'
 
@@ -17,7 +17,6 @@ const state = reactive({
 })
 const redoable = computed(() => state.current < state.head)
 const undoable = computed(() => state.current > state.tail)
-const maxLength = 100
 let stopRecording = false
 
 const savedStatePointer = ref<number>(NaN)
@@ -106,7 +105,7 @@ function take() {
   if (state.current < state.head)
     for (let i = state.head; i > state.current; --i) snapshotList.delete(i)
   state.head = state.current
-  while (snapshotList.size > maxLength) snapshotList.delete(state.tail++)
+  while (snapshotList.size > usePrefStore().maxUndoSteps) snapshotList.delete(state.tail++)
 }
 
 function wayback(snapshot: Readonly<Snapshot>, isRedo = false) {

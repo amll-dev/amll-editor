@@ -328,12 +328,12 @@ useGlobalKeyboard('importFromClipboard', handleImportFromClipboard)
 
 <style lang="scss">
 .titlebar {
+  white-space: pre;
   display: flex;
   margin: 0 0.5rem 0.5rem;
   gap: 0.8rem;
   .leftbar,
   .rightbar {
-    width: 0;
     flex: 1;
     display: flex;
     gap: 0.3rem;
@@ -351,7 +351,7 @@ useGlobalKeyboard('importFromClipboard', handleImportFromClipboard)
     flex-grow: 1;
     display: flex;
     align-items: center;
-    white-space: nowrap;
+    white-space: pre;
     overflow-x: hidden;
     position: relative;
     .filename-text {
@@ -378,11 +378,6 @@ useGlobalKeyboard('importFromClipboard', handleImportFromClipboard)
       pointer-events: none;
       background: linear-gradient(to right, transparent, var(--global-background));
     }
-    @media screen and (max-width: 720px) {
-      & {
-        display: none;
-      }
-    }
     @media (display-mode: standalone) {
       display: none;
     }
@@ -399,6 +394,12 @@ useGlobalKeyboard('importFromClipboard', handleImportFromClipboard)
         content: '·';
         margin: 0 0.3rem;
       }
+    }
+  }
+  @media screen and (max-width: 720px) {
+    .filename-section,
+    .save-state-section {
+      display: none;
     }
   }
 }

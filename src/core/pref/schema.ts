@@ -4,7 +4,7 @@ import { isAppleDevice } from '@utils/detectAppleDevice'
 
 export interface PreferenceSchema {
   // Data
-  maxRedoSteps: number
+  maxUndoSteps: number
   autoSaveEnabled: boolean
   autoSaveIntervalMinutes: number
   packAudioToProject: boolean
@@ -15,6 +15,7 @@ export interface PreferenceSchema {
   globalLatency: number
   alwaysIgnoreBackground: boolean
   hideLineTiming: boolean
+  autoConnectLineTimes: boolean
   // Roman
   sylRomanEnabled: boolean
   swapTranslateRoman: boolean
@@ -24,7 +25,7 @@ export interface PreferenceSchema {
 }
 
 export const getDefaultPref = (): PreferenceSchema => ({
-  maxRedoSteps: 100,
+  maxUndoSteps: 100,
   autoSaveEnabled: true,
   autoSaveIntervalMinutes: 5,
   packAudioToProject: true,
@@ -33,6 +34,7 @@ export const getDefaultPref = (): PreferenceSchema => ({
   globalLatency: 0,
   alwaysIgnoreBackground: false,
   hideLineTiming: false,
+  autoConnectLineTimes: false,
   sylRomanEnabled: false,
   swapTranslateRoman: false,
   sidebarWidth: 360,
