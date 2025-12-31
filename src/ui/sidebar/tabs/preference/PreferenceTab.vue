@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { usePrefStore } from '@states/stores'
+import { usePrefStore, useStaticStore } from '@states/stores'
 
 import PrefItem from './PrefItem.vue'
 import PrefNumberItem from './PrefNumberItem.vue'
@@ -7,6 +7,15 @@ import PrefSwitchItem from './PrefSwitchItem.vue'
 import { Button } from 'primevue'
 
 const prefStore = usePrefStore()
+const staticStore = useStaticStore()
+async function handleReset() {
+  const confirmed = await staticStore.waitForConfirmHook?.({
+    header: '重置全部选项',
+    message: '确定要将所有选项恢复为默认值吗？此操作不可撤销。',
+    acceptLabel: '重置',
+    acceptIcon: 'pi pi-sync',
+  })
+}
 </script>
 
 <template>
@@ -78,6 +87,19 @@ const prefStore = usePrefStore()
         label="启用逐字音译"
         desc="在音节框下方显示逐字音译"
       />
+    </div>
+    <div class="pref-group">
+      <div class="pref-group-title">重置</div>
+      <PrefItem label="重置全部选项" desc="将所有选项恢复为默认值">
+        <Button
+          severity="danger"
+          variant="outlined"
+          label="重置"
+          icon="pi pi-arrow-right"
+          iconPos="right"
+          @click="handleReset"
+        />
+      </PrefItem>
     </div>
   </div>
 </template>
