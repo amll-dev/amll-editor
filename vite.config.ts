@@ -1,6 +1,7 @@
 import vue from '@vitejs/plugin-vue'
 import { URL, fileURLToPath } from 'node:url'
 import { visualizer } from 'rollup-plugin-visualizer'
+import { simpleGit } from 'simple-git'
 import { defineConfig } from 'vite'
 
 import packageJSON from './package.json'
@@ -21,8 +22,10 @@ for (const [key, relPath] of Object.entries(aliasRelMap)) {
   aliasMap[key] = fileURLToPath(new URL(relPath, import.meta.url))
 }
 
+const git = simpleGit()
+
 // https://vite.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig(async ({ mode }) => ({
   plugins: [
     manifestPlugin(),
     iconSetPlugin(),
@@ -81,10 +84,14 @@ export default defineConfig(({ mode }) => ({
   resolve: { alias: aliasMap },
   define: {
     __APP_VERSION__: JSON.stringify(packageJSON.version),
+    __APP_COMMIT_HASH__: JSON.stringify(await git.revparse(['HEAD'])),
     __REPO_URL__: JSON.stringify(packageJSON.repository),
     __APP_DISPLAY_NAME__: JSON.stringify(
       packageJSON.displayName + (process.env.VITE_BUILD_CHANNEL === 'BETA' ? ` BETA` : ''),
     ),
+    __APP_BUILD_TIMESTAMP__: JSON.stringify(Date.now()),
+    __AMLL_CORE_VERSION__: JSON.stringify(packageJSON.dependencies['@applemusic-like-lyrics/core']),
+    __AMLL_VUE_VERSION__: JSON.stringify(packageJSON.dependencies['@applemusic-like-lyrics/vue']),
   },
   optimizeDeps: { exclude: ['pyodide'] },
 }))
