@@ -79,6 +79,7 @@ const modalDialogActivated = () => !!document.querySelector('.p-dialog-mask.p-ov
 const handleRootKeydown = (e: KeyboardEvent) => {
   const hotkey = parseKeyEvent(e)
   if (!hotkey) return
+  if (e.target instanceof HTMLElement && e.target.closest('[disable-global-hotkeys]')) return
   if (shouldEscapeInInput(hotkey)) {
     if (e.target !== document.body && e.target instanceof HTMLInputElement) {
       if (isInputEl(e.target)) return

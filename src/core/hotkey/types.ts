@@ -1,7 +1,7 @@
-import type { hotkeyCommands } from './data'
+import type { hotkeyCommandNames } from './data'
 
 export namespace HotKey {
-  export type Command = (typeof hotkeyCommands)[number]
+  export type Command = keyof typeof hotkeyCommandNames
   export interface Key {
     code: string
     ctrl: boolean

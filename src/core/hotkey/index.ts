@@ -40,10 +40,11 @@ const keyBlockList = new Set([
   'Meta',
   'Unidentified',
 ])
-export function parseKeyEvent(e: KeyboardEvent): HK.Key | null {
-  if (keyBlockList.has(e.key)) return null
+export function parseKeyEvent(e: KeyboardEvent, force: boolean = false): HK.Key | null {
+  const notComplete = keyBlockList.has(e.key)
+  if (notComplete && !force) return null
   return {
-    code: e.code,
+    code: notComplete ? '' : e.code,
     ctrl: e.ctrlKey || e.metaKey,
     alt: e.altKey,
     shift: e.shiftKey,
