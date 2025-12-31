@@ -2,7 +2,7 @@
 import { compatibilityMap } from '@core/compat'
 import { type PreferenceSchema, getDefaultPref } from '@core/pref'
 
-import { usePrefStore, useStaticStore } from '@states/stores'
+import { usePrefStore, useRuntimeStore, useStaticStore } from '@states/stores'
 
 import PrefItem from './PrefItem.vue'
 import PrefNumberItem from './PrefNumberItem.vue'
@@ -11,6 +11,8 @@ import { Button } from 'primevue'
 
 const prefStore = usePrefStore()
 const staticStore = useStaticStore()
+const runtimeStore = useRuntimeStore()
+
 async function handleReset() {
   const confirmed = await staticStore.waitForConfirmHook?.({
     header: '重置全部选项',
@@ -25,6 +27,8 @@ async function handleReset() {
     ;(prefStore as any)[key] = value
   }
 }
+
+const isBeta = import.meta.env.VITE_BUILD_CHANNEL === 'BETA'
 </script>
 
 <template>
@@ -34,13 +38,13 @@ async function handleReset() {
       <PrefSwitchItem
         pref-key="autoSaveEnabled"
         label="自动保存"
-        desc="仅在授予写入权限后生效"
+        desc="授予写入权限后，定时保存至文件系统"
         :disabled="!compatibilityMap.fileSystem"
       />
       <PrefNumberItem
         pref-key="autoSaveIntervalMinutes"
         label="自动保存间隔"
-        desc="单位为分钟"
+        desc="自动保存触发的时间间隔 (分钟)"
         :disabled="!compatibilityMap.fileSystem || !prefStore.autoSaveEnabled"
         :min="1"
         :max="60"
@@ -56,12 +60,25 @@ async function handleReset() {
     <div class="pref-group">
       <div class="pref-group-title">按键</div>
       <PrefItem label="按键绑定" desc="打开快捷键设置窗口">
-        <Button severity="secondary" label="设置" icon="pi pi-arrow-up-right" iconPos="right" />
+        <Button
+          severity="secondary"
+          label="设置"
+          icon="pi pi-arrow-up-right"
+          iconPos="right"
+          @click="runtimeStore.dialogShown.keyBinding = !runtimeStore.dialogShown.keyBinding"
+        />
       </PrefItem>
       <PrefSwitchItem
         pref-key="macStyleShortcuts"
         label="macOS 风格组合键"
         desc="使用 ⌘、⌥ 等符号展示组合键"
+      />
+      <PrefNumberItem
+        pref-key="audioSeekingStepMs"
+        label="音频按键跳转步长"
+        desc="按键快进或快退时跳转的时长 (毫秒)"
+        :min="100"
+        :max="20000"
       />
     </div>
     <div class="pref-group">
@@ -69,7 +86,7 @@ async function handleReset() {
       <PrefNumberItem
         pref-key="globalLatency"
         label="全局延时补偿"
-        desc="音频播放延时补偿，单位为毫秒"
+        desc="正值表示实际音频落后 (毫秒)"
         :min="-5000"
         :max="5000"
       />
@@ -98,7 +115,7 @@ async function handleReset() {
       <PrefSwitchItem
         pref-key="swapTranslateRoman"
         label="交换翻译与音译框位置"
-        desc="在内容也将音译框置于左侧，并影响查找顺序"
+        desc="在内容视图将音译框置于左侧，并影响查找顺序"
       />
       <PrefSwitchItem
         pref-key="sylRomanEnabled"
@@ -115,6 +132,18 @@ async function handleReset() {
           label="重置"
           icon="pi pi-sync"
           @click="handleReset"
+        />
+      </PrefItem>
+    </div>
+    <div class="pref-group">
+      <div class="pref-group-title">关于</div>
+      <PrefItem :label="`关于 AMLL Editor ${isBeta ? 'BETA' : ''}`" desc="打开软件版本信息窗口">
+        <Button
+          severity="secondary"
+          label="关于"
+          icon="pi pi-arrow-up-right"
+          iconPos="right"
+          @click="runtimeStore.dialogShown.about = !runtimeStore.dialogShown.about"
         />
       </PrefItem>
     </div>

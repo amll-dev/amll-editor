@@ -11,6 +11,7 @@ export interface PreferenceSchema {
   // Shortcuts
   macStyleShortcuts: boolean
   hotkeyMap: HotKey.Map
+  audioSeekingStepMs: number
   // Timing
   globalLatency: number
   alwaysIgnoreBackground: boolean
@@ -31,6 +32,7 @@ export const getDefaultPref = (): PreferenceSchema => ({
   packAudioToProject: true,
   macStyleShortcuts: isAppleDevice(),
   hotkeyMap: getDefaultHotkeyMap(),
+  audioSeekingStepMs: 5000,
   globalLatency: 0,
   alwaysIgnoreBackground: false,
   hideLineTiming: false,

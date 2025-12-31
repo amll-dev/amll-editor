@@ -66,6 +66,8 @@ import { audioEngine } from '@core/audio'
 import { fileBackend } from '@core/file'
 import { useGlobalKeyboard } from '@core/hotkey'
 
+import { usePrefStore } from '@states/stores'
+
 import { ms2str } from '@utils/formatTime'
 import { tipHotkey } from '@utils/generateTooltip'
 
@@ -130,17 +132,22 @@ useGlobalKeyboard('playPauseAudio', () => {
   if (activatedRef.value) audioEngine.togglePlay()
   if (playPauseButton.value) ((playPauseButton.value as any).$el as HTMLButtonElement).focus()
 })
-useGlobalKeyboard('seekBackward', () => {
-  audioEngine.seekBy(-5000)
-})
-useGlobalKeyboard('seekForward', () => {
-  audioEngine.seekBy(5000)
-})
 useGlobalKeyboard('volumeDown', () => {
   audioEngine.volumeRef.value = Math.max(0, audioEngine.volumeRef.value - 0.1)
 })
 useGlobalKeyboard('volumeUp', () => {
   audioEngine.volumeRef.value = Math.min(1, audioEngine.volumeRef.value + 0.1)
+})
+
+const prefStore = usePrefStore()
+const optimizedStep = computed(
+  () => prefStore.audioSeekingStepMs / audioEngine.playbackRateRef.value,
+)
+useGlobalKeyboard('seekBackward', () => {
+  audioEngine.seekBy(-optimizedStep.value)
+})
+useGlobalKeyboard('seekForward', () => {
+  audioEngine.seekBy(optimizedStep.value)
 })
 
 const percentageRef = computed(() => {
