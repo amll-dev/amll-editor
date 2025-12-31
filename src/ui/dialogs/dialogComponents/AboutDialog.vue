@@ -1,7 +1,7 @@
 <template>
   <Dialog v-model:visible="visible" header="关于" class="about-dialog">
     <div class="heading">
-      <img .src="'/brand.svg'" class="logo" />
+      <img .src="'/brand.svg'" class="logo" draggable="false" />
       <div class="logo-text">
         <div class="title">{{ appName }}</div>
         <div class="title-version">
@@ -83,7 +83,7 @@ function handleOpenGithub() {
   .heading {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1rem;
     margin-bottom: 1rem;
   }
   .logo {
@@ -96,7 +96,6 @@ function handleOpenGithub() {
     line-height: 1;
   }
   .title-version {
-    font-size: 1.1rem;
     opacity: 0.7;
   }
   .title {
