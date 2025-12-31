@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { compatibilityMap } from '@core/compat'
 import { type PreferenceSchema, getDefaultPref } from '@core/pref'
 
 import { usePrefStore, useStaticStore } from '@states/stores'
@@ -30,12 +31,17 @@ async function handleReset() {
   <div class="pref-panel">
     <div class="pref-group">
       <div class="pref-group-title">数据</div>
-      <PrefSwitchItem pref-key="autoSaveEnabled" label="自动保存" desc="仅在授予写入权限后生效" />
+      <PrefSwitchItem
+        pref-key="autoSaveEnabled"
+        label="自动保存"
+        desc="仅在授予写入权限后生效"
+        :disabled="!compatibilityMap.fileSystem"
+      />
       <PrefNumberItem
         pref-key="autoSaveIntervalMinutes"
         label="自动保存间隔"
         desc="单位为分钟"
-        :disabled="!prefStore.autoSaveEnabled"
+        :disabled="!compatibilityMap.fileSystem || !prefStore.autoSaveEnabled"
       />
       <PrefNumberItem
         pref-key="maxUndoSteps"
@@ -47,14 +53,14 @@ async function handleReset() {
     </div>
     <div class="pref-group">
       <div class="pref-group-title">按键</div>
-      <PrefSwitchItem
-        pref-key="macStyleShortcuts"
-        label="Mac OS 风格组合键"
-        desc="使用 ⌘、⌥ 等符号展示组合键"
-      />
       <PrefItem label="按键绑定" desc="打开快捷键设置窗口">
         <Button severity="secondary" label="设置" icon="pi pi-arrow-up-right" iconPos="right" />
       </PrefItem>
+      <PrefSwitchItem
+        pref-key="macStyleShortcuts"
+        label="macOS 风格组合键"
+        desc="使用 ⌘、⌥ 等符号展示组合键"
+      />
     </div>
     <div class="pref-group">
       <div class="pref-group-title">时轴</div>
@@ -62,7 +68,6 @@ async function handleReset() {
         pref-key="globalLatency"
         label="全局延时补偿"
         desc="设备音频播放延时，单位为毫秒"
-        :disabled="!prefStore.autoSaveEnabled"
       />
       <PrefSwitchItem
         pref-key="alwaysIgnoreBackground"
@@ -103,8 +108,7 @@ async function handleReset() {
           severity="danger"
           variant="outlined"
           label="重置"
-          icon="pi pi-arrow-right"
-          iconPos="right"
+          icon="pi pi-sync"
           @click="handleReset"
         />
       </PrefItem>
