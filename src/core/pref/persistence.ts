@@ -34,7 +34,7 @@ export function savePreference(data: PreferenceSchema) {
   const defaultPref = getDefaultPref()
   for (const [_key, value] of Object.entries(data)) {
     const key = _key as keyof PreferenceSchema
-    if (value === defaultPref[key]) delete prunedData[key]
+    if (value === defaultPref[key] || value === undefined) delete prunedData[key]
     if (typeof value === 'object' && value !== null) {
       if (stableStringify(value) === stableStringify(defaultPref[key])) delete prunedData[key]
     }

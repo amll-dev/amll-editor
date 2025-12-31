@@ -18,6 +18,7 @@ const props = defineProps<{
   max?: number
   disabled?: boolean
   experimental?: boolean
+  placeholder?: string
 }>()
 
 const prefStore = usePrefStore()
@@ -30,6 +31,7 @@ const prefStore = usePrefStore()
       :min
       :max
       :disabled
+      :placeholder
       class="pref-number"
       fluid
       show-buttons

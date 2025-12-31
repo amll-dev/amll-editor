@@ -58,6 +58,7 @@ const displayName = __APP_DISPLAY_NAME__
         desc="允许撤销的最大步数"
         :min="1"
         :max="5000"
+        placeholder="100"
       />
     </div>
     <div class="pref-group">
@@ -82,6 +83,7 @@ const displayName = __APP_DISPLAY_NAME__
         desc="按键快进或快退时跳转的时长 (毫秒)"
         :min="100"
         :max="20000"
+        placeholder="5,000"
       />
     </div>
     <div class="pref-group">
@@ -90,6 +92,7 @@ const displayName = __APP_DISPLAY_NAME__
         pref-key="globalLatency"
         label="全局延时补偿"
         desc="正值表示实际音频落后 (毫秒)"
+        placeholder="0"
         :min="-5000"
         :max="5000"
       />
