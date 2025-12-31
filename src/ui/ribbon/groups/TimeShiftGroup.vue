@@ -10,6 +10,9 @@
         size="small"
         placeholder="0"
         v-model="prefStore.globalLatency"
+        :use-grouping="false"
+        :max="5000"
+        :min="-5000"
       />
     </div>
     <Button
@@ -26,8 +29,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-
 import { useGlobalKeyboard } from '@core/hotkey'
 
 import { usePrefStore, useRuntimeStore } from '@states/stores'

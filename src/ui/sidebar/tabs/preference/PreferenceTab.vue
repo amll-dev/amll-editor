@@ -42,13 +42,15 @@ async function handleReset() {
         label="自动保存间隔"
         desc="单位为分钟"
         :disabled="!compatibilityMap.fileSystem || !prefStore.autoSaveEnabled"
+        :min="1"
+        :max="60"
       />
       <PrefNumberItem
         pref-key="maxUndoSteps"
         label="历史记录快照数"
         desc="允许撤销的最大步数"
         :min="1"
-        :max="1000"
+        :max="5000"
       />
     </div>
     <div class="pref-group">
@@ -67,7 +69,9 @@ async function handleReset() {
       <PrefNumberItem
         pref-key="globalLatency"
         label="全局延时补偿"
-        desc="设备音频播放延时，单位为毫秒"
+        desc="音频播放延时补偿，单位为毫秒"
+        :min="-5000"
+        :max="5000"
       />
       <PrefSwitchItem
         pref-key="alwaysIgnoreBackground"
@@ -77,13 +81,14 @@ async function handleReset() {
       <PrefSwitchItem
         pref-key="hideLineTiming"
         label="隐藏行时间戳"
-        desc="自动从音节生成行时间戳"
+        desc="自动从音节生成行时间戳，暂未实现"
         experimental
+        disabled
       />
       <PrefSwitchItem
         pref-key="autoConnectLineTimes"
         label="自动连接行时间"
-        desc="自动将间隔较近的相邻行时间戳连接起来"
+        desc="自动连接间隔较近的相邻行时间戳"
         :disabled="!prefStore.hideLineTiming"
         experimental
       />
