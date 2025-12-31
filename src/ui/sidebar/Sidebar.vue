@@ -112,7 +112,7 @@ function handleResizeStart(e: MouseEvent) {
 }
 
 .sidebar-title {
-  height: 3.5rem;
+  height: 3.2rem;
   &.single {
     display: flex;
     justify-content: space-between;
@@ -165,8 +165,7 @@ function handleResizeStart(e: MouseEvent) {
   flex: 1;
   overflow-x: hidden;
   overflow-y: auto;
-  padding: 0 0.8rem 0 1rem;
-  margin: 0.5rem 0 0.3rem;
+  padding: 0.8rem 0.8rem 0.3rem 1rem;
 }
 .sidebar-resizer {
   position: absolute;

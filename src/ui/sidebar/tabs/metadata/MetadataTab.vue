@@ -190,12 +190,13 @@ function search({ query }: { query: string }) {
 
 <style lang="scss">
 .metadata-panel {
+  padding-bottom: 0 !important;
   .top-buttons {
-    margin-top: 0.5rem;
     display: flex;
     gap: 0.5rem;
     position: sticky;
-    top: 0;
+    top: -0.8rem;
+    padding-top: 0.5rem;
     z-index: 1;
     background-color: var(--global-background);
     padding-bottom: 0.5rem;
@@ -207,6 +208,7 @@ function search({ query }: { query: string }) {
     z-index: 1;
     background-color: var(--global-background);
     padding-top: 0.5rem;
+    padding-bottom: 0.3rem;
     display: flex;
     gap: 0.5rem;
   }
@@ -214,6 +216,9 @@ function search({ query }: { query: string }) {
 .metadata-field-list {
   display: flex;
   flex-direction: column;
+}
+.metadata-field-list:empty + .add-field {
+  padding-top: 0;
 }
 .metadata-field {
   display: grid;
