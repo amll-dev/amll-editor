@@ -88,6 +88,9 @@ export default defineConfig(async ({ mode }) => ({
     __APP_VERSION__: JSON.stringify(packageJSON.version),
     __APP_COMMIT_HASH__: JSON.stringify(await git.revparse(['HEAD'])),
     __REPO_URL__: JSON.stringify(packageJSON.repository),
+    __BETA_DEPLOY_LOG_URL__: JSON.stringify(
+      'https://github.com/Linho1219/AMLL-Editor-BetaDeploy/actions',
+    ),
     __APP_DISPLAY_NAME__: JSON.stringify(
       packageJSON.displayName + (process.env.VITE_BUILD_CHANNEL === 'BETA' ? ` BETA` : ''),
     ),

@@ -17,7 +17,7 @@
       </p>
       <p>开发不易，不妨点个免费的 star 吧！</p>
     </div>
-    <div class="actions">
+    <div class="actions" :class="{ beta: isBeta }">
       <Button
         severity="secondary"
         icon="pi pi-github"
@@ -25,9 +25,16 @@
         @click="handleOpenGithub()"
       />
       <Button
+        v-if="isBeta"
+        severity="secondary"
+        icon="pi pi-history"
+        label="Beta 部署日志"
+        @click="handleOpenBetaDeployLog()"
+      />
+      <Button
         :severity="keyValueFolded ? 'secondary' : 'primary'"
         icon="pi pi-info-circle"
-        label="详细版本信息"
+        label="展开详细信息"
         @click="keyValueFolded = !keyValueFolded"
       />
     </div>
@@ -40,7 +47,7 @@
         <span class="value">{{ appChannel ?? '未指定' }}</span>
         <span class="key">Commit Hash</span>
         <span class="value">{{ appCommitHash }}</span>
-        <span class="key">构建日期</span>
+        <span class="key">构建时间</span>
         <span class="value">{{ readableBuildDate }}</span>
         <span class="key">AMLL 核心库版本</span>
         <span class="value">{{ amllCoreVersion }}</span>
@@ -74,11 +81,14 @@ const amllVueVersion = __AMLL_VUE_VERSION__
 function handleOpenGithub() {
   window.open(__REPO_URL__, '_blank')
 }
+function handleOpenBetaDeployLog() {
+  window.open(__BETA_DEPLOY_LOG_URL__, '_blank')
+}
 </script>
 
 <style lang="scss">
 .about-dialog {
-  width: 30rem;
+  width: 32rem;
 
   .heading {
     display: flex;
@@ -103,7 +113,7 @@ function handleOpenGithub() {
     font-weight: 300;
   }
   .description {
-    margin: 1.2rem 0;
+    margin: 0.75rem 0;
     line-height: 1.5;
     opacity: 0.9;
     p {
@@ -113,6 +123,9 @@ function handleOpenGithub() {
   .actions {
     display: flex;
     gap: 1rem;
+    &.beta {
+      justify-content: space-between;
+    }
   }
   .key-value {
     display: grid;
