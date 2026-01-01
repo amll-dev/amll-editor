@@ -329,6 +329,8 @@ function initDragListener(notifier: Notifier) {
     if (!hasFiles(e)) return
     const file = e.dataTransfer?.files[0]
     if (!file) return
+    const el = e.target as HTMLElement
+    if (el.closest('.cm-editor')) return // Skip if dropping on editor
     e.preventDefault()
     const [, ext] = breakExtension(file.name)
     if (possibleAudioExts.has(ext)) {
