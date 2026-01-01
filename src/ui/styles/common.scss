@@ -1,13 +1,3 @@
-:root:root {
-  --p-border-radius-md: 5px;
-  --p-border-radius-lg: 6px;
-  --p-border-radius-xl: 6px;
-  --p-select-checkmark-gutter-start: -0.2rem;
-}
-.p-select-option-blank-icon {
-  margin-left: 0.175rem;
-}
-
 html,
 body {
   overflow: hidden;
@@ -19,27 +9,55 @@ body {
     'Noto Sans S Chinese', 'Microsoft YaHei', 'WenQuanYi Micro Hei', sans-serif, 'JetBrains Mono';
   --font-monospace:
     'JetBrains Mono', 'Sarasa Term SC', 'Iosevka', 'Fira Code', 'Source Code Pro', monospace;
-  user-select: none;
-  color: var(--p-text-color);
+
   --global-background: light-dark(white, #121212);
   --global-ease: cubic-bezier(0.19, 1, 0.22, 1);
   --global-fast-ease: cubic-bezier(0, 1, 0, 1);
+
+  --e-duet-text-color: light-dark(var(--p-lime-600), var(--p-lime-400));
+  --e-duet-hover-background: light-dark(
+    color-mix(in srgb, var(--p-lime-100), transparent 50%),
+    color-mix(in srgb, var(--p-lime-400), transparent 90%)
+  );
+  --e-duet-active-background: color-mix(in srgb, var(--p-lime-400), transparent 80%);
+
+  --e-bg-text-color: light-dark(var(--p-blue-500), var(--p-blue-400));
+  --e-bg-hover-background: light-dark(
+    color-mix(in srgb, var(--p-blue-50), transparent 30%),
+    color-mix(in srgb, var(--p-blue-400), transparent 90%)
+  );
+  --e-bg-active-background: color-mix(in srgb, var(--p-blue-400), transparent 80%);
+
+  user-select: none;
+  color: var(--p-text-color);
   background-color: var(--global-background);
 }
 
 :root,
-input {
+input,
+textarea {
   font-family: var(--font-main);
   line-height: 1.4;
+}
+
+.monospace {
+  font-family: var(--font-monospace);
+}
+
+a[href] {
+  text-decoration: none;
+}
+
+hr {
+  margin: 0;
+  border: none;
+  border-top: solid 1px var(--p-form-field-border-color);
 }
 
 ::selection {
   background-color: color-mix(in srgb, var(--p-primary-400), transparent 55%);
 }
 
-.monospace {
-  font-family: var(--font-monospace);
-}
 .timeinput.timeinput,
 .durationinput input {
   font-family: var(--font-monospace);
@@ -59,102 +77,6 @@ input {
   display: flex;
   flex-direction: column;
 }
-
-.p-contextmenu.p-contextmenu {
-  &-enter-active,
-  &-leave-active {
-    transition: opacity 0.1s;
-  }
-}
-
-.p-button.p-button {
-  transition:
-    background var(--p-button-transition-duration),
-    color var(--p-button-transition-duration),
-    opacity var(--p-button-transition-duration),
-    border-color var(--p-button-transition-duration),
-    outline-color var(--p-button-transition-duration),
-    box-shadow var(--p-button-transition-duration);
-}
-
-.p-inputgroupaddon {
-  z-index: 1;
-  &:has(.p-button:focus-visible) {
-    outline: var(--p-button-focus-ring-width) var(--p-button-focus-ring-style)
-      var(--p-button-secondary-focus-ring-color);
-    outline-offset: var(--p-button-focus-ring-offset);
-
-    box-shadow: var(--p-button-secondary-focus-ring-shadow);
-  }
-}
-
-.p-slider-handle {
-  box-shadow: 0 0 0 2px inset var(--p-slider-handle-background) !important;
-  background-color: var(--p-slider-handle-content-background) !important;
-  &::before {
-    content: unset !important;
-  }
-  &:active,
-  :root:has(&:active) * {
-    cursor: grabbing;
-  }
-}
-
-.p-radiobutton-icon {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: unset !important;
-  width: unset !important;
-  transform: scale(0.1) !important;
-  .p-radiobutton-checked .p-radiobutton-box & {
-    transform: scale(calc(var(--p-radiobutton-icon-size) / var(--p-radiobutton-width))) !important;
-  }
-}
-
-.p-toast-message-icon:empty {
-  display: none;
-}
-.p-toast.p-toast-top-right {
-  top: 4.5rem !important;
-}
-.p-toast-message.p-toast-message {
-  &-enter-active {
-    animation: pe-animate-toast-message-enter 300ms var(--global-ease);
-  }
-  &-leave-active {
-    animation: pe-animate-toast-leave 800ms var(--global-ease);
-    transition: 800ms var(--global-ease);
-  }
-  &-leave-to .p-toast-message-content {
-    padding: var(--p-toast-content-padding);
-  }
-  @keyframes pe-animate-toast-message-enter {
-    from {
-      opacity: 0;
-      transform: scale(0.93);
-    }
-  }
-  @keyframes pe-animate-toast-leave {
-    from {
-      opacity: 1;
-    }
-    to {
-      opacity: 0;
-      margin-bottom: calc(var(--p-toast-content-padding) * -2);
-      grid-template-rows: 0fr;
-    }
-  }
-}
-
-@keyframes fade {
-  from {
-    opacity: 0;
-  }
-}
-
 .kvgrid {
   display: grid;
   grid-template-columns: auto auto;
@@ -167,6 +89,12 @@ input {
     label {
       padding-left: 0.5rem;
     }
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
   }
 }
 
@@ -186,21 +114,18 @@ input {
   &:hover {
     background: transparent;
   }
-
   &-track {
     background: transparent;
     &:hover {
       background: transparent;
     }
   }
-
   &-corner {
     background: transparent;
     &:hover {
       background: transparent;
     }
   }
-
   &-thumb {
     border: solid transparent 4px;
     box-shadow:
@@ -211,16 +136,6 @@ input {
   }
 }
 
-a[href] {
-  text-decoration: none;
-}
-
-hr {
-  margin: 0;
-  border: none;
-  border-top: solid 1px var(--p-form-field-border-color);
-}
-
 .p-dialog.thin-padding {
   --p-overlay-modal-padding: 0.6rem;
   --p-dialog-header-padding: 0.5rem 0.3rem 0.2rem 0.9rem;
@@ -228,22 +143,6 @@ hr {
 }
 .p-dialog-header:active {
   cursor: move;
-}
-
-:root {
-  --e-duet-text-color: light-dark(var(--p-lime-600), var(--p-lime-400));
-  --e-duet-hover-background: light-dark(
-    color-mix(in srgb, var(--p-lime-100), transparent 50%),
-    color-mix(in srgb, var(--p-lime-400), transparent 90%)
-  );
-  --e-duet-active-background: color-mix(in srgb, var(--p-lime-400), transparent 80%);
-
-  --e-bg-text-color: light-dark(var(--p-blue-500), var(--p-blue-400));
-  --e-bg-hover-background: light-dark(
-    color-mix(in srgb, var(--p-blue-50), transparent 30%),
-    color-mix(in srgb, var(--p-blue-400), transparent 90%)
-  );
-  --e-bg-active-background: color-mix(in srgb, var(--p-blue-400), transparent 80%);
 }
 
 .v-popper--theme-tooltip .v-popper__inner.v-popper__inner {
@@ -317,10 +216,6 @@ hr {
   &-leave-to {
     opacity: 0;
   }
-}
-
-.p-floatlabel-on > label {
-  z-index: 3;
 }
 
 .pi.pi-color {

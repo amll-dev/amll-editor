@@ -1,0 +1,103 @@
+:root:root {
+  --p-border-radius-md: 5px;
+  --p-border-radius-lg: 6px;
+  --p-border-radius-xl: 6px;
+  --p-select-checkmark-gutter-start: -0.2rem;
+}
+
+.p-select-option-blank-icon {
+  margin-left: 0.175rem;
+}
+
+.p-contextmenu.p-contextmenu {
+  &-enter-active,
+  &-leave-active {
+    transition: opacity 0.1s;
+  }
+}
+
+.p-button.p-button {
+  transition:
+    background var(--p-button-transition-duration),
+    color var(--p-button-transition-duration),
+    opacity var(--p-button-transition-duration),
+    border-color var(--p-button-transition-duration),
+    outline-color var(--p-button-transition-duration),
+    box-shadow var(--p-button-transition-duration);
+}
+
+.p-inputgroupaddon {
+  z-index: 1;
+  &:has(.p-button:focus-visible) {
+    outline: var(--p-button-focus-ring-width) var(--p-button-focus-ring-style)
+      var(--p-button-secondary-focus-ring-color);
+    outline-offset: var(--p-button-focus-ring-offset);
+
+    box-shadow: var(--p-button-secondary-focus-ring-shadow);
+  }
+}
+
+.p-slider-handle {
+  box-shadow: 0 0 0 2px inset var(--p-slider-handle-background) !important;
+  background-color: var(--p-slider-handle-content-background) !important;
+  &::before {
+    content: unset !important;
+  }
+  &:active,
+  :root:has(&:active) * {
+    cursor: grabbing;
+  }
+}
+
+.p-radiobutton-icon {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: unset !important;
+  width: unset !important;
+  transform: scale(0.1) !important;
+  .p-radiobutton-checked .p-radiobutton-box & {
+    transform: scale(calc(var(--p-radiobutton-icon-size) / var(--p-radiobutton-width))) !important;
+  }
+}
+
+.p-toast-message-icon:empty {
+  display: none;
+}
+.p-toast.p-toast-top-right {
+  top: 4.5rem !important;
+}
+.p-toast-message.p-toast-message {
+  &-enter-active {
+    animation: pe-animate-toast-message-enter 300ms var(--global-ease);
+  }
+  &-leave-active {
+    animation: pe-animate-toast-leave 800ms var(--global-ease);
+    transition: 800ms var(--global-ease);
+  }
+  &-leave-to .p-toast-message-content {
+    padding: var(--p-toast-content-padding);
+  }
+  @keyframes pe-animate-toast-message-enter {
+    from {
+      opacity: 0;
+      transform: scale(0.93);
+    }
+  }
+  @keyframes pe-animate-toast-leave {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+      margin-bottom: calc(var(--p-toast-content-padding) * -2);
+      grid-template-rows: 0fr;
+    }
+  }
+}
+
+.p-floatlabel-on > label {
+  z-index: 3;
+}

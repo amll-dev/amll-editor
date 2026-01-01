@@ -15,7 +15,8 @@ import ToastService from 'primevue/toastservice'
 
 import consoleArt from '@assets/consoleArt.txt?raw'
 import '@assets/fonts/index.scss'
-import '@ui/common.scss'
+import '@ui/styles/common.scss'
+import '@ui/styles/rewrites.scss'
 import 'floating-vue/dist/style.css'
 import 'primeicons/primeicons.css'
 
@@ -32,13 +33,7 @@ app.use(PrimeVue, {
     preset: definePreset(Aura, {
       semantic: {
         primary: makePrimeColorSet(primaryColorToken),
-        colorScheme: {
-          light: {
-            content: {
-              background: '{surface.50}',
-            },
-          },
-        },
+        colorScheme: { light: { content: { background: '{surface.50}' } } },
       },
     }),
   },
