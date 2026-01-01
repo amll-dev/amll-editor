@@ -64,7 +64,6 @@ const displayName = __APP_DISPLAY_NAME__
         pref-key="ttmlAsDefault"
         label="以 TTML 为默认格式"
         desc="新建和保存文档时默认使用 TTML 而非 ALP 格式"
-        :disabled="!compatibilityMap.fileSystem"
         experimental
       />
     </div>
