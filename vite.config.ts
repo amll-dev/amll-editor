@@ -24,6 +24,8 @@ for (const [key, relPath] of Object.entries(aliasRelMap)) {
 
 const git = simpleGit()
 
+console.log(`Current channel: ${process.env.VITE_BUILD_CHANNEL || 'UNSPECIFIED'}\n`)
+
 // https://vite.dev/config/
 export default defineConfig(async ({ mode }) => ({
   plugins: [

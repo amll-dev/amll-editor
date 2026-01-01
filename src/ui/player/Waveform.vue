@@ -21,13 +21,13 @@
 
 <script setup lang="ts">
 import { useCssVar } from '@vueuse/core'
+import { clamp } from 'lodash-es'
 import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef } from 'vue'
 import WaveSurfer from 'wavesurfer.js'
 
 import { audioEngine } from '@core/audio'
 
 import { ms2str } from '@utils/formatTime'
-import { clamp } from 'lodash-es'
 
 const containerEl = useTemplateRef('container')
 const timeEl = useTemplateRef('timeEl')
@@ -40,7 +40,6 @@ const cursorLeftPxRef = ref(0)
 const hoverCursorShown = ref(false)
 let containRect: DOMRect | null = null
 let timeRect: DOMRect | null = null
-
 
 function handleMounseEnter() {
   if (!containerEl.value || !timeEl.value) return

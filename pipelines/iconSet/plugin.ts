@@ -9,7 +9,6 @@ export function iconSetPlugin() {
     'icons',
     process.env.VITE_BUILD_CHANNEL === 'BETA' ? 'beta' : 'normal',
   )
-  console.log('Using icon set from:', iconSetDir)
   return viteStaticCopy({
     targets: [
       {
