@@ -123,12 +123,11 @@ const displayName = __APP_DISPLAY_NAME__
       />
       <PrefNumberItem
         pref-key="autoConnectThresholdMs"
-        label="连接阈值"
+        label="行时间自动连接阈值"
         desc="连接相邻行时允许的最大间隔 (毫秒)"
         :min="0"
         :max="5000"
         :disabled="!prefStore.hideLineTiming || !prefStore.autoConnectLineTimes"
-        experimental
       />
     </div>
     <div class="pref-group">
