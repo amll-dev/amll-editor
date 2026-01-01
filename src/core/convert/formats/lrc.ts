@@ -3,6 +3,7 @@ import type { LyricLine, Persist } from '@core/types'
 import { coreCreate } from '@states/stores/core'
 
 import { str2ms } from '@utils/formatTime'
+import { pairwise } from '@utils/pairwise'
 
 import MANIFEST from '../manifest.json'
 import type { Convert as CV } from '../types'
@@ -67,11 +68,8 @@ export function parseLRC(lrc: string): Persist {
     })
   })
   lyricLines.sort((a, b) => a.startTime - b.startTime)
-  for (let i = lyricLines.length - 1; i > 0; i--) {
-    const line = lyricLines[i]!
-    const prevLine = lyricLines[i - 1]!
-    prevLine.endTime = line.startTime
-    prevLine.syllables[0]!.endTime = line.startTime
+  for (const [prev, curr] of pairwise(lyricLines)) {
+    prev.endTime = prev.syllables[0]!.endTime = curr.startTime
   }
   if (lyricLines.length && metadata.length && metadata.length.length) {
     const length = str2ms(metadata.length[0]!)

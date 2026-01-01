@@ -88,7 +88,7 @@ export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
         runtimeStore.selectLine(...newLines)
         nextTick(() =>
           staticStore.scrollToHook?.(
-            newLines.reduce((acc, line) => Math.max(acc, coreStore.lyricLines.indexOf(line)), 0),
+            Math.max(0, ...newLines.map((l) => coreStore.lyricLines.indexOf(l))),
             { align: 'nearest' },
           ),
         )

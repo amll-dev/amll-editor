@@ -18,6 +18,7 @@ export interface PreferenceSchema {
   alwaysIgnoreBackground: boolean
   hideLineTiming: boolean
   autoConnectLineTimes: boolean
+  autoConnectThresholdMs: number
   // Roman
   sylRomanEnabled: boolean
   swapTranslateRoman: boolean
@@ -39,6 +40,7 @@ export const getDefaultPref = (): PreferenceSchema => ({
   alwaysIgnoreBackground: false,
   hideLineTiming: false,
   autoConnectLineTimes: false,
+  autoConnectThresholdMs: 100,
   sylRomanEnabled: false,
   swapTranslateRoman: false,
   sidebarWidth: 360,
