@@ -80,6 +80,8 @@ const groupedCmdList = [
       'selectAllLines',
       'selectAllSyls',
       'breakLine',
+      'duet',
+      'background',
     ],
   },
   {
