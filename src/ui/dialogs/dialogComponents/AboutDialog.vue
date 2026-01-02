@@ -110,7 +110,6 @@ function handleOpenBetaDeployLog() {
   }
   .title {
     font-size: 2rem;
-    font-weight: 300;
   }
   .description {
     margin: 0.75rem 0;
