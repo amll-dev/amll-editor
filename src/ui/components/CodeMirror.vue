@@ -55,7 +55,7 @@ function highlightCurrentLine() {
       }
       getDeco(view: EditorView) {
         const dropPos = view.state.field(dropCursorPos, false)
-        const pos = dropPos != null ? dropPos : view.state.selection.main.head
+        const pos = typeof dropPos === 'number' ? dropPos : view.state.selection.main.head
         const line = view.state.doc.lineAt(pos)
         currentLine.value = line.number
         return Decoration.set([
@@ -72,7 +72,7 @@ function highlightCurrentLine() {
 // so that fields can be tracked here
 const setDropCursorPos = StateEffect.define<number | null>({
   map(pos, mapping) {
-    return pos == null ? null : mapping.mapPos(pos)
+    return pos === null ? null : mapping.mapPos(pos)
   },
 })
 const dropCursorPos = StateField.define<number | null>({
@@ -80,7 +80,7 @@ const dropCursorPos = StateField.define<number | null>({
     return null
   },
   update(pos, tr) {
-    if (pos != null) pos = tr.changes.mapPos(pos)
+    if (pos !== null) pos = tr.changes.mapPos(pos)
     return tr.effects.reduce((pos, e) => (e.is(setDropCursorPos) ? e.value : pos), pos)
   },
 })
@@ -104,8 +104,8 @@ const drawDropCursor = ViewPlugin.fromClass(
     }
     update(update: ViewUpdate) {
       const cursorPos = update.state.field(dropCursorPos)
-      if (cursorPos == null) {
-        if (this.cursor != null) {
+      if (cursorPos === null) {
+        if (this.cursor !== null) {
           this.cursor?.remove()
           this.cursor = null
         }
@@ -115,7 +115,7 @@ const drawDropCursor = ViewPlugin.fromClass(
           this.cursor!.className = 'cm-dropCursor'
         }
         if (
-          update.startState.field(dropCursorPos) != cursorPos ||
+          update.startState.field(dropCursorPos) !== cursorPos ||
           update.docChanged ||
           update.geometryChanged
         )
@@ -125,7 +125,7 @@ const drawDropCursor = ViewPlugin.fromClass(
     readPos(): { left: number; top: number; height: number } | null {
       const { view } = this
       const pos = view.state.field(dropCursorPos)
-      const rect = pos != null && view.coordsAtPos(pos)
+      const rect = pos !== null && view.coordsAtPos(pos)
       if (!rect) return null
       const outer = view.scrollDOM.getBoundingClientRect()
       return {
@@ -150,7 +150,7 @@ const drawDropCursor = ViewPlugin.fromClass(
       if (this.cursor) this.cursor.remove()
     }
     setDropPos(pos: number | null) {
-      if (this.view.state.field(dropCursorPos) != pos)
+      if (this.view.state.field(dropCursorPos) !== pos)
         this.view.dispatch({ effects: setDropCursorPos.of(pos) })
     }
   },
@@ -161,7 +161,7 @@ const drawDropCursor = ViewPlugin.fromClass(
       },
       dragleave(event) {
         if (
-          event.target == this.view.contentDOM ||
+          event.target === this.view.contentDOM ||
           !this.view.contentDOM.contains(event.relatedTarget as HTMLElement)
         )
           this.setDropPos(null)
@@ -212,7 +212,7 @@ onMounted(() => {
       highlightCompartment.of([]),
       editableCompartment.of(EditorView.editable.of(!props.readonly)),
       ...(props.extensions || []),
-    ].filter((e) => !!e),
+    ].filter((e) => e !== null),
   })
 })
 onUnmounted(() => {

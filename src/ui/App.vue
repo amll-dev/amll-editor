@@ -75,7 +75,7 @@ watch(
   { immediate: true },
 )
 
-const modalDialogActivated = () => !!document.querySelector('.p-dialog-mask.p-overlay-mask')
+const modalDialogActivated = () => document.querySelector('.p-dialog-mask.p-overlay-mask') !== null
 const handleRootKeydown = (e: KeyboardEvent) => {
   const hotkey = parseKeyEvent(e)
   if (!hotkey) return

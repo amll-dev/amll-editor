@@ -66,7 +66,7 @@ const listItems = ref<ListItem[]>(
     original,
     props.transEnabled ? translation : null,
     props.romanEnabled ? romanization : null,
-  ].filter((i) => !!i),
+  ].filter((i) => i !== null),
 )
 const originalOrder = computed<number | undefined>(() => {
   const index = listItems.value.findIndex((item) => item.key === original.key)

@@ -1,6 +1,6 @@
 <template>
   <div class="hotkey-popup">
-    <div class="hotkey-popup-item" v-for="(item, index) in innerList">
+    <div class="hotkey-popup-item" v-for="(_item, index) in innerList">
       <HotKeyInput v-model="innerList[index]!" fluid />
       <Button
         icon="pi pi-times"
