@@ -17,14 +17,14 @@
       }"
     >
       <SpectrogramTile
-        v-for="tile in visibleTiles"
-        :key="tile.id"
-        :left="tile.left"
-        :width="tile.width"
-        :height="tile.height"
-        :canvas-height="tile.canvasHeight"
-        :canvas-width="tile.canvasWidth"
-        :bitmap="tile.bitmap"
+        v-for="{ id: key, left, width, height, canvasHeight, canvasWidth, bitmap } in visibleTiles"
+        :key
+        :left
+        :width
+        :height
+        :canvas-height
+        :canvas-width
+        :bitmap
       />
     </div>
 

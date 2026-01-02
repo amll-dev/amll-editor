@@ -2,12 +2,12 @@
   <div
     class="spectrogram-tile"
     :style="{
-      left: `${left}px`,
-      width: `${width}px`,
-      height: `${height}px`,
+      left: `${props.left}px`,
+      width: `${props.width}px`,
+      height: `${props.height}px`,
     }"
   >
-    <canvas ref="canvasRef" :width="canvasWidth" :height="canvasHeight"></canvas>
+    <canvas ref="canvasRef" :width="props.canvasWidth" :height="props.canvasHeight"></canvas>
   </div>
 </template>
 
@@ -35,9 +35,7 @@ const draw = () => {
 
 watch(
   [() => props.bitmap, () => props.canvasWidth, () => props.canvasHeight],
-  () => {
-    nextTick(draw)
-  },
+  () => nextTick(draw),
   { immediate: true },
 )
 
