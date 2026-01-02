@@ -90,17 +90,17 @@ const { requestTileIfNeeded, tileCache, lastTileTimestamp } = useSpectrogramWork
   palette,
 )
 
-const visibleTiles = shallowRef<
-  Array<{
-    id: string
-    left: number
-    width: number
-    height: number
-    canvasHeight: number
-    canvasWidth: number
-    bitmap?: ImageBitmap
-  }>
->([])
+interface VisibleTile {
+  id: string
+  left: number
+  width: number
+  height: number
+  canvasHeight: number
+  canvasWidth: number
+  bitmap?: ImageBitmap
+}
+
+const visibleTiles = shallowRef<VisibleTile[]>([])
 
 const totalContentWidth = computed(() => {
   const duration = audioEngine.audioBuffer?.duration || 0
@@ -121,7 +121,7 @@ const updateVisibleTiles = () => {
   const firstVisibleIndex = Math.floor(viewStart / tileDisplayWidthPx)
   const lastVisibleIndex = Math.ceil(viewEnd / tileDisplayWidthPx)
 
-  const newVisibleTiles = []
+  const newVisibleTiles: VisibleTile[] = []
 
   const renderH = renderHeight.value
 
