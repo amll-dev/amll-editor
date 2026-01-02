@@ -23,6 +23,16 @@ const savedStatePointer = ref<number>(NaN)
 const isDirty = computed(() => savedStatePointer.value !== state.current)
 const markSaved = () => (savedStatePointer.value = state.current)
 
+const preventClose = (e: BeforeUnloadEvent) => {
+  e.preventDefault()
+  e.returnValue = ''
+  return ''
+}
+watch(isDirty, () => {
+  if (isDirty.value) window.addEventListener('beforeunload', preventClose)
+  else window.removeEventListener('beforeunload', preventClose)
+})
+
 let shutdownHook: (() => void) | null = null
 
 function clear() {
