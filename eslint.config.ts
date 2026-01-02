@@ -32,7 +32,6 @@ export default defineConfigWithVueTs(
       '@typescript-eslint/no-explicit-any': 'off',
       'vue/no-mutating-props': 'off',
       'vue/require-v-for-key': 'off',
-      'vue/valid-v-for': 'off',
     },
   },
 )
