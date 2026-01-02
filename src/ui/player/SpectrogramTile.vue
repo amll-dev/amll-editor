@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { nextTick, onMounted, ref, watch } from 'vue'
 
 const props = defineProps<{
   left: number
@@ -30,10 +30,17 @@ const draw = () => {
   if (!ctx || !props.bitmap) return
 
   ctx.clearRect(0, 0, props.canvasWidth, props.canvasHeight)
-  ctx.drawImage(props.bitmap, 0, 0)
+  ctx.drawImage(props.bitmap, 0, 0, props.canvasWidth, props.canvasHeight)
 }
 
-watch(() => props.bitmap, draw)
+watch(
+  [() => props.bitmap, () => props.canvasWidth, () => props.canvasHeight],
+  () => {
+    nextTick(draw)
+  },
+  { immediate: true },
+)
+
 onMounted(draw)
 </script>
 

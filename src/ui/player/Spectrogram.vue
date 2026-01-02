@@ -49,6 +49,9 @@ import { useSpectrogramWorker } from './useSpectrogramWorker'
 
 const TILE_DURATION_S = 5
 const LOD_WIDTHS = [512, 1024, 2048, 4096, 8192]
+const MIN_ZOOM = 10
+const MAX_ZOOM = 1000
+const ZOOM_SENSITIVITY = 1.15
 
 const containerEl = ref<HTMLElement | null>(null)
 const containerWidth = ref(0)
@@ -178,12 +181,40 @@ watch(
 )
 
 const handleWheel = (e: WheelEvent) => {
-  const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY
+  if (e.ctrlKey) {
+    if (!containerEl.value) return
+    const rect = containerEl.value.getBoundingClientRect()
+    const mouseX = e.clientX - rect.left
 
-  const maxScroll = Math.max(0, totalContentWidth.value - containerWidth.value)
-  const newScroll = scrollLeft.value + delta
+    const timeAtCursor = (scrollLeft.value + mouseX) / zoom.value
 
-  scrollLeft.value = Math.max(0, Math.min(newScroll, maxScroll))
+    let newZoom = zoom.value
+    if (e.deltaY < 0) {
+      newZoom *= ZOOM_SENSITIVITY
+    } else {
+      newZoom /= ZOOM_SENSITIVITY
+    }
+
+    newZoom = Math.max(MIN_ZOOM, Math.min(newZoom, MAX_ZOOM))
+
+    if (newZoom !== zoom.value) {
+      const newScrollLeft = timeAtCursor * newZoom - mouseX
+
+      zoom.value = newZoom
+      const maxScroll = Math.max(
+        0,
+        (audioEngine.audioBuffer?.duration || 0) * newZoom - containerWidth.value,
+      )
+      scrollLeft.value = Math.max(0, Math.min(newScrollLeft, maxScroll))
+    }
+  } else {
+    const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY
+
+    const maxScroll = Math.max(0, totalContentWidth.value - containerWidth.value)
+    const newScroll = scrollLeft.value + delta
+
+    scrollLeft.value = Math.max(0, Math.min(newScroll, maxScroll))
+  }
 }
 </script>
 
