@@ -104,8 +104,10 @@ export function stringifyTTML(ttmlLyric: Persist): string {
     }
     const lastGroup = groupedLines.at(-1)
     if (lastGroup) {
-      if (lastGroup.background)
-        throw new Error('Multiple background lines for one main line detected.')
+      if (lastGroup.background) {
+        console.warn('Multiple background lines for one main line detected.')
+        groupedLines.push({ main: line }) // TO DO: better handling
+      }
       lastGroup.background = line
     } else groupedLines.push({ main: line }) // TO DO: better handling
   }
