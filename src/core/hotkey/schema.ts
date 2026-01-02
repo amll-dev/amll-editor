@@ -31,6 +31,8 @@ export const hotkeyCommandNames = {
   selectAllLines: '全选所有行',
   selectAllSyls: '全选所有音节',
   breakLine: '拆分行',
+  duet: '设为对唱行',
+  background: '设为背景行',
 
   goPrevLine: '上一行',
   goPrevSyl: '上一音节',
@@ -99,6 +101,8 @@ export const getDefaultHotkeyMap = () =>
     selectAllLines: k(Ctrl, 'a'),
     selectAllSyls: k(Alt, 'a'),
     breakLine: k('Enter'),
+    duet: k(Ctrl, 'u'),
+    background: k(Ctrl, 'b'),
   })
 
 //#region Helpers

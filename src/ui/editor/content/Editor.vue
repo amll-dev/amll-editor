@@ -63,12 +63,12 @@
 import type { ScrollToIndexOpts } from 'virtua/unstable_core'
 import { VList } from 'virtua/vue'
 import {
+  computed,
   nextTick,
   onBeforeUnmount,
   onMounted,
   onUnmounted,
   ref,
-  shallowRef,
   useTemplateRef,
 } from 'vue'
 
@@ -78,6 +78,7 @@ import { type LyricLine, View } from '@core/types'
 import { useCoreStore, usePrefStore, useRuntimeStore, useStaticStore } from '@states/stores'
 import type { EditorComponentActions } from '@states/stores/static'
 
+import { alignLineEndTime, alignLineTime } from '@utils/alignLineSylTime'
 import { forceOutsideBlur } from '@utils/forceOutsideBlur'
 import { isInputEl } from '@utils/isInputEl'
 import { sortSyllables } from '@utils/sortLineSyls'
@@ -91,7 +92,6 @@ import WordInsertIndicator from './SyllableInsertIndicator.vue'
 import EmptyTip from '@ui/components/EmptyTip.vue'
 import TieredMenuItem from '@ui/components/TieredMenuItem.vue'
 import { Button, ContextMenu } from 'primevue'
-import type { MenuItem } from 'primevue/menuitem'
 
 import { useContentCtxItems } from './context'
 
@@ -131,18 +131,19 @@ const contextSylIndex = ref<number | undefined>(undefined)
 
 const menu = useTemplateRef('menu')
 
-const menuItemsMap = useContentCtxItems({
+const { menuItemsMap, toggleBackground, toggleDuet } = useContentCtxItems({
   lineIndex: contextLineIndex,
   sylIndex: contextSylIndex,
 })
-const menuItems = shallowRef<MenuItem[]>(menuItemsMap.blank)
+const currentContextType = ref<keyof typeof menuItemsMap>('blank')
+const menuItems = computed(() => menuItemsMap[currentContextType.value].value)
 
 const handleContext =
   (src: keyof typeof menuItemsMap) => (e: MouseEvent, lineIndex?: number, sylIndex?: number) => {
     if (isInputEl(e.target as HTMLElement)) return
     contextLineIndex.value = lineIndex
     contextSylIndex.value = sylIndex
-    menuItems.value = menuItemsMap[src]
+    currentContextType.value = src
     menu.value?.show(e)
   }
 const handleBlankContext = handleContext('blank')
@@ -166,11 +167,15 @@ useGlobalKeyboard('breakLine', () => {
     const sylIndex = line.syllables.indexOf(syl)
     const remainingSyls = line.syllables.splice(sylIndex)
     const newLine = coreStore.newLine({ ...line, syllables: remainingSyls })
+    alignLineEndTime(line)
+    alignLineTime(newLine)
     coreStore.lyricLines.splice(currentLineIndex + 1, 0, newLine)
     currentLineIndex++
   }
   runtimeStore.selectSyllable(...syls)
 })
+useGlobalKeyboard('duet', toggleDuet)
+useGlobalKeyboard('background', toggleBackground)
 
 // onBeforeUnmounted instead of onUnmounted: vscroll quits at unmounted phase
 onBeforeUnmount(() => {
