@@ -48,6 +48,7 @@
     "mitt": "^3.0.1",
     "nanoid": "^5.1.6",
     "pinia": "^3.0.4",
+    "posthog-js": "^1.312.0",
     "primeicons": "^7.0.0",
     "primevue": "^4.5.4",
     "pyodide": "^0.29.0",
