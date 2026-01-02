@@ -3,14 +3,14 @@ import type { LyricLine, LyricSyllable, Metadata, Persist } from '@core/types'
 import { coreCreate } from '@states/stores/core'
 
 import { ms2str, str2ms as nullableStr2ms } from '@utils/formatTime'
+import type { Maybe } from '@utils/types'
 
 import MANIFEST from '../manifest.json'
 import type { Convert as CV } from '../types'
 
 // Frontend TTML parser and stringifier, following AMLL TTML Lyric Format
-// Source: https://github.com/Steve-xmh/amll-ttml-tool , Licensed under GPLv3
-// Minor changes were made to fit into this project structure.
-// See https://www.w3.org/TR/2018/REC-ttml1-20181108/
+// Derived from: https://github.com/Steve-xmh/amll-ttml-tool , Licensed under GPLv3
+// See also https://www.w3.org/TR/2018/REC-ttml1-20181108/
 
 export const ttmlReg: CV.Format = {
   ...MANIFEST.ttml,
@@ -34,16 +34,32 @@ interface WordRomanMetadata {
 
 const { newLine, newSyllable } = coreCreate
 
-function str2ms(str: string): number {
+function str2ms(str: Maybe<string>): number {
+  if (!str) return 0
   const ms = nullableStr2ms(str)
   if (ms === null) throw new TypeError(`Invalid time string: ${str}`)
   return ms
 }
 
-export function parseTTML(ttmlText: string): Persist {
-  const domParser = new DOMParser()
-  const ttmlDoc: XMLDocument = domParser.parseFromString(ttmlText, 'application/xml')
+const trimBraces = (s: string) =>
+  s
+    .trim()
+    .replace(/^[（(]/, '')
+    .replace(/[)）]$/, '')
+    .trim()
 
+class StringAccum {
+  private parts: string[] = []
+  append(s: Maybe<string>) {
+    if (typeof s !== 'string' || s.length === 0) return
+    this.parts.push(s)
+  }
+  toString() {
+    return this.parts.join('')
+  }
+}
+
+function parseItunesTranslations(ttmlDoc: XMLDocument) {
   const itunesTranslations = new Map<string, LineMetadata>()
   const translationTextElements = ttmlDoc.querySelectorAll(
     'iTunesMetadata > translations > translation > text[for]',
@@ -53,31 +69,26 @@ export function parseTTML(ttmlText: string): Persist {
     const key = textEl.getAttribute('for')
     if (!key) return
 
-    let main = ''
-    let bg = ''
+    const mainStrs = new StringAccum()
+    const bgStrs = new StringAccum()
 
-    for (const node of Array.from(textEl.childNodes)) {
-      if (node.nodeType === Node.TEXT_NODE) {
-        main += node.textContent ?? ''
-      } else if (node.nodeType === Node.ELEMENT_NODE) {
-        if ((node as Element).getAttribute('ttm:role') === 'x-bg') {
-          bg += node.textContent ?? ''
-        }
-      }
-    }
+    textEl.childNodes.forEach((node) => {
+      if (node.nodeType === Node.TEXT_NODE) mainStrs.append(node.textContent)
+      else if (node.nodeType === Node.ELEMENT_NODE)
+        if ((node as Element).getAttribute('ttm:role') === 'x-bg')
+          if (node.textContent) bgStrs.append(node.textContent)
+    })
 
-    main = main.trim()
-    bg = bg
-      .trim()
-      .replace(/^[（(]/, '')
-      .replace(/[)）]$/, '')
-      .trim()
+    const main = mainStrs.toString().trim()
+    const bg = trimBraces(bgStrs.toString())
 
-    if (main.length > 0 || bg.length > 0) {
-      itunesTranslations.set(key, { main, bg })
-    }
+    if (main || bg) itunesTranslations.set(key, { main, bg })
   })
 
+  return itunesTranslations
+}
+
+function parseItunesRomanizations(ttmlDoc: XMLDocument) {
   const itunesLineRomanizations = new Map<string, LineMetadata>()
   const itunesWordRomanizations = new Map<string, WordRomanMetadata>()
 
@@ -85,65 +96,50 @@ export function parseTTML(ttmlText: string): Persist {
     'iTunesMetadata > transliterations > transliteration > text[for]',
   )
 
+  const spanToRomanWord = (span: Element, trimTextBraces = false): RomanWord => ({
+    startTime: str2ms(span.getAttribute('begin')),
+    endTime: str2ms(span.getAttribute('end')),
+    text: trimTextBraces ? trimBraces(span.textContent) : span.textContent.trim(),
+  })
+
   romanizationTextElements.forEach((textEl) => {
     const key = textEl.getAttribute('for')
     if (!key) return
 
     const mainWords: RomanWord[] = []
     const bgWords: RomanWord[] = []
-    let lineRomanMain = ''
-    let lineRomanBg = ''
+    const lineRomanMainStrs = new StringAccum()
+    const lineRomanBgStrs = new StringAccum()
     let isWordByWord = false
 
-    for (const node of Array.from(textEl.childNodes)) {
+    textEl.childNodes.forEach((node) => {
       if (node.nodeType === Node.TEXT_NODE) {
-        lineRomanMain += node.textContent ?? ''
-      } else if (node.nodeType === Node.ELEMENT_NODE) {
-        const el = node as Element
-        if (el.getAttribute('ttm:role') === 'x-bg') {
-          const nestedSpans = el.querySelectorAll('span[begin][end]')
-          if (nestedSpans.length > 0) {
-            isWordByWord = true
-            nestedSpans.forEach((span) => {
-              let bgWordText = span.textContent ?? ''
-              bgWordText = bgWordText
-                .trim()
-                .replace(/^[（(]/, '')
-                .replace(/[)）]$/, '')
-                .trim()
-
-              bgWords.push({
-                startTime: str2ms(span.getAttribute('begin') ?? ''),
-                endTime: str2ms(span.getAttribute('end') ?? ''),
-                text: bgWordText,
-              })
-            })
-          } else {
-            lineRomanBg += el.textContent ?? ''
-          }
-        } else if (el.hasAttribute('begin') && el.hasAttribute('end')) {
-          isWordByWord = true
-          mainWords.push({
-            startTime: str2ms(el.getAttribute('begin') ?? ''),
-            endTime: str2ms(el.getAttribute('end') ?? ''),
-            text: el.textContent ?? '',
-          })
-        }
+        lineRomanMainStrs.append(node.textContent)
+        return
       }
-    }
+      if (node.nodeType !== Node.ELEMENT_NODE) return
+      const el = node as Element
+      if (el.getAttribute('ttm:role') === 'x-bg') {
+        const nestedSpans = el.querySelectorAll('span[begin][end]')
+        if (nestedSpans.length === 0) lineRomanBgStrs.append(el.textContent)
+        else {
+          isWordByWord = true
+          nestedSpans.forEach((span) => bgWords.push(spanToRomanWord(span, true)))
+        }
+      } else if (el.hasAttribute('begin') && el.hasAttribute('end')) {
+        isWordByWord = true
+        mainWords.push(spanToRomanWord(el))
+      }
+    })
 
     if (isWordByWord) {
       itunesWordRomanizations.set(key, { main: mainWords, bg: bgWords })
     }
 
-    lineRomanMain = lineRomanMain.trim()
-    lineRomanBg = lineRomanBg
-      .trim()
-      .replace(/^[（(]/, '')
-      .replace(/[)）]$/, '')
-      .trim()
+    const lineRomanMain = lineRomanMainStrs.toString().trim()
+    const lineRomanBg = trimBraces(lineRomanBgStrs.toString())
 
-    if (lineRomanMain.length > 0 || lineRomanBg.length > 0) {
+    if (lineRomanMain || lineRomanBg) {
       itunesLineRomanizations.set(key, {
         main: lineRomanMain,
         bg: lineRomanBg,
@@ -151,73 +147,41 @@ export function parseTTML(ttmlText: string): Persist {
     }
   })
 
-  const itunesTimedTranslations = new Map<string, LineMetadata>()
-  const timedTranslationTextElements = ttmlDoc.querySelectorAll(
-    'iTunesMetadata > translations > translation > text[for]',
-  )
+  return { itunesLineRomanizations, itunesWordRomanizations }
+}
 
-  timedTranslationTextElements.forEach((textEl) => {
-    const key = textEl.getAttribute('for')
-    if (!key) return
-
-    let main = ''
-    let bg = ''
-
-    for (const node of Array.from(textEl.childNodes)) {
-      if (node.nodeType === Node.TEXT_NODE) {
-        main += node.textContent ?? ''
-      } else if (node.nodeType === Node.ELEMENT_NODE) {
-        if ((node as Element).getAttribute('ttm:role') === 'x-bg') {
-          bg += node.textContent ?? ''
-        }
-      }
-    }
-
-    main = main.trim()
-    bg = bg
-      .trim()
-      .replace(/^[（(]/, '')
-      .replace(/[)）]$/, '')
-      .trim()
-
-    if ((main.length > 0 || bg.length > 0) && textEl.querySelector('span')) {
-      itunesTimedTranslations.set(key, { main, bg })
-      itunesTranslations.delete(key)
-    }
+function parseMetadata(ttmlDoc: XMLDocument): Metadata {
+  const metadataMap = new Map<string, string[]>()
+  ttmlDoc.querySelectorAll('meta').forEach((meta) => {
+    if (meta.tagName !== 'amll:meta') return
+    const key = meta.getAttribute('key')
+    const value = meta.getAttribute('value')
+    if (!key || !value) return
+    if (metadataMap.has(key)) metadataMap.get(key)!.push(value)
+    else metadataMap.set(key, [value])
   })
+  return [...metadataMap.entries()].map(([key, values]) => ({ key, values }))
+}
 
-  let mainAgentId = 'v1'
-
-  const metadata: Metadata = []
-  for (const meta of Array.from(ttmlDoc.querySelectorAll('meta'))) {
-    if (meta.tagName === 'amll:meta') {
-      const key = meta.getAttribute('key')
-      if (key) {
-        const value = meta.getAttribute('value')
-        if (value) {
-          const existing = metadata.find((m) => m.key === key)
-          if (existing) {
-            existing.values.push(value)
-          } else {
-            metadata.push({
-              key,
-              values: [value],
-            })
-          }
-        }
-      }
-    }
-  }
-
+function findMainAgentId(ttmlDoc: XMLDocument): string {
   for (const agent of Array.from(ttmlDoc.querySelectorAll('ttm\\:agent'))) {
-    if (agent.getAttribute('type') === 'person') {
-      const id = agent.getAttribute('xml:id')
-      if (id) {
-        mainAgentId = id
-        break
-      }
-    }
+    if (agent.getAttribute('type') !== 'person') continue
+    const id = agent.getAttribute('xml:id')
+    if (id) return id
   }
+  return 'v1'
+}
+
+export function parseTTML(ttmlText: string): Persist {
+  const domParser = new DOMParser()
+  const ttmlDoc: XMLDocument = domParser.parseFromString(ttmlText, 'application/xml')
+
+  const itunesTranslations = parseItunesTranslations(ttmlDoc)
+  const { itunesLineRomanizations, itunesWordRomanizations } = parseItunesRomanizations(ttmlDoc)
+
+  const metadata = parseMetadata(ttmlDoc)
+
+  const mainAgentId = findMainAgentId(ttmlDoc)
 
   const lyricLines: LyricLine[] = []
 
@@ -244,21 +208,14 @@ export function parseTTML(ttmlText: string): Persist {
     const romanWords = background ? romanWordData?.bg : romanWordData?.main
 
     if (itunesKey) {
-      const timedTrans = itunesTimedTranslations.get(itunesKey)
-      const lineTrans = itunesTranslations.get(itunesKey)
+      const trans = itunesTranslations.get(itunesKey)
 
-      if (background) {
-        line.translation = timedTrans?.bg ?? lineTrans?.bg ?? ''
-      } else {
-        line.translation = timedTrans?.main ?? lineTrans?.main ?? ''
-      }
+      if (background) line.translation = trans?.bg ?? ''
+      else line.translation = trans?.main ?? ''
 
       const lineRoman = itunesLineRomanizations.get(itunesKey)
-      if (background) {
-        line.romanization = lineRoman?.bg ?? ''
-      } else {
-        line.romanization = lineRoman?.main ?? ''
-      }
+      if (background) line.romanization = lineRoman?.bg ?? ''
+      else line.romanization = lineRoman?.main ?? ''
     }
 
     for (const wordNode of Array.from(lineEl.childNodes)) {
@@ -290,11 +247,11 @@ export function parseTTML(ttmlText: string): Persist {
             }
           }
         } else if (wordEl.hasAttribute('begin') && wordEl.hasAttribute('end')) {
-          const wordStartTime = str2ms(wordEl.getAttribute('begin') ?? '')
-          const wordEndTime = str2ms(wordEl.getAttribute('end') ?? '')
+          const wordStartTime = str2ms(wordEl.getAttribute('begin'))
+          const wordEndTime = str2ms(wordEl.getAttribute('end'))
 
           const word = newSyllable({
-            text: wordEl.textContent ?? '',
+            text: wordEl.textContent,
             startTime: wordStartTime,
             endTime: wordEndTime,
           })
