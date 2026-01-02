@@ -224,7 +224,7 @@ function suggestName() {
   const [displayName] = breakExtension(displayFilenameRef.value)
   if (!displayName.startsWith('未命名')) return displayName
   const coreStore = useCoreStore()
-  const title = coreStore.metadata.find((m) => m.key === 'musicName' || m.key === 'ti')?.values[0]
+  const title = (coreStore.metadata.musicName ?? coreStore.metadata.ti)?.[0]
   if (title) return title
   const mediaFilename = audioEngine.filenameComputed.value
   if (mediaFilename) {

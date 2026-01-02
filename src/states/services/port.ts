@@ -1,4 +1,5 @@
 import { cloneDeep } from 'lodash-es'
+import { reactive, toRaw } from 'vue'
 
 import type { LyricLine, MetadataKey, Persist } from '@core/types'
 
@@ -15,11 +16,7 @@ export function applyPersist(data: Persist) {
   const coreStore = useCoreStore()
   const runtimeStore = useRuntimeStore()
   runtimeStore.clearSelection()
-  coreStore.metadata.length = 0
-  for (const [k, values] of Object.entries(data.metadata)) {
-    const key = k as MetadataKey
-    coreStore.metadata.push({ key, values })
-  }
+  coreStore.metadata = reactive(data.metadata)
   coreStore.lyricLines.splice(0, coreStore.lyricLines.length, ...data.lines)
   editHistory.init()
 }
@@ -27,16 +24,11 @@ export function applyPersist(data: Persist) {
 export function collectPersist(): Persist {
   const coreStore = useCoreStore()
   const prefStore = usePrefStore()
-  const lines = cloneDeep(coreStore.lyricLines)
+  const lines = cloneDeep(toRaw(coreStore.lyricLines))
+  const metadata = cloneDeep(toRaw(coreStore.metadata))
   if (prefStore.hideLineTiming) lines.forEach((line) => alignLineTime(line))
   if (prefStore.autoConnectLineTimes) connectLineTimes(lines, prefStore.autoConnectThresholdMs)
-  const outputData: Persist = {
-    metadata: [...coreStore.metadata].reduce(
-      (obj, { key, values }) => ((obj[key] = [...values]), obj),
-      {} as Record<MetadataKey, string[]>,
-    ),
-    lines,
-  }
+  const outputData: Persist = { metadata, lines }
   return outputData
 }
 

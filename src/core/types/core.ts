@@ -1,10 +1,7 @@
 /** 元数据键 */
 export type MetadataKey = string
 /** 元数据 */
-export type Metadata = {
-  key: MetadataKey
-  values: string[]
-}[]
+export type MetadataMap = Record<MetadataKey, string[]>
 
 /** 歌词行 */
 export interface LyricLine {

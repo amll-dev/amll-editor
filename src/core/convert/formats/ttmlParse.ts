@@ -1,4 +1,4 @@
-import type { LyricLine, Persist } from '@core/types'
+import type { LyricLine, MetadataMap, Persist } from '@core/types'
 
 import { coreCreate } from '@states/stores/core'
 
@@ -144,7 +144,7 @@ function parseItunesRomanizations(ttmlDoc: XMLDocument) {
   return { itunesLineRomanizations, itunesWordRomanizations }
 }
 
-function parseMetadata(ttmlDoc: XMLDocument): Persist['metadata'] {
+function parseMetadata(ttmlDoc: XMLDocument): MetadataMap {
   const metadataMap = new Map<string, string[]>()
   ttmlDoc.querySelectorAll('meta').forEach((meta) => {
     if (meta.tagName !== 'amll:meta') return

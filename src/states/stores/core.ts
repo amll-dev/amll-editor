@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid'
 import { defineStore } from 'pinia'
 import { reactive } from 'vue'
 
-import type { LyricLine, LyricSyllable, Metadata } from '@core/types'
+import type { LyricLine, LyricSyllable, MetadataMap } from '@core/types'
 
 import { alignLineEndTime, alignLineStartTime } from '@utils/alignLineSylTime'
 
@@ -39,7 +39,7 @@ const newSyllable = (attrs: Partial<LyricSyllable> = {}) =>
 
 export const useCoreStore = defineStore('core', () => {
   // const createdAt = ref(Date.now())
-  const metadata = reactive<Metadata>([])
+  const metadata = reactive<MetadataMap>({})
   const lyricLines = reactive<LyricLine[]>([])
   // const comments = reactive<Comment[]>([])
   return {
