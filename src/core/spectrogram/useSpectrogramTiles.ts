@@ -22,8 +22,6 @@ interface UseSpectrogramTilesOptions {
   audioBuffer: Ref<AudioBuffer | null>
   gain: Ref<number>
   palette: Ref<Uint8Array>
-  renderHeight: Ref<number>
-  displayHeight: Ref<number>
 }
 
 export function useSpectrogramTiles({
@@ -31,8 +29,6 @@ export function useSpectrogramTiles({
   audioBuffer,
   gain,
   palette,
-  renderHeight,
-  displayHeight,
 }: UseSpectrogramTilesOptions) {
   const { requestTileIfNeeded, tileCache, lastTileTimestamp } = useSpectrogramWorker(
     audioBuffer,
@@ -56,8 +52,8 @@ export function useSpectrogramTiles({
     const lastVisibleIndex = Math.ceil(viewEnd / tileDisplayWidthPx)
 
     const newVisibleTiles: VisibleTile[] = []
-    const renderH = renderHeight.value
-    const displayH = displayHeight.value
+    const renderH = ctx.renderHeight.value
+    const displayH = ctx.displayHeight.value
 
     for (let i = firstVisibleIndex - 2; i <= lastVisibleIndex + 2; i++) {
       if (i < 0 || i >= totalTiles) continue
@@ -100,8 +96,8 @@ export function useSpectrogramTiles({
       ctx.scrollLeft,
       ctx.zoom,
       ctx.containerWidth,
-      displayHeight,
-      renderHeight,
+      ctx.displayHeight,
+      ctx.renderHeight,
       gain,
       lastTileTimestamp,
       audioBuffer,

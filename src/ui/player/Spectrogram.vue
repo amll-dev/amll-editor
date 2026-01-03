@@ -74,10 +74,20 @@ const {
 })
 
 // 拖拽调整高度时只修改 CSS 高度，停止拖拽时再更新渲染分辨率以避免每帧重渲染的性能问题
-const renderHeight = ref(displayHeight.value)
+watch(
+  displayHeight,
+  (h) => {
+    ctx.displayHeight.value = h
+    if (!isResizing.value) {
+      ctx.renderHeight.value = h
+    }
+  },
+  { immediate: true },
+)
+
 watch(isResizing, (resizing) => {
   if (!resizing) {
-    renderHeight.value = displayHeight.value
+    ctx.renderHeight.value = ctx.displayHeight.value
   }
 })
 
@@ -87,8 +97,6 @@ const { visibleTiles } = useSpectrogramTiles({
   audioBuffer: audioBufferRef,
   gain,
   palette,
-  renderHeight,
-  displayHeight,
 })
 </script>
 

@@ -63,6 +63,14 @@ export interface SpectrogramContext {
    * @see {@link zoom}
    */
   pixelsPerSecond: Ref<number>
+  /**
+   * 容器的 CSS 高度，用于 CSS 布局
+   */
+  displayHeight: Ref<number>
+  /**
+   * 瓦片的实际渲染高度，用于 Canvas
+   */
+  renderHeight: Ref<number>
 }
 
 const SpectrogramContextKey: InjectionKey<SpectrogramContext> = Symbol('SpectrogramContext')
@@ -99,6 +107,9 @@ export function useSpectrogramProvider({ audioBuffer }: SpectrogramProviderOptio
     return Math.max(0, Math.min(time, duration.value))
   })
 
+  const displayHeight = ref(240)
+  const renderHeight = ref(240)
+
   const context: SpectrogramContext = {
     scrollLeft,
     zoom,
@@ -111,6 +122,8 @@ export function useSpectrogramProvider({ audioBuffer }: SpectrogramProviderOptio
     viewEndTime,
     hoverTime,
     pixelsPerSecond: zoom,
+    displayHeight,
+    renderHeight,
   }
 
   provide(SpectrogramContextKey, context)
