@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { useVModel } from '@vueuse/core'
+import { syncRef, useVModel } from '@vueuse/core'
 import { type Ref, computed, ref, watch } from 'vue'
 
 import { audioEngine } from '@core/audio/index.ts'
@@ -55,22 +55,26 @@ const props = defineProps<{
   palette?: Uint8Array
 }>()
 
-const emit = defineEmits(['update:gain', 'update:zoom', 'update:scrollLeft', 'update:palette'])
+const emit = defineEmits(['update:gain', 'update:zoom', 'update:scrollLeft'])
 
-const gainRef = useVModel(props, 'gain', emit, { defaultValue: 3.0 }) as Ref<number>
-const zoomRef = useVModel(props, 'zoom', emit, { defaultValue: 100 }) as Ref<number>
-const scrollLeftRef = useVModel(props, 'scrollLeft', emit, { defaultValue: 0 }) as Ref<number>
-const paletteRef = props.palette
-  ? (useVModel(props, 'palette', emit) as Ref<Uint8Array>)
-  : undefined
+const gainModel = useVModel(props, 'gain', emit, { defaultValue: 3.0 }) as Ref<number>
+const zoomModel = useVModel(props, 'zoom', emit, { defaultValue: 100 }) as Ref<number>
+const scrollLeftModel = useVModel(props, 'scrollLeft', emit, { defaultValue: 0 }) as Ref<number>
+
+const internalGain = ref(gainModel.value)
+const internalZoom = ref(zoomModel.value)
+const internalScrollLeft = ref(scrollLeftModel.value)
+
+syncRef(gainModel, internalGain)
+syncRef(zoomModel, internalZoom)
+syncRef(scrollLeftModel, internalScrollLeft)
 
 // 初始化 Context 状态源
 const ctx = useSpectrogramProvider({
   audioBuffer: audioBufferRef,
-  initGain: gainRef,
-  initZoom: zoomRef,
-  initScrollLeft: scrollLeftRef,
-  initPalette: paletteRef,
+  initGain: internalGain,
+  initZoom: internalZoom,
+  initScrollLeft: internalScrollLeft,
 })
 
 // 初始化交互相关
