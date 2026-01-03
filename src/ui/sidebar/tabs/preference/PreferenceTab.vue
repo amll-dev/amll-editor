@@ -93,6 +93,20 @@ const displayName = __APP_DISPLAY_NAME__
       />
     </div>
     <div class="pref-group">
+      <div class="pref-group-title">内容</div>
+      <PrefSwitchItem
+        pref-key="swapTranslateRoman"
+        label="交换翻译与音译框位置"
+        desc="在内容视图将音译框置于左侧，并影响查找顺序"
+      />
+      <PrefSwitchItem
+        pref-key="sylRomanEnabled"
+        label="启用逐字音译"
+        desc="在音节框下方显示逐字音译，并支持查找替换"
+        experimental
+      />
+    </div>
+    <div class="pref-group">
       <div class="pref-group-title">时轴</div>
       <PrefNumberItem
         pref-key="globalLatency"
@@ -130,30 +144,8 @@ const displayName = __APP_DISPLAY_NAME__
       />
     </div>
     <div class="pref-group">
-      <div class="pref-group-title">音译</div>
-      <PrefSwitchItem
-        pref-key="swapTranslateRoman"
-        label="交换翻译与音译框位置"
-        desc="在内容视图将音译框置于左侧，并影响查找顺序"
-      />
-      <PrefSwitchItem
-        pref-key="sylRomanEnabled"
-        label="启用逐字音译"
-        desc="在音节框下方显示逐字音译，并支持查找替换"
-        experimental
-      />
-    </div>
-    <div class="pref-group">
-      <div class="pref-group-title">重置</div>
-      <PrefItem label="重置全部选项" desc="将所有选项恢复为默认值">
-        <Button
-          severity="danger"
-          variant="outlined"
-          label="重置"
-          icon="pi pi-sync"
-          @click="handleReset"
-        />
-      </PrefItem>
+      <div class="pref-group-title">频谱</div>
+      暂未实现
     </div>
     <div class="pref-group">
       <div class="pref-group-title">兼容性</div>
@@ -169,6 +161,18 @@ const displayName = __APP_DISPLAY_NAME__
           icon="pi pi-arrow-up-right"
           iconPos="right"
           @click="runtimeStore.dialogShown.compatibility = !runtimeStore.dialogShown.compatibility"
+        />
+      </PrefItem>
+    </div>
+    <div class="pref-group">
+      <div class="pref-group-title">重置</div>
+      <PrefItem label="重置全部选项" desc="将所有选项恢复为默认值">
+        <Button
+          severity="danger"
+          variant="outlined"
+          label="重置"
+          icon="pi pi-sync"
+          @click="handleReset"
         />
       </PrefItem>
     </div>

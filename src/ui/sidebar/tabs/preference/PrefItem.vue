@@ -30,7 +30,7 @@ const props = defineProps<{
 <style lang="scss">
 .pref-item {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: auto auto;
   align-items: center;
   justify-content: space-between;
   .text {
