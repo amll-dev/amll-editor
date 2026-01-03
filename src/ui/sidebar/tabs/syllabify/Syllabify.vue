@@ -4,7 +4,7 @@
       <IftaLabel>
         <Select
           v-model="selectedEngine"
-          inputId="splitEngine"
+          input-id="splitEngine"
           :options="displayEngines"
           optionGroupLabel="label"
           optionGroupChildren="items"
@@ -40,7 +40,7 @@
       <div class="subtitle">
         <div class="subtitle-text">自定义规则</div>
         <div class="kvgrid" style="width: fit-content">
-          <Checkbox v-model="caseSensitive" binary inputId="caseSensitive" size="small" />
+          <Checkbox v-model="caseSensitive" binary input-id="caseSensitive" size="small" />
           <label for="caseSensitive">区分大小写</label>
         </div>
       </div>

@@ -4,7 +4,7 @@ export namespace Compatibility {
     name: string
     description?: string
     effect: string
-    severity: 'info' | 'warning' | 'error'
+    severity: 'info' | 'warn' | 'danger'
     referenceUrls?: {
       label: string
       url: string

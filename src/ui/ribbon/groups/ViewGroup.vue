@@ -2,7 +2,7 @@
   <RibbonGroup label="视图">
     <div class="kvgrid">
       <Checkbox
-        inputId="ribbon-show-syl-roman"
+        input-id="ribbon-show-syl-roman"
         value="show-syl-roman"
         size="small"
         binary
@@ -10,7 +10,7 @@
       />
       <label for="ribbon-show-syl-roman">启用逐字音译</label>
       <Checkbox
-        inputId="ribbon-auto-scroll"
+        input-id="ribbon-auto-scroll"
         value="auto-scroll"
         size="small"
         binary
@@ -18,7 +18,7 @@
       />
       <label for="ribbon-auto-scroll">随播放自动滚动</label>
       <Checkbox
-        inputId="ribbon-swap-translate-roman"
+        input-id="ribbon-swap-translate-roman"
         value="swap-translate-roman"
         size="small"
         binary

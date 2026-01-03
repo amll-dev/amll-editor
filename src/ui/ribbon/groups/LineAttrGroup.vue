@@ -3,7 +3,7 @@
     <div class="hflex" style="align-items: center; gap: 1rem">
       <div class="kvgrid">
         <Checkbox
-          inputId="ribbon-duetline"
+          input-id="ribbon-duetline"
           size="small"
           :disabled="lineSelectedEmpty"
           :indeterminate="duetIndeterminate"
@@ -12,7 +12,7 @@
         />
         <label for="ribbon-duetline">对唱行</label>
         <Checkbox
-          inputId="ribbon-bgline"
+          input-id="ribbon-bgline"
           size="small"
           :disabled="lineSelectedEmpty"
           :indeterminate="backgroundIndeterminate"
@@ -21,7 +21,7 @@
         />
         <label for="ribbon-bgline">背景行</label>
         <Checkbox
-          inputId="ribbon-ignoretime"
+          input-id="ribbon-ignoretime"
           size="small"
           :disabled="lineSelectedEmpty"
           :indeterminate="ignoreTimingIndeterminate"
@@ -30,7 +30,7 @@
         />
         <label for="ribbon-ignoretime">时轴中忽略</label>
         <Checkbox
-          inputId="ribbon-alwaysignorebg"
+          input-id="ribbon-alwaysignorebg"
           size="small"
           v-model="prefStore.alwaysIgnoreBackground"
           binary

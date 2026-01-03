@@ -4,6 +4,7 @@ import type { ValueOf } from '@utils/types'
 
 import AboutDialog from './dialogComponents/AboutDialog.vue'
 import BatchTimeShiftDialog from './dialogComponents/BatchTimeShiftDialog.vue'
+import CompatibilityDialog from './dialogComponents/CompatibilityDialog.vue'
 import FindReplaceDialog from './dialogComponents/FindReplaceDialog.vue'
 import FromOtherFormatModal from './dialogComponents/FromOtherFormatModal.vue'
 import FromTextModal from './dialogComponents/FromTextModal.vue'
@@ -16,6 +17,7 @@ export const DialogKey = {
   About: 'about',
   FromOtherFormat: 'fromOtherFormat',
   FromText: 'fromText',
+  Compatibility: 'compatibility',
 } as const
 export type DialogKey = ValueOf<typeof DialogKey>
 
@@ -31,4 +33,5 @@ export const dialogRegs: DialogReg[] = [
   { key: DialogKey.About, component: AboutDialog },
   { key: DialogKey.FromOtherFormat, component: FromOtherFormatModal },
   { key: DialogKey.FromText, component: FromTextModal },
+  { key: DialogKey.Compatibility, component: CompatibilityDialog },
 ]

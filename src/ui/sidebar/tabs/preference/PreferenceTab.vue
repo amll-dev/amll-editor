@@ -156,6 +156,23 @@ const displayName = __APP_DISPLAY_NAME__
       </PrefItem>
     </div>
     <div class="pref-group">
+      <div class="pref-group-title">兼容性</div>
+      <PrefSwitchItem
+        pref-key="notifyCompatIssuesOnStartup"
+        label="启动时检查兼容性"
+        desc="在启动时若发现问题，显示兼容性报告对话框"
+      />
+      <PrefItem label="兼容性报告" desc="打开兼容性报告窗口">
+        <Button
+          severity="secondary"
+          label="打开"
+          icon="pi pi-arrow-up-right"
+          iconPos="right"
+          @click="runtimeStore.dialogShown.compatibility = !runtimeStore.dialogShown.compatibility"
+        />
+      </PrefItem>
+    </div>
+    <div class="pref-group">
       <div class="pref-group-title">关于</div>
       <PrefItem :label="`关于 ${displayName}`" desc="打开软件版本信息窗口">
         <Button

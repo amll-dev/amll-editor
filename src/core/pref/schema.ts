@@ -23,6 +23,7 @@ export interface PreferenceSchema {
   sylRomanEnabled: boolean
   swapTranslateRoman: boolean
   // Misc
+  notifyCompatIssuesOnStartup: boolean
   sidebarWidth: number
   scrollWithPlayback: boolean
 }
@@ -43,6 +44,7 @@ export const getDefaultPref = (): PreferenceSchema => ({
   autoConnectThresholdMs: 100,
   sylRomanEnabled: false,
   swapTranslateRoman: false,
+  notifyCompatIssuesOnStartup: true,
   sidebarWidth: 360,
   scrollWithPlayback: false,
 })

@@ -11,7 +11,7 @@
           <div class="findreplace-radio-item">
             <RadioButton
               v-model="showReplace"
-              inputId="findMode"
+              input-id="findMode"
               name="findReplaceMode"
               :value="false"
             />
@@ -20,7 +20,7 @@
           <div class="findreplace-radio-item">
             <RadioButton
               v-model="showReplace"
-              inputId="replaceMode"
+              input-id="replaceMode"
               name="findReplaceMode"
               :value="true"
             />
@@ -35,7 +35,7 @@
           >
             更多选项
           </label>
-          <ToggleSwitch v-model="showOptions" inputId="findShowOptions" />
+          <ToggleSwitch v-model="showOptions" input-id="findShowOptions" />
         </div>
       </div>
       <div class="findreplace-inputs">
@@ -86,19 +86,19 @@
           <div class="findreplace-range-title">匹配范围</div>
           <div class="findreplace-range-options" :class="{ 'two-cols': prefStore.sylRomanEnabled }">
             <div class="findreplace-range-option-item">
-              <Checkbox v-model="findInSyls" inputId="findInWords" binary />
+              <Checkbox v-model="findInSyls" input-id="findInWords" binary />
               <label for="findInWords" class="findreplace-range-option-label">音节内容</label>
             </div>
             <div class="findreplace-range-option-item" v-if="prefStore.sylRomanEnabled">
-              <Checkbox v-model="findInSylRomanModel" inputId="findInSylRoman" binary />
+              <Checkbox v-model="findInSylRomanModel" input-id="findInSylRoman" binary />
               <label for="findInSylRoman" class="findreplace-range-option-label">音节音译</label>
             </div>
             <div class="findreplace-range-option-item">
-              <Checkbox v-model="findInTranslations" inputId="findInTranslations" binary />
+              <Checkbox v-model="findInTranslations" input-id="findInTranslations" binary />
               <label for="findInTranslations" class="findreplace-range-option-label">翻译</label>
             </div>
             <div class="findreplace-range-option-item">
-              <Checkbox v-model="findInRoman" inputId="findInRoman" binary />
+              <Checkbox v-model="findInRoman" input-id="findInRoman" binary />
               <label for="findInRoman" class="findreplace-range-option-label">{{
                 prefStore.sylRomanEnabled ? '行音译' : '音译'
               }}</label>
@@ -110,32 +110,32 @@
             <div class="findreplace-options-title">匹配选项</div>
             <div class="findreplace-options-list">
               <div class="findreplace-option-item">
-                <Checkbox v-model="matchCase" inputId="matchCase" binary />
+                <Checkbox v-model="matchCase" input-id="matchCase" binary />
                 <label for="matchCase" class="findreplace-option-label">区分大小写</label>
               </div>
               <div class="findreplace-option-item">
-                <Checkbox v-model="matchWholeWord" inputId="matchWholeWord" binary />
+                <Checkbox v-model="matchWholeWord" input-id="matchWholeWord" binary />
                 <label for="matchWholeWord" class="findreplace-option-label">全字匹配</label>
               </div>
               <div class="findreplace-option-item">
-                <Checkbox v-model="matchFullField" inputId="matchFullField" binary />
+                <Checkbox v-model="matchFullField" input-id="matchFullField" binary />
                 <label for="matchFullField" class="findreplace-option-label">整字段匹配</label>
               </div>
               <div class="findreplace-option-item">
                 <Checkbox
                   v-model="crossWordMatch"
-                  inputId="crossWordMatch"
+                  input-id="crossWordMatch"
                   binary
                   :disabled="showReplace"
                 />
                 <label for="crossWordMatch" class="findreplace-option-label">跨音节匹配</label>
               </div>
               <div class="findreplace-option-item">
-                <Checkbox v-model="useRegex" inputId="useRegex" binary />
+                <Checkbox v-model="useRegex" input-id="useRegex" binary />
                 <label for="useRegex" class="findreplace-option-label">使用正则</label>
               </div>
               <div class="findreplace-option-item">
-                <Checkbox v-model="wrapSearch" inputId="wrapSearch" binary />
+                <Checkbox v-model="wrapSearch" input-id="wrapSearch" binary />
                 <label for="wrapSearch" class="findreplace-option-label">循环搜索</label>
               </div>
             </div>

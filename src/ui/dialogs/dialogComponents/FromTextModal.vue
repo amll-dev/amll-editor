@@ -15,7 +15,7 @@
         <div class="check-item">
           <Checkbox
             v-model="originalChecked"
-            inputId="original"
+            input-id="original"
             name="original"
             binary
             :disabled="currentMode === interleaved"
@@ -23,11 +23,11 @@
           <label class="check-item-label" for="original"> 原文 </label>
         </div>
         <div class="check-item">
-          <Checkbox v-model="translationChecked" inputId="translation" name="translation" binary />
+          <Checkbox v-model="translationChecked" input-id="translation" name="translation" binary />
           <label class="check-item-label" for="translation"> 翻译 </label>
         </div>
         <div class="check-item">
-          <Checkbox v-model="romanChecked" inputId="roman" name="roman" binary />
+          <Checkbox v-model="romanChecked" input-id="roman" name="roman" binary />
           <label class="check-item-label" for="roman"> 音译 </label>
         </div>
         <div class="no-item-checked-warning" v-if="noItemChecked">至少提供一项</div>

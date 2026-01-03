@@ -6,14 +6,16 @@ interface H5NativeFileHandle {
   filename: string
 }
 
-const extractDotExts = (types: FilePickerAcceptType[]): string[] =>
+const extractMIMEs = (types: FilePickerAcceptType[]): string[] =>
   types.flatMap(({ accept }) =>
     !accept ? [] : [...Object.entries(accept)].map(([mime, dotExts]) => [mime, ...dotExts]).flat(),
   )
+const extractDotExts = (types: FilePickerAcceptType[]): string[] =>
+  extractMIMEs(types).filter((s) => s.startsWith('.'))
 
 export const h5NativeBackend = defineFileBackend<H5NativeFileHandle>({
   async read(_id, types) {
-    const dotExts = extractDotExts(types)
+    const dotExts = extractMIMEs(types)
     const accept = dotExts.join(',')
     const file = await new Promise<File>((resolve, reject) => {
       const input = document.createElement('input')
@@ -51,6 +53,7 @@ export const h5NativeBackend = defineFileBackend<H5NativeFileHandle>({
     const [dotExt] = extractDotExts(types)
     if (!dotExt) throw new Error('Cannot determine file extension for saving.')
     const filename = `${suggestedBaseName}${dotExt}`
+    console.log('h5native writeAs', filename)
     const blob = await blobGenerator(filename)
     saveFile(blob, filename)
     return {

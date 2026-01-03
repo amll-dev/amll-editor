@@ -157,7 +157,7 @@ onMounted(() => {
       confirm.require({
         header: optn.header,
         message: optn.message,
-        icon: `${optn.icon || 'pi pi-exclamation-triangle'} pi-color-${optn.severity || 'danger'}`,
+        icon: `${optn.icon || 'pi pi-exclamation-triangle'} p-color-${optn.severity || 'danger'}`,
         rejectProps: {
           label: optn.rejectLabel || '取消',
           severity: 'secondary',

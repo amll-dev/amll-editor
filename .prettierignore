@@ -5,3 +5,4 @@
 *.dict.json
 *.min.js
 /dist
+/pnpm-lock.yaml
