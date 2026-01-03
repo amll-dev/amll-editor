@@ -89,6 +89,7 @@ export interface SpectrogramContext {
 
   /**
    * 设置调色板数据的 Action
+   * @param name: 频谱图调色板的名称
    * @param colorGenerator 调色板生成器函数
    * @returns 调色板 RGB 数据
    */
