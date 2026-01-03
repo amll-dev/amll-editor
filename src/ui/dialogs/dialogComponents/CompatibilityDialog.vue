@@ -1,5 +1,11 @@
 <template>
-  <Dialog v-model:visible="visible" header="兼容性报告" class="compat-dialog">
+  <Dialog
+    v-model:visible="visible"
+    header="兼容性报告"
+    class="compat-dialog"
+    @hide="handleClose"
+    @show="handleShow"
+  >
     <template v-for="(item, index) in list" :key="item.key">
       <Divider v-if="index !== 0" />
       <div class="compat-dialog-item">
@@ -41,13 +47,13 @@
         <Checkbox binary input-id="dont-mind-next-time" v-model="dontMindNextTime" />
         <label for="dont-mind-next-time" class="dont-mind-label">此后启动时不再检查</label>
       </div>
-      <Button label="关闭" severity="secondary" icon="pi pi-times" @click="visible = false" />
+      <Button label="确认" severity="secondary" icon="pi pi-check" @click="handleClose" />
     </template>
   </Dialog>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { nextTick, onMounted, ref } from 'vue'
 
 import { compatibilityList } from '@core/compat'
 
@@ -56,6 +62,15 @@ import { usePrefStore } from '@states/stores'
 import { Button, Checkbox, Dialog, Divider } from 'primevue'
 
 const [visible] = defineModel<boolean>({ required: true })
+
+function handleClose() {
+  prefStore.notifyCompatIssuesOnStartup = !dontMindNextTime.value
+  visible.value = false
+}
+
+function handleShow() {
+  dontMindNextTime.value = !prefStore.notifyCompatIssuesOnStartup
+}
 
 const severityOrder = {
   info: 0,
@@ -72,18 +87,15 @@ const list = [...compatibilityList].sort((a, b) => {
 })
 
 const prefStore = usePrefStore()
-const dontMindNextTime = computed({
-  get: () => !prefStore.notifyCompatIssuesOnStartup,
-  set: (val: boolean) => (prefStore.notifyCompatIssuesOnStartup = !val),
-})
+const dontMindNextTime = ref(false)
 
 onMounted(() =>
   setTimeout(() => {
     if (list.some((item) => !item.meet) && prefStore.notifyCompatIssuesOnStartup) {
       visible.value = true
-      dontMindNextTime.value = true
+      nextTick(() => (dontMindNextTime.value = true))
     }
-  }, 5000),
+  }, 3000),
 )
 </script>
 
