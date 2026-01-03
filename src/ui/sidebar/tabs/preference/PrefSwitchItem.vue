@@ -22,7 +22,7 @@ const prefStore = usePrefStore()
 </script>
 
 <template>
-  <PrefItem :label :desc :disabled :experimental>
-    <ToggleSwitch v-model="prefStore[props.prefKey]" :disabled />
+  <PrefItem :label :desc :disabled :experimental :for="props.prefKey">
+    <ToggleSwitch v-model="prefStore[props.prefKey]" :disabled :input-id="props.prefKey" />
   </PrefItem>
 </template>

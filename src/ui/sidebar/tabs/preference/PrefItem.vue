@@ -1,6 +1,6 @@
 <template>
   <div class="pref-item">
-    <div class="text" :class="{ disabled }">
+    <label class="text" :class="{ disabled }" :for="props.for">
       <div class="label">
         {{ props.label
         }}<i
@@ -10,7 +10,7 @@
         ></i>
       </div>
       <div v-if="props.desc" class="description">{{ props.desc }}</div>
-    </div>
+    </label>
     <div class="field">
       <slot></slot>
     </div>
@@ -23,6 +23,7 @@ const props = defineProps<{
   desc?: string
   disabled?: boolean
   experimental?: boolean
+  for?: string
 }>()
 </script>
 
@@ -32,8 +33,8 @@ const props = defineProps<{
   grid-template-columns: 1fr auto;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
   .text {
+    padding-right: 1rem;
     transition:
       color 0.2s,
       opacity 0.2s;

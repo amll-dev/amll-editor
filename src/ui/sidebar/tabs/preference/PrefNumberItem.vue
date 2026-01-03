@@ -39,7 +39,7 @@ const model = computed({
 </script>
 
 <template>
-  <PrefItem :label :desc :disabled :experimental>
+  <PrefItem :label :desc :disabled :experimental :for="props.prefKey">
     <InputNumber
       v-model="model"
       :min
@@ -49,6 +49,7 @@ const model = computed({
       class="pref-number"
       fluid
       show-buttons
+      :input-id="props.prefKey"
     />
   </PrefItem>
 </template>

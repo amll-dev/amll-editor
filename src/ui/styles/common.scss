@@ -220,15 +220,15 @@ hr {
 
 .p-color {
   &-danger {
-    color: var(--p-button-danger-background);
+    color: var(--p-button-danger-background) !important;
   }
   &-success {
-    color: var(--p-button-success-background);
+    color: var(--p-button-success-background) !important;
   }
   &-warn {
-    color: var(--p-button-warn-background);
+    color: var(--p-button-warn-background) !important;
   }
   &-info {
-    color: var(--p-button-info-background);
+    color: var(--p-button-info-background) !important;
   }
 }
