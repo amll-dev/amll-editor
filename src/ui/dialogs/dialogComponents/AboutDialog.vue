@@ -98,6 +98,7 @@ function handleOpenBetaDeployLog() {
   }
   .logo {
     width: 4rem;
+    height: 4rem;
   }
   .logo-text {
     display: flex;
