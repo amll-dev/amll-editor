@@ -77,12 +77,14 @@ const dontMindNextTime = computed({
   set: (val: boolean) => (prefStore.notifyCompatIssuesOnStartup = !val),
 })
 
-onMounted(() => {
-  if (list.some((item) => !item.meet) && prefStore.notifyCompatIssuesOnStartup) {
-    visible.value = true
-    dontMindNextTime.value = true
-  }
-})
+onMounted(() =>
+  setTimeout(() => {
+    if (list.some((item) => !item.meet) && prefStore.notifyCompatIssuesOnStartup) {
+      visible.value = true
+      dontMindNextTime.value = true
+    }
+  }, 5000),
+)
 </script>
 
 <style lang="scss">
