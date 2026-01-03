@@ -13,7 +13,7 @@
       class="spectrogram-content"
       :style="{
         width: `${totalContentWidth}px`,
-        transform: `translate3d(${-scrollLeft}px, 0, 0)`,
+        transform: `translate3d(${-Math.round(scrollLeft)}px, 0, 0)`,
       }"
     >
       <SpectrogramTile
@@ -40,7 +40,7 @@
 
 <script setup lang="ts">
 import { useResizeObserver } from '@vueuse/core'
-import { computed, ref, shallowRef, watch } from 'vue'
+import { computed, onUnmounted, ref, shallowRef, watch } from 'vue'
 
 import { audioEngine } from '@core/audio/index.ts'
 import { generatePalette, getIcyBlueColor } from '@core/spectrogram/colors'
@@ -59,8 +59,11 @@ const ZOOM_SENSITIVITY = 1.15
 const containerEl = ref<HTMLElement | null>(null)
 const containerWidth = ref(0)
 const scrollLeft = ref(0)
-// TODO: 从 store 获取
+const targetScrollLeft = ref(0)
 const zoom = ref(100)
+const targetZoom = ref(100)
+const SMOOTHING_FACTOR = 0.27
+// TODO: 从 store 获取
 const gain = ref(3.0)
 const palette = ref<Uint8Array>(generatePalette(getIcyBlueColor))
 
@@ -183,6 +186,68 @@ watch(
   { immediate: true },
 )
 
+let scrollAnimId = 0
+let zoomAnimId = 0
+
+let zoomAnchorTime = 0
+let zoomAnchorMouseX = 0
+
+const startSmoothScroll = () => {
+  cancelAnimationFrame(scrollAnimId)
+  cancelAnimationFrame(zoomAnimId)
+
+  const step = () => {
+    const diff = targetScrollLeft.value - scrollLeft.value
+    if (Math.abs(diff) < 0.5) {
+      scrollLeft.value = targetScrollLeft.value
+      return
+    }
+    scrollLeft.value += diff * SMOOTHING_FACTOR
+    scrollAnimId = requestAnimationFrame(step)
+  }
+  step()
+}
+
+const startSmoothZoom = () => {
+  cancelAnimationFrame(zoomAnimId)
+  cancelAnimationFrame(scrollAnimId)
+
+  const step = () => {
+    const diff = targetZoom.value - zoom.value
+
+    if (Math.abs(diff) < 0.1) {
+      zoom.value = targetZoom.value
+      const finalScroll = zoomAnchorTime * zoom.value - zoomAnchorMouseX
+      scrollLeft.value = Math.max(0, finalScroll)
+      targetScrollLeft.value = scrollLeft.value
+      return
+    }
+
+    zoom.value += diff * SMOOTHING_FACTOR
+
+    const newScroll = zoomAnchorTime * zoom.value - zoomAnchorMouseX
+
+    const maxScroll = Math.max(
+      0,
+      (audioEngine.audioBuffer?.duration || 0) * zoom.value - containerWidth.value,
+    )
+    const clampedScroll = Math.max(0, Math.min(newScroll, maxScroll))
+
+    scrollLeft.value = clampedScroll
+
+    targetScrollLeft.value = clampedScroll
+
+    zoomAnimId = requestAnimationFrame(step)
+  }
+
+  step()
+}
+
+onUnmounted(() => {
+  cancelAnimationFrame(scrollAnimId)
+  cancelAnimationFrame(zoomAnimId)
+})
+
 const handleWheel = (e: WheelEvent) => {
   if (e.ctrlKey) {
     if (!containerEl.value) return
@@ -191,34 +256,43 @@ const handleWheel = (e: WheelEvent) => {
 
     const timeAtCursor = (scrollLeft.value + mouseX) / zoom.value
 
-    let newZoom = zoom.value
+    zoomAnchorTime = timeAtCursor
+    zoomAnchorMouseX = mouseX
+
+    let newTarget = targetZoom.value
     if (e.deltaY < 0) {
-      newZoom *= ZOOM_SENSITIVITY
+      newTarget *= ZOOM_SENSITIVITY
     } else {
-      newZoom /= ZOOM_SENSITIVITY
+      newTarget /= ZOOM_SENSITIVITY
     }
 
-    newZoom = Math.max(MIN_ZOOM, Math.min(newZoom, MAX_ZOOM))
+    newTarget = Math.max(MIN_ZOOM, Math.min(newTarget, MAX_ZOOM))
 
-    if (newZoom !== zoom.value) {
-      const newScrollLeft = timeAtCursor * newZoom - mouseX
-
-      zoom.value = newZoom
-      const maxScroll = Math.max(
-        0,
-        (audioEngine.audioBuffer?.duration || 0) * newZoom - containerWidth.value,
-      )
-      scrollLeft.value = Math.max(0, Math.min(newScrollLeft, maxScroll))
+    if (newTarget !== targetZoom.value) {
+      targetZoom.value = newTarget
+      startSmoothZoom()
     }
   } else {
-    const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY
+    let delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY
+    if (e.shiftKey && delta === 0) delta = e.deltaY
 
     const maxScroll = Math.max(0, totalContentWidth.value - containerWidth.value)
-    const newScroll = scrollLeft.value + delta
+    const newTarget = targetScrollLeft.value + delta
 
-    scrollLeft.value = Math.max(0, Math.min(newScroll, maxScroll))
+    targetScrollLeft.value = Math.max(0, Math.min(newTarget, maxScroll))
+
+    startSmoothScroll()
   }
 }
+
+watch(audioBufferRef, () => {
+  scrollLeft.value = 0
+  targetScrollLeft.value = 0
+  zoom.value = 100
+  targetZoom.value = 100
+  cancelAnimationFrame(scrollAnimId)
+  cancelAnimationFrame(zoomAnimId)
+})
 </script>
 
 <style lang="scss" scoped>
