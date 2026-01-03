@@ -53,7 +53,14 @@
           icon="pi pi-chart-bar"
           :severity="showSpectrogram ? 'primary' : 'secondary'"
           @click="showSpectrogram = !showSpectrogram"
-          v-tooltip="showSpectrogram ? '隐藏频谱图' : '显示频谱图'"
+          v-tooltip="
+            !compatibilityMap.sharedArrayBuffer
+              ? '频谱图功能不可用'
+              : showSpectrogram
+                ? '隐藏频谱图'
+                : '显示频谱图'
+          "
+          :disabled="!compatibilityMap.sharedArrayBuffer"
         />
       </div>
     </template>
@@ -65,6 +72,7 @@ import { useDark } from '@vueuse/core'
 import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue'
 
 import { audioEngine } from '@core/audio'
+import { compatibilityMap } from '@core/compat'
 import { fileBackend } from '@core/file'
 import { useGlobalKeyboard } from '@core/hotkey'
 
