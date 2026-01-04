@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import type { Plugin } from 'vite'
 
+import { injectToHead } from '../shared'
 import { generateManifest } from './generate'
 
 const VIRTUAL_MANIFEST_FILENAME = 'app.webmanifest'
@@ -33,7 +34,7 @@ export function manifestPlugin(): Plugin {
       })
     },
     transformIndexHtml(html) {
-      return html.replace('</head>', `${INJECTED_HEAD}</head>`)
+      return injectToHead(html, INJECTED_HEAD)
     },
   }
 }
