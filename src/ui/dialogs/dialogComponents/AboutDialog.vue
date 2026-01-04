@@ -17,19 +17,12 @@
       </p>
       <p>开发不易，不妨点个免费的 star 吧！</p>
     </div>
-    <div class="actions" :class="{ beta: isBeta }">
+    <div class="actions">
       <Button
         severity="secondary"
         icon="pi pi-github"
         label="GitHub 仓库"
         @click="handleOpenGithub()"
-      />
-      <Button
-        v-if="isBeta"
-        severity="secondary"
-        icon="pi pi-history"
-        label="Beta 部署日志"
-        @click="handleOpenBetaDeployLog()"
       />
       <Button
         :severity="keyValueFolded ? 'secondary' : 'primary'"
@@ -81,9 +74,6 @@ const amllVueVersion = __AMLL_VUE_VERSION__
 function handleOpenGithub() {
   window.open(__REPO_URL__, '_blank')
 }
-function handleOpenBetaDeployLog() {
-  window.open(__BETA_DEPLOY_LOG_URL__, '_blank')
-}
 </script>
 
 <style lang="scss">
@@ -123,9 +113,6 @@ function handleOpenBetaDeployLog() {
   .actions {
     display: flex;
     gap: 1rem;
-    &.beta {
-      justify-content: space-between;
-    }
   }
   .key-value {
     display: grid;

@@ -4,7 +4,6 @@ declare const __APP_VERSION__: string
 declare const __APP_COMMIT_HASH__: string
 declare const __APP_BUILD_TIMESTAMP__: number
 declare const __REPO_URL__: string
-declare const __BETA_DEPLOY_LOG_URL__: string
 declare const __APP_DISPLAY_NAME__: string
 declare const __APP_BUILD_CHANNEL__: string | undefined
 declare const __APP_IS_BETA__: boolean

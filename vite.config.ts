@@ -18,15 +18,14 @@ const aliasRelMap: Record<string, string> = {
   '@vendors': './src/vendors',
 }
 
+const isBeta = process.env.VITE_BUILD_CHANNEL === 'BETA'
 const defineObjMap: Record<string, string | number | boolean | undefined> = {
   __APP_VERSION__: packageJSON.version,
   __APP_COMMIT_HASH__: await simpleGit().revparse(['HEAD']),
   __REPO_URL__: packageJSON.repository,
-  __BETA_DEPLOY_LOG_URL__: 'https://github.com/Linho1219/AMLL-Editor-BetaDeploy/actions',
-  __APP_DISPLAY_NAME__:
-    packageJSON.displayName + (process.env.VITE_BUILD_CHANNEL === 'BETA' ? ` BETA` : ''),
+  __APP_DISPLAY_NAME__: packageJSON.displayName + (isBeta ? ` BETA` : ''),
   __APP_BUILD_CHANNEL__: process.env.VITE_BUILD_CHANNEL || undefined,
-  __APP_IS_BETA__: process.env.VITE_BUILD_CHANNEL === 'BETA' || false,
+  __APP_IS_BETA__: isBeta,
   __APP_BUILD_TIMESTAMP__: Date.now(),
   __AMLL_CORE_VERSION__: packageJSON.dependencies['@applemusic-like-lyrics/core'],
   __AMLL_VUE_VERSION__: packageJSON.dependencies['@applemusic-like-lyrics/vue'],
