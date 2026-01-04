@@ -5,6 +5,7 @@ import { simpleGit } from 'simple-git'
 import { defineConfig } from 'vite'
 
 import packageJSON from './package.json'
+import { coiPlugin } from './pipelines/coi/plugin'
 import { iconSetPlugin } from './pipelines/iconSet/plugin'
 import { viteStaticCopyPyodide } from './pipelines/pyodide/plugin'
 import { manifestPlugin } from './pipelines/webManifest/plugin'
@@ -38,6 +39,7 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     manifestPlugin(),
     iconSetPlugin(),
+    coiPlugin(),
     viteStaticCopyPyodide(mode === 'development'),
     vue(),
     visualizer({

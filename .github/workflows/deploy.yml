@@ -38,6 +38,7 @@ jobs:
       - name: Build with Vite
         env:
           VITE_BUILD_CHANNEL: STABLE
+          VITE_COI_WORKAROUND: true
         run: pnpm build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

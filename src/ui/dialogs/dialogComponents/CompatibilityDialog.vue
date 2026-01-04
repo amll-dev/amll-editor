@@ -89,14 +89,17 @@ const list = [...compatibilityList].sort((a, b) => {
 const prefStore = usePrefStore()
 const dontMindNextTime = ref(false)
 
-onMounted(() =>
-  setTimeout(() => {
-    if (list.some((item) => !item.meet) && prefStore.notifyCompatIssuesOnStartup) {
-      visible.value = true
-      nextTick(() => (dontMindNextTime.value = true))
-    }
-  }, 3000),
-)
+function checkOnStartup() {
+  if (list.some((item) => !item.meet) && prefStore.notifyCompatIssuesOnStartup) {
+    visible.value = true
+    nextTick(() => (dontMindNextTime.value = true))
+  }
+}
+
+onMounted(() => {
+  if (import.meta.env.VITE_COI_WORKAROUND) setTimeout(() => checkOnStartup(), 3000)
+  else checkOnStartup()
+})
 </script>
 
 <style lang="scss">
