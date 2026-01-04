@@ -1,4 +1,5 @@
 import vue from '@vitejs/plugin-vue'
+import chalk, { ChalkInstance } from 'chalk'
 import { URL, fileURLToPath } from 'node:url'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { simpleGit } from 'simple-git'
@@ -32,7 +33,13 @@ const defineObjMap: Record<string, string | number | boolean | undefined> = {
   __AMLL_VUE_VERSION__: packageJSON.dependencies['@applemusic-like-lyrics/vue'],
 }
 
-console.log(`Current channel: ${process.env.VITE_BUILD_CHANNEL || 'UNSPECIFIED'}\n`)
+const channelColors: Record<string, ChalkInstance> = {
+  STABLE: chalk.hex('#10B981'),
+  BETA: chalk.hex('#F97316'),
+  UNSPECIFIED: chalk.gray,
+}
+const channel = process.env.VITE_BUILD_CHANNEL || 'UNSPECIFIED'
+console.log(`Current channel: ${channelColors[channel]?.(channel) || channel}\n`)
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
