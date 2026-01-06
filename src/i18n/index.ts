@@ -12,6 +12,7 @@ function detectEnvLocale(): Locales {
   // pending implementation
   return 'zhHans'
 }
+const envLocale = detectEnvLocale()
 
 function getStoredLocale(): Locales | null {
   const stored = localStorage.getItem(STORE_KEY)
@@ -19,12 +20,14 @@ function getStoredLocale(): Locales | null {
   return null
 }
 
-const currentLocale = getStoredLocale() ?? detectEnvLocale()
+const currentLocale = getStoredLocale() ?? envLocale
 loadLocale(currentLocale)
 export const t = i18nObject(currentLocale)
-export const localeOpt = ref<Locales>(currentLocale)
-export const localeOptNotMatch = computed(() => localeOpt.value !== currentLocale)
+export const localeOptRef = ref<Locales>(currentLocale)
+export const localeOptNotMatch = computed(() => localeOptRef.value !== currentLocale)
 
-watch(localeOpt, (newLocale, oldLocale) => {
-  if (newLocale !== oldLocale) localStorage.setItem(STORE_KEY, newLocale)
+watch(localeOptRef, (newLocale, oldLocale) => {
+  if (newLocale === oldLocale) return
+  if (newLocale === envLocale) localStorage.removeItem(STORE_KEY)
+  else localStorage.setItem(STORE_KEY, newLocale)
 })
