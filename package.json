@@ -18,7 +18,8 @@
     "lint": "eslint . --fix --cache",
     "format": "prettier --write src/",
     "knip": "knip",
-    "dict-rebuild": "python pipelines/prosoticDictGen/scripts/corrected2csv.py && tsx pipelines/prosoticDictGen/scripts/csv2dictJson.ts"
+    "dict-rebuild": "python pipelines/prosoticDictGen/scripts/corrected2csv.py && tsx pipelines/prosoticDictGen/scripts/csv2dictJson.ts",
+    "i18n": "typesafe-i18n"
   },
   "dependencies": {
     "@applemusic-like-lyrics/core": "^0.2.0",
@@ -55,6 +56,7 @@
     "save-file": "^2.3.1",
     "syllabify": "^1.0.1",
     "syllabify-fr": "^1.0.1",
+    "typesafe-i18n": "^5.26.2",
     "virtua": "^0.46.7",
     "vue": "^3.5.26",
     "vue-draggable-plus": "^0.6.0",

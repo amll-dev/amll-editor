@@ -6,3 +6,4 @@
 *.min.js
 /dist
 /pnpm-lock.yaml
+src/i18n/i18n-*.ts

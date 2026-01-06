@@ -21,6 +21,7 @@ export default defineConfigWithVueTs(
     '**/vendors/**',
     'env.d.ts',
     '**/*.min.js',
+    'src/i18n/i18n-*.ts',
   ]),
 
   ...pluginVue.configs['flat/essential'],
