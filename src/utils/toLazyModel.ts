@@ -1,6 +1,6 @@
 import { type Ref, ref, watch } from 'vue'
 
-import type { SimpleType } from './types'
+import type { Primitive } from './types'
 
 /**
  * Creates a lazy two-way binding model,
@@ -13,7 +13,7 @@ import type { SimpleType } from './types'
  * @param flushIf A condition function to determine when to flush changes to the external model.
  * @returns An internal model, a flush function and an unbind function.
  */
-export function toLazyModel<T extends SimpleType>(
+export function toLazyModel<T extends Primitive>(
   externalModel: Ref<T>,
   flushIf?: () => boolean,
 ): [internalModel: Ref<T>, flush: () => void, unbind: () => void] {
