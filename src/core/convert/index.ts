@@ -13,9 +13,8 @@ export type { Convert } from './types'
 export { detectFormat } from './detect'
 
 export const portFormats = ['lrc', 'lrcA2', 'yrc', 'qrc', 'spl'] as const
-export type PortFormat = (typeof portFormats)[number]
 
-const portFormatHandlers: Record<PortFormat, CV.FormatHandler> = {
+const portFormatHandlers: Record<CV.PortFormatKey, CV.FormatHandler> = {
   lrc: lrcReg,
   lrcA2: lrcA2Reg,
   yrc: yrcReg,
@@ -24,15 +23,14 @@ const portFormatHandlers: Record<PortFormat, CV.FormatHandler> = {
 } as const
 
 const tRefs = t.formats.sharedReferences
-const formatReferences: Partial<Record<PortFormat, CV.FormatCaption['reference']>> = {
+const formatReferences: Partial<Record<CV.PortFormatKey, CV.FormatCaption['reference']>> = {
   lrc: [{ name: tRefs.wikipedia(), url: 'https://wikipedia.org/wiki/LRC_(file_format)' }],
   lrcA2: [{ name: tRefs.wikipedia(), url: 'https://en.wikipedia.org/wiki/LRC_(file_format)' }],
   spl: [{ name: tRefs.officialDoc(), url: 'https://moriafly.com/standards/spl.html' }],
 }
 
-type FormatWithKey = { key: PortFormat } & CV.Format
-export const portFormatRegister: FormatWithKey[] = (
-  [...Object.entries(portFormatHandlers)] as [PortFormat, CV.FormatHandler][]
+export const portFormatRegister: CV.PortFormatWithKey[] = (
+  [...Object.entries(portFormatHandlers)] as [CV.PortFormatKey, CV.FormatHandler][]
 ).map(([key, handler]) => {
   const manifestItem: CV.FormatManifest = MANIFEST[key]
   return {
@@ -45,10 +43,6 @@ export const portFormatRegister: FormatWithKey[] = (
   }
 })
 
-export const portFormatRegisterMap: Record<PortFormat, FormatWithKey> = portFormatRegister.reduce(
-  (acc, format) => {
-    acc[format.key] = format
-    return acc
-  },
-  {} as Record<PortFormat, FormatWithKey>,
-)
+export const portFormatRegisterMap = Object.fromEntries(
+  portFormatRegister.map((fmt) => [fmt.key, fmt]),
+) as CV.PortFormatMap

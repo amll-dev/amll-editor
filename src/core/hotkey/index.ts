@@ -1,3 +1,4 @@
+import { t } from '@i18n'
 import mitt from 'mitt'
 import { onUnmounted } from 'vue'
 
@@ -60,7 +61,7 @@ export function matchHotkeyInMap(hotkey: HK.Key, hotkeyMap: HK.Map): HK.Command 
 }
 
 const keyRewrites: Record<string, string> = {
-  Space: '空格',
+  Space: t.hotkey.keyNames.space(),
   Escape: 'Esc',
   ArrowLeft: '←',
   ArrowRight: '→',

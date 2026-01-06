@@ -3,12 +3,7 @@ import { readonly, ref } from 'vue'
 
 import { audioEngine } from '@core/audio'
 import { compatibilityMap } from '@core/compat'
-import {
-  type Convert as CV,
-  type PortFormat,
-  detectFormat,
-  portFormatRegister,
-} from '@core/convert'
+import { type Convert as CV, detectFormat, portFormatRegister } from '@core/convert'
 import { parseTTML, stringifyTTML } from '@core/convert/formats/ttml'
 import FORMAT_MANIFEST from '@core/convert/manifest.json'
 import type { Persist } from '@core/types'
@@ -53,8 +48,11 @@ const allSupportedExt = new Set([
   '.ttml',
   ...portFormatRegister.map((f) => f.accept).flat(),
 ]) as Set<string>
-type AllFormat = 'alp' | 'ttml' | PortFormat
-const manifest2formats = (key: AllFormat, mItem: CV.FormatManifest): FilePickerAcceptType => ({
+
+const manifest2formats = (
+  key: CV.AllFormatKey,
+  mItem: CV.FormatManifest,
+): FilePickerAcceptType => ({
   description: t.formats[key].name(),
   accept: { [mItem.mime]: mItem.accept },
 })
@@ -149,7 +147,7 @@ const askForWrite = async (handle: FileHandle) => {
 }
 async function handleFile(result: FileReadResult) {
   const [, ext] = breakExtension(result.filename)
-  if (!allSupportedExt.has(`.${ext}`)) throw new Error(t.file.typeNotSupported(ext))
+  if (!allSupportedExt.has(`.${ext}`)) throw new Error(t.file.failedToReadErr.typeNotSupported(ext))
   if (ext === 'alp') await handleProjFile(result)
   else if (ext === 'ttml') await handleTTMLFile(result)
   else await handleMiscFile(result)
@@ -348,17 +346,21 @@ function initDragListener(notifier: Notifier) {
       return
     }
     if (!allSupportedExt.has(`.${ext}`))
-      return notifier(t.file.failedToRead(), t.file.typeNotSupported(ext), 'error')
+      return notifier(
+        t.file.failedToReadErr.summary(),
+        t.file.failedToReadErr.typeNotSupported(ext),
+        'error',
+      )
 
     getFileBackendAdapter(fileBackend)
       .dragDrop(e)
       .then(async (result) => {
-        if (!result) throw new Error(t.file.failedToRead())
+        if (!result) throw new Error(t.file.failedToReadErr.summary())
         await handleFile(result)
         notifier(t.file.loaded(), file.name, 'success')
       })
       .catch((err) => {
-        notifier(t.file.failedToRead(), String(err), 'error')
+        notifier(t.file.failedToReadErr.summary(), String(err), 'error')
       })
   })
 }
@@ -367,15 +369,25 @@ function initPwaLaunch(notifier: Notifier) {
   if (!('launchQueue' in window)) return
   window.launchQueue.setConsumer(async (launchParams) => {
     const [file] = launchParams.files.filter((f) => f instanceof FileSystemFileHandle)
-    if (!file) return notifier(t.file.failedToRead(), t.file.noHandleProvided(), 'error')
+    if (!file)
+      return notifier(
+        t.file.failedToReadErr.summary(),
+        t.file.failedToReadErr.noHandleProvided(),
+        'error',
+      )
     const result = await getFileBackendAdapter(fileBackend).fsHandle(file)
-    if (!result) return notifier(t.file.failedToRead(), t.file.unableToGetFile(), 'error')
+    if (!result)
+      return notifier(
+        t.file.failedToReadErr.summary(),
+        t.file.failedToReadErr.unableToGetFile(),
+        'error',
+      )
     if (editHistory.isDirty && !(await checkDataDropConfirm())) return
     try {
       await handleFile(result)
       notifier(t.file.loaded(), result.filename, 'success')
     } catch (err) {
-      notifier(t.file.failedToRead(), String(err), 'error')
+      notifier(t.file.failedToReadErr.summary(), String(err), 'error')
     }
   })
 }

@@ -196,23 +196,25 @@ type RootTranslation = {
 		 * 成​功​加​载​文​件
 		 */
 		loaded: string
-		/**
-		 * 读​取​文​件​失​败
-		 */
-		failedToRead: string
-		/**
-		 * 不​支​持​的​文​件​类​型​：​{​0​}
-		 * @param {unknown} 0
-		 */
-		typeNotSupported: RequiredParams<'0'>
-		/**
-		 * 未​提​供​文​件​句​柄
-		 */
-		noHandleProvided: string
-		/**
-		 * 无​法​获​取​提​供​的​文​件
-		 */
-		unableToGetFile: string
+		failedToReadErr: {
+			/**
+			 * 读​取​文​件​失​败
+			 */
+			summary: string
+			/**
+			 * 不​支​持​的​文​件​类​型​：​{​0​}
+			 * @param {unknown} 0
+			 */
+			typeNotSupported: RequiredParams<'0'>
+			/**
+			 * 未​提​供​文​件​句​柄
+			 */
+			noHandleProvided: string
+			/**
+			 * 无​法​获​取​提​供​的​文​件
+			 */
+			unableToGetFile: string
+		}
 		dataDropConfirm: {
 			/**
 			 * 您​有​未​保​存​的​工​作
@@ -477,6 +479,86 @@ type RootTranslation = {
 			 */
 			volumeDown: string
 		}
+		keyNames: {
+			/**
+			 * 空​格
+			 */
+			space: string
+		}
+	}
+	syllabify: {
+		engines: {
+			basic: {
+				/**
+				 * 基​本​断​字
+				 */
+				name: string
+				/**
+				 * 对​西​文​按​词​拆​分​，​对​于​ ​C​J​K​ ​按​字​拆​分​。​若​有​自​定​义​规​则​，​将​对​拆​分​后​的​词​应​用​，​已​拆​分​的​词​不​会​合​并​。
+				 */
+				description: string
+			}
+			jaBasic: {
+				/**
+				 * 日​语​基​本​断​字
+				 */
+				name: string
+				/**
+				 * 针​对​日​语​拗​音​等​做​专​门​处​理​。​若​有​自​定​义​规​则​，​将​优​先​提​取​自​定​义​拆​分​，​其​余​部​分​按​规​则​拆​分​。
+				 */
+				description: string
+			}
+			prosodic: {
+				/**
+				 * P​r​o​s​o​d​i​c​ ​英​语​断​字
+				 */
+				name: string
+				/**
+				 * 将​ ​S​U​B​T​L​E​X​u​s​ ​作​为​语​料​，​由​ ​P​r​o​s​o​d​i​c​ ​根​据​ ​C​M​U​D​i​c​t​ ​进​行​音​节​划​分​后​，​匹​配​回​拼​写​得​到​词​典​，​高​频​词​经​人​工​校​对​。​未​命​中​的​词​将​回​退​至​ ​C​o​m​p​r​o​m​i​s​e​。
+				 */
+				description: string
+			}
+			silabeador: {
+				/**
+				 * S​i​l​a​b​e​a​d​o​r​ ​西​班​牙​语​断​字
+				 */
+				name: string
+				/**
+				 * 由​ ​S​i​l​a​b​e​a​d​o​r​ ​库​提​供​的​正​字​法​西​班​牙​语​音​节​划​分​，​内​置​例​外​表​。​同​时​可​容​忍​不​常​见​或​非​西​班​牙​语​变​音​符​号​与​辅​音​集​群​。
+				 */
+				description: string
+			}
+			compromise: {
+				/**
+				 * C​o​m​p​r​o​m​i​s​e​ ​英​语​断​字
+				 */
+				name: string
+				/**
+				 * 由​ ​C​o​m​p​r​o​m​i​s​e​ ​库​提​供​的​正​字​法​英​语​音​节​拆​分​。
+				 */
+				description: string
+			}
+			syllabifyFr: {
+				/**
+				 * S​y​l​l​a​b​i​f​y​-​f​r​ ​法​语​断​字
+				 */
+				name: string
+				/**
+				 * 由​ ​S​y​l​l​a​b​i​f​y​-​f​r​ ​库​提​供​的​正​字​法​法​语​语​音​节​划​分​。
+				 */
+				description: string
+			}
+			syllabify: {
+				/**
+				 * S​y​l​l​a​b​i​f​y​ ​俄​语​断​字
+				 */
+				name: string
+				/**
+				 * 由​ ​S​y​l​l​a​b​i​f​y​ ​库​提​供​的​正​字​法​俄​语​音​节​划​分​。
+				 */
+				description: string
+			}
+		}
 	}
 }
 
@@ -664,22 +746,24 @@ export type TranslationFunctions = {
 		 * 成功加载文件
 		 */
 		loaded: () => LocalizedString
-		/**
-		 * 读取文件失败
-		 */
-		failedToRead: () => LocalizedString
-		/**
-		 * 不支持的文件类型：{0}
-		 */
-		typeNotSupported: (arg0: unknown) => LocalizedString
-		/**
-		 * 未提供文件句柄
-		 */
-		noHandleProvided: () => LocalizedString
-		/**
-		 * 无法获取提供的文件
-		 */
-		unableToGetFile: () => LocalizedString
+		failedToReadErr: {
+			/**
+			 * 读取文件失败
+			 */
+			summary: () => LocalizedString
+			/**
+			 * 不支持的文件类型：{0}
+			 */
+			typeNotSupported: (arg0: unknown) => LocalizedString
+			/**
+			 * 未提供文件句柄
+			 */
+			noHandleProvided: () => LocalizedString
+			/**
+			 * 无法获取提供的文件
+			 */
+			unableToGetFile: () => LocalizedString
+		}
 		dataDropConfirm: {
 			/**
 			 * 您有未保存的工作
@@ -942,6 +1026,86 @@ export type TranslationFunctions = {
 			 * 减小音量
 			 */
 			volumeDown: () => LocalizedString
+		}
+		keyNames: {
+			/**
+			 * 空格
+			 */
+			space: () => LocalizedString
+		}
+	}
+	syllabify: {
+		engines: {
+			basic: {
+				/**
+				 * 基本断字
+				 */
+				name: () => LocalizedString
+				/**
+				 * 对西文按词拆分，对于 CJK 按字拆分。若有自定义规则，将对拆分后的词应用，已拆分的词不会合并。
+				 */
+				description: () => LocalizedString
+			}
+			jaBasic: {
+				/**
+				 * 日语基本断字
+				 */
+				name: () => LocalizedString
+				/**
+				 * 针对日语拗音等做专门处理。若有自定义规则，将优先提取自定义拆分，其余部分按规则拆分。
+				 */
+				description: () => LocalizedString
+			}
+			prosodic: {
+				/**
+				 * Prosodic 英语断字
+				 */
+				name: () => LocalizedString
+				/**
+				 * 将 SUBTLEXus 作为语料，由 Prosodic 根据 CMUDict 进行音节划分后，匹配回拼写得到词典，高频词经人工校对。未命中的词将回退至 Compromise。
+				 */
+				description: () => LocalizedString
+			}
+			silabeador: {
+				/**
+				 * Silabeador 西班牙语断字
+				 */
+				name: () => LocalizedString
+				/**
+				 * 由 Silabeador 库提供的正字法西班牙语音节划分，内置例外表。同时可容忍不常见或非西班牙语变音符号与辅音集群。
+				 */
+				description: () => LocalizedString
+			}
+			compromise: {
+				/**
+				 * Compromise 英语断字
+				 */
+				name: () => LocalizedString
+				/**
+				 * 由 Compromise 库提供的正字法英语音节拆分。
+				 */
+				description: () => LocalizedString
+			}
+			syllabifyFr: {
+				/**
+				 * Syllabify-fr 法语断字
+				 */
+				name: () => LocalizedString
+				/**
+				 * 由 Syllabify-fr 库提供的正字法法语语音节划分。
+				 */
+				description: () => LocalizedString
+			}
+			syllabify: {
+				/**
+				 * Syllabify 俄语断字
+				 */
+				name: () => LocalizedString
+				/**
+				 * 由 Syllabify 库提供的正字法俄语音节划分。
+				 */
+				description: () => LocalizedString
+			}
 		}
 	}
 }
