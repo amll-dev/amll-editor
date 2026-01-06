@@ -5,7 +5,6 @@ import { coreCreate } from '@states/stores/core'
 import { str2ms } from '@utils/formatTime'
 import { pairwise } from '@utils/pairwise'
 
-import MANIFEST from '../manifest.json'
 import type { Convert as CV } from '../types'
 
 // Basic LRC parser and stringifier
@@ -24,8 +23,7 @@ import type { Convert as CV } from '../types'
 // [02:03.552]In our souls, do we know?
 // [02:06.103][02:08.916][02:11.135]On the journey
 
-export const lrcReg: CV.Format = {
-  ...MANIFEST.lrc,
+export const lrcReg: CV.FormatHandler = {
   parser: parseLRC,
   stringifier: stringifyLRC,
 }

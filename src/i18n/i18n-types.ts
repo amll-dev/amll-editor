@@ -102,6 +102,16 @@ type RootTranslation = {
 		}
 	}
 	formats: {
+		sharedReferences: {
+			/**
+			 * 维​基​百​科
+			 */
+			wikipedia: string
+			/**
+			 * 官​方​文​档
+			 */
+			officialDoc: string
+		}
 		alp: {
 			/**
 			 * A​M​L​L​ ​E​d​i​t​o​r​ ​工​程​文​件
@@ -171,16 +181,6 @@ type RootTranslation = {
 			 * 椒​盐​音​乐​的​私​有​格​式​，​基​于​ ​L​R​C​ ​扩​展​，​支​持​行​时​间​戳​和​逐​字​时​间​戳​，​并​支​持​翻​译​。​由​于​规​则​繁​杂​，​可​能​不​完​全​可​用​。
 			 */
 			description: string
-		}
-		sharedReferences: {
-			/**
-			 * 维​基​百​科
-			 */
-			wikipedia: string
-			/**
-			 * 官​方​文​档
-			 */
-			officialDoc: string
 		}
 	}
 }
@@ -275,6 +275,16 @@ export type TranslationFunctions = {
 		}
 	}
 	formats: {
+		sharedReferences: {
+			/**
+			 * 维基百科
+			 */
+			wikipedia: () => LocalizedString
+			/**
+			 * 官方文档
+			 */
+			officialDoc: () => LocalizedString
+		}
 		alp: {
 			/**
 			 * AMLL Editor 工程文件
@@ -344,16 +354,6 @@ export type TranslationFunctions = {
 			 * 椒盐音乐的私有格式，基于 LRC 扩展，支持行时间戳和逐字时间戳，并支持翻译。由于规则繁杂，可能不完全可用。
 			 */
 			description: () => LocalizedString
-		}
-		sharedReferences: {
-			/**
-			 * 维基百科
-			 */
-			wikipedia: () => LocalizedString
-			/**
-			 * 官方文档
-			 */
-			officialDoc: () => LocalizedString
 		}
 	}
 }

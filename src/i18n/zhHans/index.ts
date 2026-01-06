@@ -40,6 +40,10 @@ const zhHans = {
     },
   },
   formats: {
+    sharedReferences: {
+      wikipedia: '维基百科',
+      officialDoc: '官方文档',
+    },
     alp: {
       name: 'AMLL Editor 工程文件',
       description: 'AMLL Editor 的项目文件格式，内嵌音频文件和歌词数据，适合项目保存和传输。',
@@ -70,10 +74,6 @@ const zhHans = {
       description:
         '椒盐音乐的私有格式，基于 LRC 扩展，支持行时间戳和逐字时间戳，并支持翻译。由于规则繁杂，可能不完全可用。',
     },
-    sharedReferences: {
-      wikipedia: '维基百科',
-      officialDoc: '官方文档',
-    }
   },
 } satisfies BaseTranslation
 
