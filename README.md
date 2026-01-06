@@ -2,7 +2,7 @@
 
 # AMLL Editor
 
-![Version](https://img.shields.io/github/package-json/v/Linho1219/AMLL-Editor?label=Version&color=white)
+[![Version](https://img.shields.io/github/package-json/v/Linho1219/AMLL-Editor?label=Version)](https://github.com/Linho1219/AMLL-Editor/releases)
 [![Vite Version](https://img.shields.io/github/package-json/dependency-version/Linho1219/AMLL-Editor/dev/vite?label=Vite&color=646CFF&logo=vite&logoColor=white)](https://vite.dev/)
 [![Vue Version](https://img.shields.io/github/package-json/dependency-version/Linho1219/AMLL-Editor/vue?label=Vue&color=4FC08D&logo=vuedotjs&logoColor=white)](https://vuejs.org/)
 [![PrimeVue Version](https://img.shields.io/github/package-json/dependency-version/Linho1219/AMLL-Editor/primevue?label=PrimeVue&color=41B883&logo=primevue&logoColor=white)](https://primevue.org/)
