@@ -13,6 +13,66 @@ export type Translation = RootTranslation
 export type Translations = RootTranslation
 
 type RootTranslation = {
+	editor: {
+		context: {
+			blank: {
+				/**
+				 * 插​入​行
+				 */
+				insertLine: string
+			}
+			betweenLines: {
+				/**
+				 * 在​此​插​入​行
+				 */
+				insertLine: string
+			}
+			line: {
+				/**
+				 * 设​置​对​唱
+				 */
+				toggleDuet: string
+				/**
+				 * 设​置​背​景
+				 */
+				toggleBackground: string
+				/**
+				 * 在​前​插​入​行
+				 */
+				insertLineAbove: string
+				/**
+				 * 在​后​插​入​行
+				 */
+				insertLineBelow: string
+				/**
+				 * 克​隆​行
+				 */
+				duplicateLine: string
+				/**
+				 * 删​除​行
+				 */
+				deleteLine: string
+			}
+			syllable: {
+				/**
+				 * 在​前​插​入​音​节
+				 */
+				insertSylBefore: string
+				/**
+				 * 在​后​插​入​音​节
+				 */
+				insertSylAfter: string
+				/**
+				 * 在​此​拆​分​行
+				 */
+				breakLineAtSyl: string
+				/**
+				 * 删​除​音​节
+				 */
+				deleteSyl: string
+			}
+		}
+	}
 	compat: {
 		dialog: {
 			/**
@@ -915,6 +975,66 @@ type RootTranslation = {
 }
 
 export type TranslationFunctions = {
+	editor: {
+		context: {
+			blank: {
+				/**
+				 * 插入行
+				 */
+				insertLine: () => LocalizedString
+			}
+			betweenLines: {
+				/**
+				 * 在此插入行
+				 */
+				insertLine: () => LocalizedString
+			}
+			line: {
+				/**
+				 * 设置对唱
+				 */
+				toggleDuet: () => LocalizedString
+				/**
+				 * 设置背景
+				 */
+				toggleBackground: () => LocalizedString
+				/**
+				 * 在前插入行
+				 */
+				insertLineAbove: () => LocalizedString
+				/**
+				 * 在后插入行
+				 */
+				insertLineBelow: () => LocalizedString
+				/**
+				 * 克隆行
+				 */
+				duplicateLine: () => LocalizedString
+				/**
+				 * 删除行
+				 */
+				deleteLine: () => LocalizedString
+			}
+			syllable: {
+				/**
+				 * 在前插入音节
+				 */
+				insertSylBefore: () => LocalizedString
+				/**
+				 * 在后插入音节
+				 */
+				insertSylAfter: () => LocalizedString
+				/**
+				 * 在此拆分行
+				 */
+				breakLineAtSyl: () => LocalizedString
+				/**
+				 * 删除音节
+				 */
+				deleteSyl: () => LocalizedString
+			}
+		}
+	}
 	compat: {
 		dialog: {
 			/**

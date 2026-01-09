@@ -1,6 +1,30 @@
 import type { BaseTranslation } from '../i18n-types'
 
 const zhHans = {
+  editor: {
+    context: {
+      blank: {
+        insertLine: '插入行',
+      },
+      betweenLines: {
+        insertLine: '在此插入行',
+      },
+      line: {
+        toggleDuet: '设置对唱',
+        toggleBackground: '设置背景',
+        insertLineAbove: '在前插入行',
+        insertLineBelow: '在后插入行',
+        duplicateLine: '克隆行',
+        deleteLine: '删除行',
+      },
+      syllable: {
+        insertSylBefore: '在前插入音节',
+        insertSylAfter: '在后插入音节',
+        breakLineAtSyl: '在此拆分行',
+        deleteSyl: '删除音节',
+      },
+    },
+  },
   compat: {
     dialog: {
       header: '兼容性报告',

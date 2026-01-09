@@ -1,3 +1,4 @@
+import { t } from '@i18n'
 import { type Ref, computed, nextTick } from 'vue'
 
 import { getHotkeyStr } from '@core/hotkey'
@@ -14,6 +15,8 @@ interface ContentCtxStates {
   sylIndex: Ref<number | undefined>
 }
 
+const tt = t.editor.context
+
 export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
   const coreStore = useCoreStore()
   const runtimeStore = useRuntimeStore()
@@ -21,7 +24,7 @@ export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
 
   const blankMenuItems = computed<MenuItem[]>(() => [
     {
-      label: '插入行',
+      label: tt.blank.insertLine(),
       icon: 'pi pi-plus',
       command: () => {
         const newLine = coreStore.newLine()
@@ -32,7 +35,7 @@ export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
   ])
   const lineInsertMenuItems = computed<MenuItem[]>(() => [
     {
-      label: '插入行',
+      label: tt.betweenLines.insertLine(),
       icon: 'pi pi-plus',
       command: () => {
         if (lineIndex.value === undefined) return
@@ -100,35 +103,35 @@ export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
 
   const lineMenuItems = computed<MenuItem[]>(() => [
     {
-      label: '设为对唱',
+      label: tt.line.toggleDuet(),
       icon: 'pi pi-align-right',
       command: toggleDuet,
       tip: getHotkeyStr('duet'),
     },
     {
-      label: '设为背景',
+      label: tt.line.toggleBackground(),
       icon: 'pi pi-expand',
       command: toggleBackground,
       tip: getHotkeyStr('background'),
     },
     { separator: true },
     {
-      label: '在前插入行',
+      label: tt.line.insertLineAbove(),
       icon: 'pi pi-arrow-up',
       command: insertLineBefore,
     },
     {
-      label: '在后插入行',
+      label: tt.line.insertLineBelow(),
       icon: 'pi pi-arrow-down',
       command: insertLineAfter,
     },
     {
-      label: '克隆行',
+      label: tt.line.duplicateLine(),
       icon: 'pi pi-clone',
       command: duplicateLine,
     },
     {
-      label: '删除行',
+      label: tt.line.deleteLine(),
       icon: 'pi pi-trash',
       command: deleteLine,
       tip: getHotkeyStr('delete'),
@@ -168,23 +171,23 @@ export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
 
   const sylMenuItems = computed<MenuItem[]>(() => [
     {
-      label: '在前插入音节',
+      label: tt.syllable.insertSylBefore(),
       icon: 'pi pi-arrow-left',
       command: insertSylBefore,
     },
     {
-      label: '在后插入音节',
+      label: tt.syllable.insertSylAfter(),
       icon: 'pi pi-arrow-right',
       command: insertSylAfter,
     },
     {
-      label: '在此拆分行',
+      label: tt.syllable.breakLineAtSyl(),
       icon: 'pi pi-code',
       command: breakLineAtSyl,
       tip: getHotkeyStr('breakLine'),
     },
     {
-      label: '删除音节',
+      label: tt.syllable.deleteSyl(),
       icon: 'pi pi-trash',
       command: deleteSyl,
       tip: getHotkeyStr('delete'),
