@@ -14,6 +14,32 @@ export type Translations = RootTranslation
 
 type RootTranslation = {
 	compat: {
+		dialog: {
+			/**
+			 * 兼​容​性​报​告
+			 */
+			header: string
+			/**
+			 * 不​支​持
+			 */
+			notSupported: string
+			/**
+			 * 未​提​供​说​明
+			 */
+			noReasonProvided: string
+			/**
+			 * 未​提​供​可​能​导​致​的​问​题
+			 */
+			noImpactProvided: string
+			/**
+			 * 启​动​时​不​再​检​查​兼​容​性
+			 */
+			dontCheckOnStartup: string
+			/**
+			 * 确​认
+			 */
+			proceed: string
+		}
 		sharedReasons: {
 			/**
 			 * 未​在​安​全​上​下​文​中​运​行​。​需​要​ ​H​T​T​P​S​ ​或​从​本​地​回​环​访​问​。
@@ -32,7 +58,7 @@ type RootTranslation = {
 			/**
 			 * 复​制​和​粘​贴​ ​T​T​M​L​ ​功​能​不​可​用​。
 			 */
-			effect: string
+			impact: string
 			/**
 			 * 浏​览​器​不​支​持​剪​贴​板​相​关​的​ ​A​P​I​。​此​ ​A​P​I​ ​在​ ​C​h​r​o​m​i​u​m​ ​6​6​、​F​i​r​e​f​o​x​ ​1​2​5​、​S​a​f​a​r​i​ ​1​3​.​1​ ​或​以​上​版​本​中​支​持​。
 			 */
@@ -50,7 +76,7 @@ type RootTranslation = {
 			/**
 			 * 保​存​文​件​时​无​法​直​接​写​入​，​而​是​通​过​浏​览​器​下​载​；​自​动​保​存​不​可​用​。
 			 */
-			effect: string
+			impact: string
 			/**
 			 * 浏​览​器​不​支​持​文​件​系​统​相​关​的​ ​A​P​I​。​此​ ​A​P​I​ ​在​ ​C​h​r​o​m​i​u​m​ ​8​6​ ​及​以​上​版​本​中​支​持​，​F​i​r​e​f​o​x​ ​和​ ​S​a​f​a​r​i​ ​暂​不​支​持​。
 			 */
@@ -68,7 +94,7 @@ type RootTranslation = {
 			/**
 			 * 将​不​能​从​系​统​媒​体​控​制​界​面​（​如​锁​屏​界​面​或​通​知​中​心​）​控​制​媒​体​播​放​。
 			 */
-			effect: string
+			impact: string
 			/**
 			 * 浏​览​器​不​支​持​媒​体​会​话​相​关​的​ ​A​P​I​。​此​ ​A​P​I​ ​在​ ​C​h​r​o​m​i​u​m​ ​7​2​、​F​i​r​e​f​o​x​ ​8​2​、​S​a​f​a​r​i​ ​1​5​ ​或​以​上​版​本​中​支​持​。​F​i​r​e​f​o​x​ ​A​n​d​r​o​i​d​ ​目​前​不​支​持​。
 			 */
@@ -86,7 +112,7 @@ type RootTranslation = {
 			/**
 			 * 频​谱​图​功​能​不​可​用​。
 			 */
-			effect: string
+			impact: string
 			/**
 			 * 浏​览​器​不​支​持​ ​S​h​a​r​e​d​A​r​r​a​y​B​u​f​f​e​r​。​此​ ​A​P​I​ ​在​ ​C​h​r​o​m​i​u​m​ ​6​8​、​F​i​r​e​f​o​x​ ​7​9​、​S​a​f​a​r​i​ ​1​5​.​2​ ​或​以​上​版​本​中​支​持​。
 			 */
@@ -732,6 +758,32 @@ type RootTranslation = {
 
 export type TranslationFunctions = {
 	compat: {
+		dialog: {
+			/**
+			 * 兼容性报告
+			 */
+			header: () => LocalizedString
+			/**
+			 * 不支持
+			 */
+			notSupported: () => LocalizedString
+			/**
+			 * 未提供说明
+			 */
+			noReasonProvided: () => LocalizedString
+			/**
+			 * 未提供可能导致的问题
+			 */
+			noImpactProvided: () => LocalizedString
+			/**
+			 * 启动时不再检查兼容性
+			 */
+			dontCheckOnStartup: () => LocalizedString
+			/**
+			 * 确认
+			 */
+			proceed: () => LocalizedString
+		}
 		sharedReasons: {
 			/**
 			 * 未在安全上下文中运行。需要 HTTPS 或从本地回环访问。
@@ -750,7 +802,7 @@ export type TranslationFunctions = {
 			/**
 			 * 复制和粘贴 TTML 功能不可用。
 			 */
-			effect: () => LocalizedString
+			impact: () => LocalizedString
 			/**
 			 * 浏览器不支持剪贴板相关的 API。此 API 在 Chromium 66、Firefox 125、Safari 13.1 或以上版本中支持。
 			 */
@@ -768,7 +820,7 @@ export type TranslationFunctions = {
 			/**
 			 * 保存文件时无法直接写入，而是通过浏览器下载；自动保存不可用。
 			 */
-			effect: () => LocalizedString
+			impact: () => LocalizedString
 			/**
 			 * 浏览器不支持文件系统相关的 API。此 API 在 Chromium 86 及以上版本中支持，Firefox 和 Safari 暂不支持。
 			 */
@@ -786,7 +838,7 @@ export type TranslationFunctions = {
 			/**
 			 * 将不能从系统媒体控制界面（如锁屏界面或通知中心）控制媒体播放。
 			 */
-			effect: () => LocalizedString
+			impact: () => LocalizedString
 			/**
 			 * 浏览器不支持媒体会话相关的 API。此 API 在 Chromium 72、Firefox 82、Safari 15 或以上版本中支持。Firefox Android 目前不支持。
 			 */
@@ -804,7 +856,7 @@ export type TranslationFunctions = {
 			/**
 			 * 频谱图功能不可用。
 			 */
-			effect: () => LocalizedString
+			impact: () => LocalizedString
 			/**
 			 * 浏览器不支持 SharedArrayBuffer。此 API 在 Chromium 68、Firefox 79、Safari 15.2 或以上版本中支持。
 			 */

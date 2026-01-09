@@ -12,7 +12,7 @@ const mediaSessionInfo = {
     { label: 'Can I Use: Media Session', url: 'https://caniuse.com/wf-media-session' },
   ],
   severity: 'info',
-  effect: tt.effect(),
+  impact: tt.impact(),
 } as const satisfies CP.CompatibilityInfo
 
 const meet =

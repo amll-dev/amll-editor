@@ -3,7 +3,7 @@ export namespace Compatibility {
     key: string
     name: string
     description?: string
-    effect: string
+    impact: string
     severity: 'info' | 'warn' | 'danger'
     referenceUrls?: {
       label: string

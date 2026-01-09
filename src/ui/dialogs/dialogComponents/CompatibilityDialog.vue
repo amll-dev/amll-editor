@@ -1,7 +1,7 @@
 <template>
   <Dialog
     v-model:visible="visible"
-    header="兼容性报告"
+    :header="tt.header()"
     class="compat-dialog"
     @hide="handleClose"
     @show="handleShow"
@@ -34,10 +34,10 @@
           </div>
           <div class="notsupported" v-if="!item.meet">
             <div class="why">
-              <strong :class="`why-strong p-color-${item.severity}`">不支持</strong
-              ><span class="why-text">{{ item.why || '未提供说明' }}</span>
+              <strong :class="`why-strong p-color-${item.severity}`">{{ tt.notSupported() }}</strong
+              ><span class="why-text">{{ item.why || tt.noReasonProvided() }}</span>
             </div>
-            <div class="effect">{{ item.effect || '未提供可能导致的问题' }}</div>
+            <div class="impact">{{ item.impact || tt.noImpactProvided() }}</div>
           </div>
         </div>
       </div>
@@ -45,14 +45,17 @@
     <template #footer>
       <div class="compat-dialog-dont-mind">
         <Checkbox binary input-id="dont-mind-next-time" v-model="dontMindNextTime" />
-        <label for="dont-mind-next-time" class="dont-mind-label">此后启动时不再检查</label>
+        <label for="dont-mind-next-time" class="dont-mind-label">{{
+          tt.dontCheckOnStartup()
+        }}</label>
       </div>
-      <Button label="确认" severity="secondary" icon="pi pi-check" @click="handleClose" />
+      <Button :label="tt.proceed()" severity="secondary" icon="pi pi-check" @click="handleClose" />
     </template>
   </Dialog>
 </template>
 
 <script setup lang="ts">
+import { t } from '@i18n'
 import { nextTick, onMounted, ref } from 'vue'
 
 import { compatibilityList } from '@core/compat'
@@ -60,6 +63,8 @@ import { compatibilityList } from '@core/compat'
 import { usePrefStore } from '@states/stores'
 
 import { Button, Checkbox, Dialog, Divider } from 'primevue'
+
+const tt = t.compat.dialog
 
 const [visible] = defineModel<boolean>({ required: true })
 
@@ -140,7 +145,7 @@ onMounted(() => {
     font-weight: bold;
     margin-right: 0.5rem;
   }
-  .effect {
+  .impact {
     margin-top: 0.5rem;
     font-weight: bold;
   }

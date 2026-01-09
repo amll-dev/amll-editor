@@ -12,7 +12,7 @@ const clipboardInfo = {
     { label: 'Can I Use: async-clipboard', url: 'https://caniuse.com/async-clipboard' },
   ],
   severity: 'warn',
-  effect: tt.effect(),
+  impact: tt.impact(),
 } as const satisfies CP.CompatibilityInfo
 
 const meet =

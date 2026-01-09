@@ -15,7 +15,7 @@ const fileSystemInfo = {
     },
   ],
   severity: 'warn',
-  effect: tt.effect(),
+  impact: tt.impact(),
 } as const satisfies CP.CompatibilityInfo
 
 const meet =
