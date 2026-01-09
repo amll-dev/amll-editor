@@ -72,6 +72,104 @@ type RootTranslation = {
 				deleteSyl: string
 			}
 		}
+		dragGhost: {
+			/**
+			 * {​{​复​制​行​}​}
+			 */
+			copyLine: string
+			/**
+			 * {​{​移​动​行​}​}
+			 */
+			moveLine: string
+			/**
+			 * {​{​复​制​音​节​}​}
+			 */
+			copySyllable: string
+			/**
+			 * {​{​移​动​音​节​}​}
+			 */
+			moveSyllable: string
+		}
+		emptyTip: {
+			title: {
+				/**
+				 * 没​有​歌​词​行
+				 */
+				noLines: string
+				/**
+				 * 所​有​歌​词​行​均​为​空
+				 */
+				allLinesEmpty: string
+			}
+			detail: {
+				/**
+				 * 使​用​「​打​开​」​菜​单​加​载​内​容​，​或​右​键​空​白​处​插​入​新​行
+				 */
+				goLoadOrCreate: string
+				/**
+				 * 使​用​「​打​开​」​菜​单​加​载​内​容​，​或​在​内​容​视​图​下​编​辑
+				 */
+				goLoadOrEdit: string
+			}
+		}
+		line: {
+			/**
+			 * 行​序​号
+			 */
+			index: string
+			/**
+			 * 双​击​以​切​换​时​轴​忽​略​状​态
+			 */
+			indexDbClickToToogleIgnore: string
+			/**
+			 * 书​签
+			 */
+			bookmark: string
+			/**
+			 * 对​唱
+			 */
+			duet: string
+			/**
+			 * 背​景
+			 */
+			background: string
+			/**
+			 * 应​用​至​逐​字​音​译
+			 */
+			applyRomanToSyl: string
+			/**
+			 * 从​逐​字​音​译​生​成
+			 */
+			generateRomanFromSyl: string
+			/**
+			 * 行​起​始​时​间
+			 */
+			startTime: string
+			/**
+			 * 行​结​束​时​间
+			 */
+			endTime: string
+			/**
+			 * 连​缀​结​束​时​间​至​下​一​行
+			 */
+			continueToNextLine: string
+		}
+		syllable: {
+			/**
+			 * 音​节​起​始​时​间
+			 */
+			startTime: string
+			/**
+			 * 音​节​结​束​时​间
+			 */
+			endTime: string
+		}
+		preview: {
+			/**
+			 * 重​载​ ​A​M​L​L
+			 */
+			reloadAmll: string
+		}
 	}
 	compat: {
 		dialog: {
@@ -1033,6 +1131,104 @@ export type TranslationFunctions = {
 				 */
 				deleteSyl: () => LocalizedString
 			}
+		}
+		dragGhost: {
+			/**
+			 * {{复制行}}
+			 */
+			copyLine: (arg0: number | string | boolean) => LocalizedString
+			/**
+			 * {{移动行}}
+			 */
+			moveLine: (arg0: number | string | boolean) => LocalizedString
+			/**
+			 * {{复制音节}}
+			 */
+			copySyllable: (arg0: number | string | boolean) => LocalizedString
+			/**
+			 * {{移动音节}}
+			 */
+			moveSyllable: (arg0: number | string | boolean) => LocalizedString
+		}
+		emptyTip: {
+			title: {
+				/**
+				 * 没有歌词行
+				 */
+				noLines: () => LocalizedString
+				/**
+				 * 所有歌词行均为空
+				 */
+				allLinesEmpty: () => LocalizedString
+			}
+			detail: {
+				/**
+				 * 使用「打开」菜单加载内容，或右键空白处插入新行
+				 */
+				goLoadOrCreate: () => LocalizedString
+				/**
+				 * 使用「打开」菜单加载内容，或在内容视图下编辑
+				 */
+				goLoadOrEdit: () => LocalizedString
+			}
+		}
+		line: {
+			/**
+			 * 行序号
+			 */
+			index: () => LocalizedString
+			/**
+			 * 双击以切换时轴忽略状态
+			 */
+			indexDbClickToToogleIgnore: () => LocalizedString
+			/**
+			 * 书签
+			 */
+			bookmark: () => LocalizedString
+			/**
+			 * 对唱
+			 */
+			duet: () => LocalizedString
+			/**
+			 * 背景
+			 */
+			background: () => LocalizedString
+			/**
+			 * 应用至逐字音译
+			 */
+			applyRomanToSyl: () => LocalizedString
+			/**
+			 * 从逐字音译生成
+			 */
+			generateRomanFromSyl: () => LocalizedString
+			/**
+			 * 行起始时间
+			 */
+			startTime: () => LocalizedString
+			/**
+			 * 行结束时间
+			 */
+			endTime: () => LocalizedString
+			/**
+			 * 连缀结束时间至下一行
+			 */
+			continueToNextLine: () => LocalizedString
+		}
+		syllable: {
+			/**
+			 * 音节起始时间
+			 */
+			startTime: () => LocalizedString
+			/**
+			 * 音节结束时间
+			 */
+			endTime: () => LocalizedString
+		}
+		preview: {
+			/**
+			 * 重载 AMLL
+			 */
+			reloadAmll: () => LocalizedString
 		}
 	}
 	compat: {

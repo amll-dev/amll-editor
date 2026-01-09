@@ -13,7 +13,7 @@
     />
     <Button
       class="preview-reload-button"
-      label="重载 AMLL"
+      :label="tt.reloadAmll()"
       severity="secondary"
       icon="pi pi-refresh"
       variant="text"
@@ -23,6 +23,7 @@
 </template>
 <script setup lang="ts">
 import { LyricPlayer } from '@applemusic-like-lyrics/vue'
+import { t } from '@i18n'
 import { onMounted, onUnmounted, ref, shallowRef, watch } from 'vue'
 
 import { audioEngine } from '@core/audio'
@@ -36,6 +37,8 @@ import { tryRaf } from '@utils/tryRaf'
 import { Button } from 'primevue'
 
 import '@applemusic-like-lyrics/core/style.css'
+
+const tt = t.editor.preview
 
 const coreStore = useCoreStore()
 const { progressComputed, playingComputed, amendedProgressComputed, seek } = audioEngine

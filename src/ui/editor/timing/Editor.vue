@@ -26,18 +26,19 @@
     </VList>
     <EmptyTip
       v-if="coreStore.lyricLines.length === 0"
-      title="没有歌词行"
-      tip="使用「打开」菜单加载内容，或右键空白处插入新行"
+      :title="tt.emptyTip.title.noLines()"
+      :tip="tt.emptyTip.detail.goLoadOrCreate()"
     />
     <EmptyTip
       v-else-if="coreStore.lyricLines.every((line) => !line.syllables.some((s) => s.text.trim()))"
-      title="所有行均为空"
-      tip="使用「打开」菜单加载内容，或在内容视图下编辑"
+      :title="tt.emptyTip.title.allLinesEmpty()"
+      :tip="tt.emptyTip.detail.goLoadOrEdit()"
     />
   </div>
 </template>
 
 <script setup lang="ts">
+import { t } from '@i18n'
 import type { ScrollToIndexOpts } from 'virtua/unstable_core'
 import { VList } from 'virtua/vue'
 import { onBeforeUnmount, onMounted, onUnmounted, useTemplateRef } from 'vue'
@@ -54,6 +55,8 @@ import { tryRaf } from '@utils/tryRaf'
 import Line from './Line.vue'
 import Syllable from './Syllable.vue'
 import EmptyTip from '@ui/components/EmptyTip.vue'
+
+const tt = t.editor
 
 const coreStore = useCoreStore()
 const runtimeStore = useRuntimeStore()

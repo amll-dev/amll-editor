@@ -50,8 +50,8 @@
     </ContextMenu>
     <EmptyTip
       v-if="coreStore.lyricLines.length === 0"
-      title="没有歌词行"
-      tip="使用「打开」菜单加载内容，或右键空白处插入新行"
+      :title="tt.emptyTip.title.noLines()"
+      :tip="tt.emptyTip.detail.goLoadOrCreate()"
     />
     <Teleport to="body">
       <DragGhost v-if="runtimeStore.isDragging" />
@@ -60,6 +60,7 @@
 </template>
 
 <script setup lang="ts">
+import { t } from '@i18n'
 import type { ScrollToIndexOpts } from 'virtua/unstable_core'
 import { VList } from 'virtua/vue'
 import {
@@ -94,6 +95,8 @@ import TieredMenuItem from '@ui/components/TieredMenuItem.vue'
 import { Button, ContextMenu } from 'primevue'
 
 import { useContentCtxItems } from './context'
+
+const tt = t.editor
 
 const coreStore = useCoreStore()
 const runtimeStore = useRuntimeStore()

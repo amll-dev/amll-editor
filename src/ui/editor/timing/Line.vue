@@ -18,7 +18,7 @@
           :icon="'pi pi-bookmark' + (props.line.bookmarked ? '-fill' : '')"
           :class="{ active: props.line.bookmarked }"
           @click.stop="props.line.bookmarked = !props.line.bookmarked"
-          v-tooltip="'书签'"
+          v-tooltip="tt.bookmark()"
         />
         <Button
           :severity="props.line.duet ? undefined : 'secondary'"
@@ -28,7 +28,7 @@
           class="tline-tag-duet"
           :class="{ active: props.line.duet }"
           @click.stop="props.line.duet = !props.line.duet"
-          v-tooltip="'对唱'"
+          v-tooltip="tt.duet()"
         />
         <Button
           :severity="props.line.background ? undefined : 'secondary'"
@@ -38,26 +38,26 @@
           class="tline-tag-background"
           :class="{ active: props.line.background }"
           @click.stop="props.line.background = !props.line.background"
-          v-tooltip="'背景'"
+          v-tooltip="tt.background()"
         />
       </div>
       <div class="tline-head-timestamps">
         <Timestamp
           begin
           v-model="props.line.startTime"
-          v-tooltip="'行起始时间'"
+          v-tooltip="tt.startTime()"
           v-if="!prefStore.hideLineTiming"
         />
         <span
           class="tline-index"
           @dblclick="props.line.ignoreInTiming = !props.line.ignoreInTiming"
-          v-tooltip="tipMultiLine('行序号', '双击以切换时轴忽略状态')"
+          v-tooltip="tipMultiLine(tt.index(), tt.indexDbClickToToogleIgnore())"
           >{{ props.index + 1 }}</span
         >
         <Timestamp
           end
           v-model="props.line.endTime"
-          v-tooltip="'行结束时间'"
+          v-tooltip="tt.endTime()"
           v-if="!prefStore.hideLineTiming"
         />
       </div>
@@ -69,6 +69,7 @@
 </template>
 
 <script setup lang="ts">
+import { t } from '@i18n'
 import { computed } from 'vue'
 
 import type { LyricLine } from '@core/types'
@@ -79,6 +80,8 @@ import { tipMultiLine } from '@utils/generateTooltip'
 
 import Timestamp from './Timestamp.vue'
 import { Button } from 'primevue'
+
+const tt = t.editor.line
 
 const pgmignored = computed(() => prefStore.alwaysIgnoreBackground && props.line.background)
 const mnlignored = computed(() => props.line.ignoreInTiming)

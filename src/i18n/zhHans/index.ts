@@ -24,6 +24,38 @@ const zhHans = {
         deleteSyl: '删除音节',
       },
     },
+    dragGhost: {
+      copyLine: '{{ 复制行 }}', // Reserved for languages with plural
+      moveLine: '{{ 移动行 }}', // Reserved for languages with plural
+      copySyllable: '{{ 复制音节 }}', // Reserved for languages with plural
+      moveSyllable: '{{ 移动音节 }}', // Reserved for languages with plural
+    },
+    emptyTip: {
+      title: { noLines: '没有歌词行', allLinesEmpty: '所有歌词行均为空' },
+      detail: {
+        goLoadOrCreate: '使用「打开」菜单加载内容，或右键空白处插入新行',
+        goLoadOrEdit: '使用「打开」菜单加载内容，或在内容视图下编辑',
+      },
+    },
+    line: {
+      index: '行序号',
+      indexDbClickToToogleIgnore: '双击以切换时轴忽略状态',
+      bookmark: '书签',
+      duet: '对唱',
+      background: '背景',
+      applyRomanToSyl: '应用至逐字音译',
+      generateRomanFromSyl: '从逐字音译生成',
+      startTime: '行起始时间',
+      endTime: '行结束时间',
+      continueToNextLine: '连缀结束时间至下一行',
+    },
+    syllable: {
+      startTime: '音节起始时间',
+      endTime: '音节结束时间',
+    },
+    preview: {
+      reloadAmll: '重载 AMLL',
+    },
   },
   compat: {
     dialog: {

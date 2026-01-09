@@ -28,12 +28,12 @@
           :icon="'pi pi-bookmark' + (props.line.bookmarked ? '-fill' : '')"
           :class="{ active: props.line.bookmarked }"
           @click.stop="props.line.bookmarked = !props.line.bookmarked"
-          v-tooltip="'书签'"
+          v-tooltip="tt.bookmark()"
         />
         <div
           class="cline-index"
           @dblclick="props.line.ignoreInTiming = !props.line.ignoreInTiming"
-          v-tooltip="tipMultiLine('行序号', '双击以切换时轴忽略状态')"
+          v-tooltip="tipMultiLine(tt.index(), tt.indexDbClickToToogleIgnore())"
         >
           {{ props.index + 1 }}
         </div>
@@ -46,7 +46,7 @@
           icon="pi pi-align-right"
           :class="{ active: props.line.duet }"
           @click.stop="props.line.duet = !props.line.duet"
-          v-tooltip="'对唱'"
+          v-tooltip="tt.duet()"
         />
         <Button
           class="cline-tag cline-tag-background"
@@ -56,7 +56,7 @@
           icon="pi pi-expand"
           :class="{ active: props.line.background }"
           @click.stop="props.line.background = !props.line.background"
-          v-tooltip="'背景'"
+          v-tooltip="tt.background()"
         />
       </div>
     </div>
@@ -83,7 +83,7 @@
                     icon="pi pi-sort-amount-up"
                     severity="secondary"
                     @click="handleRomanApply"
-                    v-tooltip="'应用至逐字音译'"
+                    v-tooltip="tt.applyRomanToSyl()"
                   />
                 </InputGroupAddon>
                 <InputGroupAddon>
@@ -91,7 +91,7 @@
                     icon="pi pi-sort-amount-down"
                     severity="secondary"
                     @click="handleRomanGenerate"
-                    v-tooltip="'从逐字音译生成'"
+                    v-tooltip="tt.generateRomanFromSyl()"
                   />
                 </InputGroupAddon>
               </template>
@@ -105,6 +105,7 @@
 </template>
 
 <script setup lang="ts">
+import { t } from '@i18n'
 import { computed, onMounted, onUnmounted, useTemplateRef } from 'vue'
 
 import type { LyricLine } from '@core/types'
@@ -119,6 +120,8 @@ import type { TimeoutHandle } from '@utils/types'
 
 import InputText from '@ui/components/InputText.vue'
 import { Button, FloatLabel, InputGroup, InputGroupAddon } from 'primevue'
+
+const tt = t.editor.line
 
 const props = defineProps<{
   line: LyricLine
