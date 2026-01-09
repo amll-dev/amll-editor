@@ -113,7 +113,7 @@ const zhHans = {
     saveStatus: {
       compatMode: '兼容读写模式',
       permissionNotGranted: '未授予写入权限',
-      savedAt: '已保存于 {0:Date:"",time}',
+      savedAt: '已保存于 {0:Date|time}',
     },
   },
   ribbon: {
@@ -231,6 +231,7 @@ const zhHans = {
     },
     preference: {
       header: '偏好设置',
+      refreshToTakeEffect: '重载页面以生效',
       resetConfirm: {
         header: '重置全部选项',
         message: '确定要将所有选项恢复为默认值吗？此操作不可撤销。',
@@ -243,7 +244,7 @@ const zhHans = {
         timing: '时轴',
         spectrogram: '频谱图',
         compatibility: '兼容性',
-        reset: '重置',
+        misc: '杂项',
         about: '关于',
       },
       experimentalWarning: '实验性选项，可能不稳定',
@@ -288,6 +289,8 @@ const zhHans = {
         notifyCompatIssuesOnStartupDesc: '在启动时若发现问题，显示兼容性报告对话框',
         resetAll: '重置全部选项',
         resetAllDesc: '将所有选项恢复为默认值',
+        language: '语言',
+        languageDesc: '选择界面显示语言',
         resetAllAction: '重置',
         aboutApp: '关于 {0}',
         aboutAppDesc: '打开软件版本信息窗口',

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { t } from '@i18n'
+import { currentLocaleItem, localeItemList, localeOptNotMatch, localeOptRef, t } from '@i18n'
+import { shallowRef, watch } from 'vue'
 
 import { compatibilityMap } from '@core/compat'
 import { type PreferenceSchema, getDefaultPref } from '@core/pref'
@@ -9,7 +10,8 @@ import { usePrefStore, useRuntimeStore, useStaticStore } from '@states/stores'
 import PrefItem from './PrefItem.vue'
 import PrefNumberItem from './PrefNumberItem.vue'
 import PrefSwitchItem from './PrefSwitchItem.vue'
-import { Button } from 'primevue'
+import AnimatedFold from '@ui/components/AnimatedFold.vue'
+import { Button, Select } from 'primevue'
 
 const tt = t.sidebar.preference
 
@@ -36,6 +38,12 @@ function openGithubRepo() {
   window.open(__REPO_URL__, '_blank')
 }
 const displayName = __APP_DISPLAY_NAME__
+
+const selectedLanguageItem = shallowRef(currentLocaleItem)
+watch(selectedLanguageItem, (val) => {
+  if (!val) return
+  localeOptRef.value = val.code
+})
 </script>
 
 <template>
@@ -89,10 +97,10 @@ const displayName = __APP_DISPLAY_NAME__
         :disabled="!prefStore.hideLineTiming || !prefStore.autoConnectLineTimes"
       />
     </div>
-    <div class="pref-group">
+    <!-- <div class="pref-group">
       <div class="pref-group-title">{{ tt.groups.spectrogram() }}</div>
       Not implemented yet
-    </div>
+    </div> -->
     <div class="pref-group">
       <div class="pref-group-title">{{ tt.groups.compatibility() }}</div>
       <PrefSwitchItem pref-key="notifyCompatIssuesOnStartup" />
@@ -107,7 +115,13 @@ const displayName = __APP_DISPLAY_NAME__
       </PrefItem>
     </div>
     <div class="pref-group">
-      <div class="pref-group-title">{{ tt.groups.reset() }}</div>
+      <div class="pref-group-title">{{ tt.groups.misc() }}</div>
+      <PrefItem :label="tt.items.language()" :desc="tt.items.languageDesc()">
+        <Select v-model="selectedLanguageItem" :options="localeItemList" optionLabel="name" />
+      </PrefItem>
+      <AnimatedFold :folded="!localeOptNotMatch">
+        <div class="refresh-tip p-color-warn">{{ tt.refreshToTakeEffect() }}</div>
+      </AnimatedFold>
       <PrefItem :label="tt.items.resetAll()" :desc="tt.items.resetAllDesc()">
         <Button
           severity="danger"
@@ -143,13 +157,14 @@ const displayName = __APP_DISPLAY_NAME__
 
 <style lang="scss">
 .pref-group {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
   margin-bottom: 2rem;
 }
 .pref-group-title {
   color: var(--p-primary-color);
   font-weight: bold;
+}
+.refresh-tip {
+  padding-top: 0.5rem;
+  font-size: 0.9rem;
 }
 </style>

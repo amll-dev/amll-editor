@@ -6,6 +6,7 @@ export type BaseTranslation = BaseTranslationType
 export type BaseLocale = 'zh-hans'
 
 export type Locales =
+	| 'en'
 	| 'zh-hans'
 
 export type Translation = RootTranslation
@@ -286,10 +287,10 @@ type RootTranslation = {
 			 */
 			permissionNotGranted: string
 			/**
-			 * 已​保​存​于​ ​{​0​}
+			 * 已​保​存​于​ ​{​0​|​t​i​m​e​}
 			 * @param {Date} 0
 			 */
-			savedAt: RequiredParams<'0'>
+			savedAt: RequiredParams<'0|time'>
 		}
 	}
 	ribbon: {
@@ -664,6 +665,10 @@ type RootTranslation = {
 			 * 偏​好​设​置
 			 */
 			header: string
+			/**
+			 * 重​载​页​面​以​生​效
+			 */
+			refreshToTakeEffect: string
 			resetConfirm: {
 				/**
 				 * 重​置​全​部​选​项
@@ -704,9 +709,9 @@ type RootTranslation = {
 				 */
 				compatibility: string
 				/**
-				 * 重​置
+				 * 杂​项
 				 */
-				reset: string
+				misc: string
 				/**
 				 * 关​于
 				 */
@@ -877,6 +882,14 @@ type RootTranslation = {
 				 * 将​所​有​选​项​恢​复​为​默​认​值
 				 */
 				resetAllDesc: string
+				/**
+				 * 语​言
+				 */
+				language: string
+				/**
+				 * 选​择​界​面​显​示​语​言
+				 */
+				languageDesc: string
 				/**
 				 * 重​置
 				 */
@@ -2261,7 +2274,7 @@ export type TranslationFunctions = {
 			 */
 			permissionNotGranted: () => LocalizedString
 			/**
-			 * 已保存于 {0}
+			 * 已保存于 {0|time}
 			 */
 			savedAt: (arg0: Date) => LocalizedString
 		}
@@ -2638,6 +2651,10 @@ export type TranslationFunctions = {
 			 * 偏好设置
 			 */
 			header: () => LocalizedString
+			/**
+			 * 重载页面以生效
+			 */
+			refreshToTakeEffect: () => LocalizedString
 			resetConfirm: {
 				/**
 				 * 重置全部选项
@@ -2678,9 +2695,9 @@ export type TranslationFunctions = {
 				 */
 				compatibility: () => LocalizedString
 				/**
-				 * 重置
+				 * 杂项
 				 */
-				reset: () => LocalizedString
+				misc: () => LocalizedString
 				/**
 				 * 关于
 				 */
@@ -2851,6 +2868,14 @@ export type TranslationFunctions = {
 				 * 将所有选项恢复为默认值
 				 */
 				resetAllDesc: () => LocalizedString
+				/**
+				 * 语言
+				 */
+				language: () => LocalizedString
+				/**
+				 * 选择界面显示语言
+				 */
+				languageDesc: () => LocalizedString
 				/**
 				 * 重置
 				 */
@@ -3956,4 +3981,6 @@ export type TranslationFunctions = {
 	consoleArt: () => LocalizedString
 }
 
-export type Formatters = {}
+export type Formatters = {
+	time: (value: Date) => unknown
+}

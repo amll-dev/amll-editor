@@ -37,6 +37,7 @@ const tt = t.sidebar.preference
   grid-template-columns: auto auto;
   align-items: center;
   justify-content: space-between;
+  margin-top: 1rem;
   .text {
     padding-right: 1rem;
     transition:

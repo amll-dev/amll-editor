@@ -1,5 +1,7 @@
 import { computed, ref, watch } from 'vue'
 
+import type { Equal, Expect } from '@utils/types'
+
 import type { Locales } from './i18n-types'
 import { i18nObject, isLocale } from './i18n-util'
 import { loadLocale } from './i18n-util.sync'
@@ -31,3 +33,14 @@ watch(localeOptRef, (newLocale, oldLocale) => {
   if (newLocale === envLocale) localStorage.removeItem(STORE_KEY)
   else localStorage.setItem(STORE_KEY, newLocale)
 })
+
+interface LocaleItem {
+  code: Locales
+  name: string
+}
+export const localeItemList = [
+  { code: 'zh-hans', name: '简体中文' },
+  { code: 'en', name: 'English' },
+] as const satisfies LocaleItem[]
+export const currentLocaleItem = localeItemList.find((item) => item.code === currentLocale)!
+type _Check = Expect<Equal<Locales, LocaleItem['code']>>
