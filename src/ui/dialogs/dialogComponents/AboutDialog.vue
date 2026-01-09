@@ -1,62 +1,53 @@
 <template>
-  <Dialog v-model:visible="visible" header="关于" class="about-dialog">
+  <Dialog v-model:visible="visible" :header="tt.header()" class="about-dialog">
     <div class="heading">
       <img .src="'/brand.svg'" class="logo" draggable="false" />
       <div class="logo-text">
         <div class="title">{{ appName }}</div>
         <div class="title-version">
-          版本 {{ appVersion
+          {{ tt.version() }} {{ appVersion
           }}<template v-if="isBeta">-beta-{{ appCommitHash.substring(0, 7) }}</template>
         </div>
       </div>
     </div>
     <Divider />
     <div class="description">
-      <p>
-        基于 Vue 的开源逐音节歌词编辑器，可与 AMLL 生态软件协作，目标成为 AMLL TTML Tool 的继任者。
-      </p>
-      <p>开发不易，不妨点个免费的 star 吧！</p>
+      <p v-for="(line, index) in tt.description().split('\n')" :key="index">{{ line }}</p>
     </div>
     <div class="actions">
       <Button
         severity="secondary"
         icon="pi pi-github"
-        label="GitHub 仓库"
+        :label="tt.githubBtn()"
         @click="handleOpenGithub()"
       />
       <Button
         :severity="keyValueFolded ? 'secondary' : 'primary'"
         icon="pi pi-info-circle"
-        label="展开详细信息"
+        :label="tt.detailBtn()"
         @click="keyValueFolded = !keyValueFolded"
       />
     </div>
     <AnimatedFold :folded="keyValueFolded">
       <Divider />
       <div class="key-value">
-        <span class="key">版本号</span>
-        <span class="value">{{ appVersion }}</span>
-        <span class="key">构建通道</span>
-        <span class="value">{{ appChannel ?? '未指定' }}</span>
-        <span class="key">Commit Hash</span>
-        <span class="value">{{ appCommitHash }}</span>
-        <span class="key">构建时间</span>
-        <span class="value">{{ readableBuildDate }}</span>
-        <span class="key">AMLL 核心库版本</span>
-        <span class="value">{{ amllCoreVersion }}</span>
-        <span class="key">AMLL Vue 绑定版本</span>
-        <span class="value">{{ amllVueVersion }}</span>
+        <template v-for="([key, val], index) in detail" :key="index">
+          <span class="key">{{ key }}</span>
+          <span class="value">{{ val }}</span>
+        </template>
       </div>
     </AnimatedFold>
   </Dialog>
 </template>
 
 <script setup lang="ts">
+import { t } from '@i18n'
 import { ref } from 'vue'
 
 import AnimatedFold from '@ui/components/AnimatedFold.vue'
 import { Button, Dialog, Divider } from 'primevue'
 
+const tt = t.about
 const [visible] = defineModel<boolean>({ required: true })
 
 const keyValueFolded = ref(true)
@@ -64,16 +55,21 @@ const keyValueFolded = ref(true)
 const appName = __APP_DISPLAY_NAME__
 const appVersion = __APP_VERSION__
 const appCommitHash = __APP_COMMIT_HASH__
-const appChannel = __APP_BUILD_CHANNEL__
 const isBeta = __APP_IS_BETA__
-const buildTimestamp = __APP_BUILD_TIMESTAMP__
-const readableBuildDate = new Date(buildTimestamp).toLocaleString()
-const amllCoreVersion = __AMLL_CORE_VERSION__
-const amllVueVersion = __AMLL_VUE_VERSION__
+const readableBuildDate = new Date(__APP_BUILD_TIMESTAMP__).toLocaleString()
 
 function handleOpenGithub() {
   window.open(__REPO_URL__, '_blank')
 }
+
+const detail: [string, string][] = [
+  [tt.detail.version(), __APP_VERSION__],
+  [tt.detail.channel(), __APP_BUILD_CHANNEL__ ?? tt.detail.notSpecified()],
+  [tt.detail.hash(), __APP_COMMIT_HASH__],
+  [tt.detail.buildTime(), readableBuildDate],
+  [tt.detail.amllCoreVersion(), __AMLL_CORE_VERSION__],
+  [tt.detail.amllVueVersion(), __AMLL_VUE_VERSION__],
+]
 </script>
 
 <style lang="scss">

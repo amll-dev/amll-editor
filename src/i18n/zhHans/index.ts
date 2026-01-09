@@ -249,6 +249,23 @@ const zhHans = {
     cancel: '取消',
     action: '导入',
   },
+  about: {
+    header: '关于',
+    version: '版本',
+    description:
+      '基于 Vue 的开源逐音节歌词编辑器，可与 AMLL 生态软件协作，目标成为 AMLL TTML Tool 的继任者。\n开发不易，不妨点个免费的 star 吧！',
+    githubBtn: 'GitHub 仓库',
+    detailBtn: '展开详细信息',
+    detail: {
+      version: '版本号',
+      channel: '构建通道',
+      hash: '提交哈希',
+      buildTime: '构建时间',
+      amllCoreVersion: 'AMLL 核心版本',
+      amllVueVersion: 'AMLL Vue 版本',
+      notSpecified: '未指定',
+    },
+  },
 } satisfies BaseTranslation
 
 export default zhHans

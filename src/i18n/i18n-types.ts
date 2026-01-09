@@ -675,6 +675,59 @@ type RootTranslation = {
 		 */
 		action: string
 	}
+	about: {
+		/**
+		 * 关​于
+		 */
+		header: string
+		/**
+		 * 版​本
+		 */
+		version: string
+		/**
+		 * 基​于​ ​V​u​e​ ​的​开​源​逐​音​节​歌​词​编​辑​器​，​可​与​ ​A​M​L​L​ ​生​态​软​件​协​作​，​目​标​成​为​ ​A​M​L​L​ ​T​T​M​L​ ​T​o​o​l​ ​的​继​任​者​。​
+	​开​发​不​易​，​不​妨​点​个​免​费​的​ ​s​t​a​r​ ​吧​！
+		 */
+		description: string
+		/**
+		 * G​i​t​H​u​b​ ​仓​库
+		 */
+		githubBtn: string
+		/**
+		 * 展​开​详​细​信​息
+		 */
+		detailBtn: string
+		detail: {
+			/**
+			 * 版​本​号
+			 */
+			version: string
+			/**
+			 * 构​建​通​道
+			 */
+			channel: string
+			/**
+			 * 提​交​哈​希
+			 */
+			hash: string
+			/**
+			 * 构​建​时​间
+			 */
+			buildTime: string
+			/**
+			 * A​M​L​L​ ​核​心​版​本
+			 */
+			amllCoreVersion: string
+			/**
+			 * A​M​L​L​ ​V​u​e​ ​版​本
+			 */
+			amllVueVersion: string
+			/**
+			 * 未​指​定
+			 */
+			notSpecified: string
+		}
+	}
 }
 
 export type TranslationFunctions = {
@@ -1336,6 +1389,59 @@ export type TranslationFunctions = {
 		 * 导入
 		 */
 		action: () => LocalizedString
+	}
+	about: {
+		/**
+		 * 关于
+		 */
+		header: () => LocalizedString
+		/**
+		 * 版本
+		 */
+		version: () => LocalizedString
+		/**
+		 * 基于 Vue 的开源逐音节歌词编辑器，可与 AMLL 生态软件协作，目标成为 AMLL TTML Tool 的继任者。
+	开发不易，不妨点个免费的 star 吧！
+		 */
+		description: () => LocalizedString
+		/**
+		 * GitHub 仓库
+		 */
+		githubBtn: () => LocalizedString
+		/**
+		 * 展开详细信息
+		 */
+		detailBtn: () => LocalizedString
+		detail: {
+			/**
+			 * 版本号
+			 */
+			version: () => LocalizedString
+			/**
+			 * 构建通道
+			 */
+			channel: () => LocalizedString
+			/**
+			 * 提交哈希
+			 */
+			hash: () => LocalizedString
+			/**
+			 * 构建时间
+			 */
+			buildTime: () => LocalizedString
+			/**
+			 * AMLL 核心版本
+			 */
+			amllCoreVersion: () => LocalizedString
+			/**
+			 * AMLL Vue 版本
+			 */
+			amllVueVersion: () => LocalizedString
+			/**
+			 * 未指定
+			 */
+			notSpecified: () => LocalizedString
+		}
 	}
 }
 
