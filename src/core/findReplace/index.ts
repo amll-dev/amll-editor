@@ -103,7 +103,7 @@ export function useFindReplaceEngine(
       if (lineIndex >= coreStore.lyricLines.length) return null
       const line = coreStore.lyricLines[lineIndex]!
       if (!line.syllables.length) return { lineIndex, field: firstSecField }
-      if (state.crossWordMatch)
+      if (state.crossSylMatch)
         return {
           lineIndex,
           field: PF.MultiSyllable,
@@ -121,7 +121,7 @@ export function useFindReplaceEngine(
       case PF.Whole:
         return getFirstPosOfLine(pos.lineIndex)
       case PF.Syllable: {
-        if (state.crossWordMatch) {
+        if (state.crossSylMatch) {
           const currLine = coreStore.lyricLines[pos.lineIndex]!
           return {
             lineIndex: pos.lineIndex,
@@ -137,7 +137,7 @@ export function useFindReplaceEngine(
         }
       }
       case PF.MultiSyllable: {
-        if (state.crossWordMatch)
+        if (state.crossSylMatch)
           return {
             lineIndex: pos.lineIndex,
             field: PF.MultiSylRoman,
@@ -158,7 +158,7 @@ export function useFindReplaceEngine(
             field: firstSecField,
           }
         }
-        if (state.crossWordMatch)
+        if (state.crossSylMatch)
           return {
             lineIndex: pos.lineIndex,
             field: PF.MultiSyllable,
@@ -178,7 +178,7 @@ export function useFindReplaceEngine(
             lineIndex: pos.lineIndex,
             field: firstSecField,
           }
-        if (state.crossWordMatch)
+        if (state.crossSylMatch)
           return {
             lineIndex: pos.lineIndex,
             field: PF.MultiSyllable,
@@ -232,7 +232,7 @@ export function useFindReplaceEngine(
         const currentWordIndex = pos.field === PF.Syllable ? pos.sylIndex : pos.startSylIndex
         const prevWordIndex = currentWordIndex - 1
         if (prevWordIndex < 0) return getLastPosOfLine(pos.lineIndex - 1)
-        if (state.crossWordMatch)
+        if (state.crossSylMatch)
           return {
             lineIndex: pos.lineIndex,
             field: PF.MultiSylRoman,
@@ -247,7 +247,7 @@ export function useFindReplaceEngine(
           }
       }
       case PF.SylRoman: {
-        if (state.crossWordMatch && pos.sylIndex !== 0)
+        if (state.crossSylMatch && pos.sylIndex !== 0)
           return {
             field: PF.MultiSylRoman,
             lineIndex: pos.lineIndex,
@@ -261,7 +261,7 @@ export function useFindReplaceEngine(
         }
       }
       case PF.MultiSylRoman: {
-        if (state.crossWordMatch)
+        if (state.crossSylMatch)
           return {
             field: PF.MultiSyllable,
             lineIndex: pos.lineIndex,
@@ -282,7 +282,7 @@ export function useFindReplaceEngine(
       case firstSecField: {
         const currLine = coreStore.lyricLines[pos.lineIndex]!
         if (!currLine.syllables.length) return getLastPosOfLine(pos.lineIndex - 1)
-        if (state.crossWordMatch)
+        if (state.crossSylMatch)
           return {
             lineIndex: pos.lineIndex,
             field: PF.MultiSylRoman,
@@ -302,9 +302,9 @@ export function useFindReplaceEngine(
 
   function checkPosInRange(pos: FR.Pos): boolean {
     if (pos.field === PF.Syllable && !state.findInSyls) return false
-    if (pos.field === PF.MultiSyllable && (!state.findInSyls || !state.crossWordMatch)) return false
+    if (pos.field === PF.MultiSyllable && (!state.findInSyls || !state.crossSylMatch)) return false
     if (pos.field === PF.SylRoman && !state.findInSylRoman) return false
-    if (pos.field === PF.MultiSylRoman && (!state.findInSylRoman || !state.crossWordMatch))
+    if (pos.field === PF.MultiSylRoman && (!state.findInSylRoman || !state.crossSylMatch))
       return false
     if (pos.field === PF.Translation && !state.findInTranslations) return false
     if (pos.field === PF.Roman && !state.findInRoman) return false

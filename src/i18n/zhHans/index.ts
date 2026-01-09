@@ -100,6 +100,39 @@ const zhHans = {
     },
   },
   find: {
+    header: '查找替换',
+    mode: {
+      find: '查找',
+      replace: '替换',
+    },
+    placeholder: {
+      find: '查找内容',
+      replace: '替换为',
+    },
+    moreOptionSwitch: '更多选项',
+    optionsHeader: '匹配选项',
+    options: {
+      caseSensitive: '区分大小写',
+      wholeWord: '全字匹配',
+      wholeField: '全字段匹配',
+      crossSyl: '跨音节匹配',
+      useRegex: '使用正则',
+      loopSearch: '循环搜索',
+    },
+    scopeHeader: '匹配范围',
+    scope: {
+      sylContent: '音节内容',
+      sylRoman: '音节音译',
+      trans: '翻译',
+      roman: '音译',
+      lineRoman: '行音译',
+    },
+    actions: {
+      replace: '替换',
+      replaceAll: '全部替换',
+      findPrev: '查找上一项',
+      findNext: '查找下一项',
+    },
     infLoopErr: {
       summary: '搜索失败',
       detail: '发生死循环。请前往反馈此问题。',

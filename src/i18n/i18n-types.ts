@@ -257,6 +257,108 @@ type RootTranslation = {
 		}
 	}
 	find: {
+		/**
+		 * 查​找​替​换
+		 */
+		header: string
+		mode: {
+			/**
+			 * 查​找
+			 */
+			find: string
+			/**
+			 * 替​换
+			 */
+			replace: string
+		}
+		placeholder: {
+			/**
+			 * 查​找​内​容
+			 */
+			find: string
+			/**
+			 * 替​换​为
+			 */
+			replace: string
+		}
+		/**
+		 * 更​多​选​项
+		 */
+		moreOptionSwitch: string
+		/**
+		 * 匹​配​选​项
+		 */
+		optionsHeader: string
+		options: {
+			/**
+			 * 区​分​大​小​写
+			 */
+			caseSensitive: string
+			/**
+			 * 全​字​匹​配
+			 */
+			wholeWord: string
+			/**
+			 * 全​字​段​匹​配
+			 */
+			wholeField: string
+			/**
+			 * 跨​音​节​匹​配
+			 */
+			crossSyl: string
+			/**
+			 * 使​用​正​则
+			 */
+			useRegex: string
+			/**
+			 * 循​环​搜​索
+			 */
+			loopSearch: string
+		}
+		/**
+		 * 匹​配​范​围
+		 */
+		scopeHeader: string
+		scope: {
+			/**
+			 * 音​节​内​容
+			 */
+			sylContent: string
+			/**
+			 * 音​节​音​译
+			 */
+			sylRoman: string
+			/**
+			 * 翻​译
+			 */
+			trans: string
+			/**
+			 * 音​译
+			 */
+			roman: string
+			/**
+			 * 行​音​译
+			 */
+			lineRoman: string
+		}
+		actions: {
+			/**
+			 * 替​换
+			 */
+			replace: string
+			/**
+			 * 全​部​替​换
+			 */
+			replaceAll: string
+			/**
+			 * 查​找​上​一​项
+			 */
+			findPrev: string
+			/**
+			 * 查​找​下​一​项
+			 */
+			findNext: string
+		}
 		infLoopErr: {
 			/**
 			 * 搜​索​失​败
@@ -1000,6 +1102,108 @@ export type TranslationFunctions = {
 		}
 	}
 	find: {
+		/**
+		 * 查找替换
+		 */
+		header: () => LocalizedString
+		mode: {
+			/**
+			 * 查找
+			 */
+			find: () => LocalizedString
+			/**
+			 * 替换
+			 */
+			replace: () => LocalizedString
+		}
+		placeholder: {
+			/**
+			 * 查找内容
+			 */
+			find: () => LocalizedString
+			/**
+			 * 替换为
+			 */
+			replace: () => LocalizedString
+		}
+		/**
+		 * 更多选项
+		 */
+		moreOptionSwitch: () => LocalizedString
+		/**
+		 * 匹配选项
+		 */
+		optionsHeader: () => LocalizedString
+		options: {
+			/**
+			 * 区分大小写
+			 */
+			caseSensitive: () => LocalizedString
+			/**
+			 * 全字匹配
+			 */
+			wholeWord: () => LocalizedString
+			/**
+			 * 全字段匹配
+			 */
+			wholeField: () => LocalizedString
+			/**
+			 * 跨音节匹配
+			 */
+			crossSyl: () => LocalizedString
+			/**
+			 * 使用正则
+			 */
+			useRegex: () => LocalizedString
+			/**
+			 * 循环搜索
+			 */
+			loopSearch: () => LocalizedString
+		}
+		/**
+		 * 匹配范围
+		 */
+		scopeHeader: () => LocalizedString
+		scope: {
+			/**
+			 * 音节内容
+			 */
+			sylContent: () => LocalizedString
+			/**
+			 * 音节音译
+			 */
+			sylRoman: () => LocalizedString
+			/**
+			 * 翻译
+			 */
+			trans: () => LocalizedString
+			/**
+			 * 音译
+			 */
+			roman: () => LocalizedString
+			/**
+			 * 行音译
+			 */
+			lineRoman: () => LocalizedString
+		}
+		actions: {
+			/**
+			 * 替换
+			 */
+			replace: () => LocalizedString
+			/**
+			 * 全部替换
+			 */
+			replaceAll: () => LocalizedString
+			/**
+			 * 查找上一项
+			 */
+			findPrev: () => LocalizedString
+			/**
+			 * 查找下一项
+			 */
+			findNext: () => LocalizedString
+		}
 		infLoopErr: {
 			/**
 			 * 搜索失败

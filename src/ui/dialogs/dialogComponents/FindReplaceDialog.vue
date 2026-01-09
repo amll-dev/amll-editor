@@ -2,7 +2,7 @@
   <Dialog
     class="thin-padding"
     v-model:visible="visible"
-    header="查找替换"
+    :header="tt.header()"
     @focusin="handleTopFocus"
   >
     <div class="findreplace-content" v-focustrap>
@@ -15,7 +15,7 @@
               name="findReplaceMode"
               :value="false"
             />
-            <label for="findMode" class="findreplace-radio-label">查找</label>
+            <label for="findMode" class="findreplace-radio-label">{{ tt.mode.find() }}</label>
           </div>
           <div class="findreplace-radio-item">
             <RadioButton
@@ -24,7 +24,7 @@
               name="findReplaceMode"
               :value="true"
             />
-            <label for="replaceMode" class="findreplace-radio-label">替换</label>
+            <label for="replaceMode" class="findreplace-radio-label">{{ tt.mode.replace() }}</label>
           </div>
         </div>
         <div class="findreplace-options-toggle">
@@ -33,7 +33,7 @@
             class="findreplace-options-toggle-label"
             :class="{ enabled: showOptions }"
           >
-            更多选项
+            {{ tt.moreOptionSwitch() }}
           </label>
           <ToggleSwitch v-model="showOptions" input-id="findShowOptions" />
         </div>
@@ -56,7 +56,7 @@
               ref="findInputComponent"
               @keydown="handleFindInputKeydown"
             />
-            <label for="findInput">查找内容</label>
+            <label for="findInput">{{ tt.placeholder.find() }}</label>
           </IftaLabel>
         </div>
         <AnimatedFold :folded="!showReplace">
@@ -76,67 +76,85 @@
                 ref="replaceInputComponent"
                 @keydown="handleReplaceInputKeydown"
               />
-              <label for="replaceInput">替换为</label>
+              <label for="replaceInput">{{ tt.placeholder.replace() }}</label>
             </IftaLabel>
           </div>
         </AnimatedFold>
       </div>
       <div class="findreplace-params">
         <div class="findreplace-range">
-          <div class="findreplace-range-title">匹配范围</div>
+          <div class="findreplace-range-title">{{ tt.scopeHeader() }}</div>
           <div class="findreplace-range-options" :class="{ 'two-cols': prefStore.sylRomanEnabled }">
             <div class="findreplace-range-option-item">
               <Checkbox v-model="findInSyls" input-id="findInWords" binary />
-              <label for="findInWords" class="findreplace-range-option-label">音节内容</label>
+              <label for="findInWords" class="findreplace-range-option-label">{{
+                tt.scope.sylContent()
+              }}</label>
             </div>
             <div class="findreplace-range-option-item" v-if="prefStore.sylRomanEnabled">
               <Checkbox v-model="findInSylRomanModel" input-id="findInSylRoman" binary />
-              <label for="findInSylRoman" class="findreplace-range-option-label">音节音译</label>
+              <label for="findInSylRoman" class="findreplace-range-option-label">{{
+                tt.scope.sylRoman()
+              }}</label>
             </div>
             <div class="findreplace-range-option-item">
               <Checkbox v-model="findInTranslations" input-id="findInTranslations" binary />
-              <label for="findInTranslations" class="findreplace-range-option-label">翻译</label>
+              <label for="findInTranslations" class="findreplace-range-option-label">{{
+                tt.scope.trans()
+              }}</label>
             </div>
             <div class="findreplace-range-option-item">
               <Checkbox v-model="findInRoman" input-id="findInRoman" binary />
               <label for="findInRoman" class="findreplace-range-option-label">{{
-                prefStore.sylRomanEnabled ? '行音译' : '音译'
+                prefStore.sylRomanEnabled ? tt.scope.lineRoman() : tt.scope.roman()
               }}</label>
             </div>
           </div>
         </div>
         <AnimatedFold :folded="!showOptions">
           <div class="findreplace-options" v-if="showOptions">
-            <div class="findreplace-options-title">匹配选项</div>
+            <div class="findreplace-options-title">{{ tt.optionsHeader() }}</div>
             <div class="findreplace-options-list">
               <div class="findreplace-option-item">
                 <Checkbox v-model="matchCase" input-id="matchCase" binary />
-                <label for="matchCase" class="findreplace-option-label">区分大小写</label>
+                <label for="matchCase" class="findreplace-option-label">{{
+                  tt.options.caseSensitive()
+                }}</label>
               </div>
               <div class="findreplace-option-item">
                 <Checkbox v-model="matchWholeWord" input-id="matchWholeWord" binary />
-                <label for="matchWholeWord" class="findreplace-option-label">全字匹配</label>
+                <label for="matchWholeWord" class="findreplace-option-label">{{
+                  tt.options.wholeWord()
+                }}</label>
               </div>
               <div class="findreplace-option-item">
                 <Checkbox v-model="matchFullField" input-id="matchFullField" binary />
-                <label for="matchFullField" class="findreplace-option-label">整字段匹配</label>
+                <label for="matchFullField" class="findreplace-option-label">{{
+                  tt.options.wholeField()
+                }}</label>
               </div>
               <div class="findreplace-option-item">
                 <Checkbox
-                  v-model="crossWordMatch"
-                  input-id="crossWordMatch"
+                  v-model="crossSylMatch"
+                  input-id="crossSylMatch"
                   binary
                   :disabled="showReplace"
                 />
-                <label for="crossWordMatch" class="findreplace-option-label">跨音节匹配</label>
+                <label for="crossSylMatch" class="findreplace-option-label">{{
+                  tt.options.crossSyl()
+                }}</label>
               </div>
               <div class="findreplace-option-item">
                 <Checkbox v-model="useRegex" input-id="useRegex" binary />
-                <label for="useRegex" class="findreplace-option-label">使用正则</label>
+                <label for="useRegex" class="findreplace-option-label">{{
+                  tt.options.useRegex()
+                }}</label>
               </div>
               <div class="findreplace-option-item">
                 <Checkbox v-model="wrapSearch" input-id="wrapSearch" binary />
-                <label for="wrapSearch" class="findreplace-option-label">循环搜索</label>
+                <label for="wrapSearch" class="findreplace-option-label">{{
+                  tt.options.loopSearch()
+                }}</label>
               </div>
             </div>
           </div>
@@ -148,14 +166,14 @@
           <div class="replace-actions" v-if="showReplace">
             <Button
               icon="pi pi-reply"
-              label="替换"
+              :label="tt.actions.replace()"
               severity="secondary"
               :disabled="actionDisabled"
               @click="handleReplace"
             />
             <Button
               icon="pi pi-angle-double-right"
-              v-tooltip="'全部替换'"
+              v-tooltip="tt.actions.replaceAll()"
               severity="secondary"
               :disabled="actionDisabled"
               @click="handleReplaceAll"
@@ -164,13 +182,13 @@
         </Transition>
         <Button
           icon="pi pi-arrow-up"
-          v-tooltip="'查找上一项'"
+          v-tooltip="tt.actions.findPrev()"
           severity="secondary"
           :disabled="actionDisabled"
           @click="handleFindPrev"
         />
         <Button
-          label="查找下一项"
+          :label="tt.actions.findNext()"
           icon="pi pi-arrow-down"
           severity="secondary"
           :disabled="actionDisabled"
@@ -182,6 +200,7 @@
 </template>
 
 <script setup lang="ts">
+import { t } from '@i18n'
 import { escapeRegExp } from 'lodash-es'
 import { computed, readonly, ref, useTemplateRef, watch } from 'vue'
 
@@ -199,6 +218,8 @@ import AnimatedFold from '@ui/components/AnimatedFold.vue'
 import InputText from '@ui/components/InputText.vue'
 import { Button, Checkbox, Dialog, IftaLabel, RadioButton, ToggleSwitch } from 'primevue'
 import { useToast } from 'primevue/usetoast'
+
+const tt = t.find
 
 const [visible] = defineModel<boolean>({ required: true })
 
@@ -222,7 +243,7 @@ const matchCase = ref(false)
 const matchWholeWord = ref(false)
 const useRegex = ref(false)
 const matchFullField = ref(false)
-const crossWordMatch = ref(false)
+const crossSylMatch = ref(false)
 const wrapSearch = ref(true)
 
 const compiledPattern = computed<RegExp | null>(() => {
@@ -259,11 +280,11 @@ watch(showOptions, (newVal) => {
     useRegex.value = false
     wrapSearch.value = true
     matchFullField.value = false
-    crossWordMatch.value = false
+    crossSylMatch.value = false
   }
 })
 watch(showReplace, (newVal) => {
-  if (newVal) crossWordMatch.value = false
+  if (newVal) crossSylMatch.value = false
 })
 
 const { handleFindNext, handleFindPrev, handleReplace, handleReplaceAll } = useFindReplaceEngine(
@@ -274,7 +295,7 @@ const { handleFindNext, handleFindPrev, handleReplace, handleReplaceAll } = useF
     findInSylRoman,
     findInTranslations,
     findInRoman,
-    crossWordMatch,
+    crossSylMatch,
     wrapSearch,
   }),
   (n) => {
@@ -317,11 +338,11 @@ function handleReplaceInputKeydown(e: KeyboardEvent) {
 
 function enableCrossMatch() {
   showOptions.value = true
-  crossWordMatch.value = true
+  crossSylMatch.value = true
   matchFullField.value = false
 }
 function disableCrossMatch() {
-  crossWordMatch.value = false
+  crossSylMatch.value = false
 }
 const escapeRegOnUsing = (text: string) => (useRegex.value ? escapeRegExp(text) : text)
 function applyCurrentToFind() {
@@ -375,8 +396,8 @@ function applyCurrentToFind() {
     return
   }
 }
-function extractSylText(crossWordMatch: boolean = false): string | undefined {
-  if (crossWordMatch)
+function extractSylText(crossSylMatch: boolean = false): string | undefined {
+  if (crossSylMatch)
     return sortSyllables(...runtimeStore.selectedSyllables)
       .map((s) => s.text)
       .join('')
@@ -384,8 +405,8 @@ function extractSylText(crossWordMatch: boolean = false): string | undefined {
   if (runtimeStore.selectedSyllables.size !== 1) return
   return runtimeStore.getFirstSelectedSyl()?.text.trim()
 }
-function extractLineText(crossWordMatch: boolean = false): string | undefined {
-  if (!crossWordMatch) return
+function extractLineText(crossSylMatch: boolean = false): string | undefined {
+  if (!crossSylMatch) return
   if (runtimeStore.selectedLines.size !== 1) return
   return runtimeStore
     .getFirstSelectedLine()!
