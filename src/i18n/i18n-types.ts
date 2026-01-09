@@ -185,6 +185,113 @@ type RootTranslation = {
 			reloadAmll: string
 		}
 	}
+	titlebar: {
+		/**
+		 * 打​开
+		 */
+		open: string
+		/**
+		 * 打​开​文​件
+		 */
+		openTip: string
+		openMenu: {
+			/**
+			 * 现​有​工​程
+			 */
+			project: string
+			/**
+			 * T​T​M​L​ ​文​件
+			 */
+			ttml: string
+			/**
+			 * 粘​贴​ ​T​T​M​L
+			 */
+			pasteTTML: string
+			/**
+			 * 导​入​纯​文​本
+			 */
+			importFromText: string
+			/**
+			 * 导​入​其​他​格​式
+			 */
+			importFromOtherFormats: string
+			/**
+			 * 空​项​目
+			 */
+			blank: string
+		}
+		/**
+		 * 保​存
+		 */
+		save: string
+		/**
+		 * 保​存​文​件
+		 */
+		saveTip: string
+		saveMenu: {
+			/**
+			 * 另​存​为
+			 */
+			saveAs: string
+			/**
+			 * 导​出​为​项​目​文​件
+			 */
+			exportToProject: string
+			/**
+			 * 导​出​为​ ​T​T​M​L​ ​文​件
+			 */
+			exportToTTML: string
+			/**
+			 * 复​制​ ​T​T​M​L
+			 */
+			copyTTML: string
+			/**
+			 * 导​出​其​他​格​式
+			 */
+			exportToOtherFormats: string
+		}
+		/**
+		 * 偏​好​设​置
+		 */
+		preferences: string
+		/**
+		 * 撤​销
+		 */
+		undo: string
+		/**
+		 * 重​做
+		 */
+		redo: string
+		view: {
+			/**
+			 * 内​容
+			 */
+			content: string
+			/**
+			 * 时​轴
+			 */
+			timing: string
+			/**
+			 * 预​览
+			 */
+			preview: string
+		}
+		saveStatus: {
+			/**
+			 * 兼​容​读​写​模​式
+			 */
+			compatMode: string
+			/**
+			 * 未​授​予​写​入​权​限
+			 */
+			permissionNotGranted: string
+			/**
+			 * 已​保​存​于​ ​{​0​|​t​i​m​e​}
+			 * @param {Date} 0
+			 */
+			savedAt: RequiredParams<'0|time'>
+		}
+	}
 	ribbon: {
 		content: {
 			/**
@@ -679,6 +786,82 @@ type RootTranslation = {
 			 * 继​续
 			 */
 			acceptLabel: string
+		}
+		/**
+		 * 成​功​加​载​文​件
+		 */
+		loadFileSuccess: string
+		failedToLoadErr: {
+			/**
+			 * 加​载​文​件​失​败
+			 */
+			summary: string
+			/**
+			 * 文​件​访​问​被​用​户​或​平​台​拒​绝
+			 */
+			detailAborted: string
+		}
+		/**
+		 * 剪​贴​板​为​空
+		 */
+		clipboardIsEmptyErr: string
+		/**
+		 * 从​剪​贴​板​导​入​ ​T​T​M​L​ ​失​败
+		 */
+		failedToPasteTTML: string
+		/**
+		 * 复​制​ ​T​T​M​L​ ​到​剪​贴​板​失​败
+		 */
+		failedToCopyTTML: string
+		/**
+		 * 成​功​从​剪​贴​板​导​入​ ​T​T​M​L
+		 */
+		pasteTTMLSuccess: string
+		/**
+		 * 成​功​复​制​ ​T​T​M​L​ ​到​剪​贴​板
+		 */
+		copyTTMLSuccess: string
+		/**
+		 * 成​功​创​建​空​项​目
+		 */
+		newBlankProjectSuccess: string
+		failedBlankProject: {
+			/**
+			 * 创​建​空​项​目​失​败
+			 */
+			summary: string
+			/**
+			 * 操​作​被​用​户​拒​绝
+			 */
+			detailAborted: string
+		}
+		/**
+		 * 成​功​保​存​文​件
+		 */
+		saveFileSuccess: string
+		failedToSaveErr: {
+			/**
+			 * 保​存​文​件​失​败
+			 */
+			summary: string
+			/**
+			 * 文​件​写​入​被​用​户​或​平​台​拒​绝
+			 */
+			detailAborted: string
+		}
+		/**
+		 * 成​功​另​存​为​文​件
+		 */
+		saveAsSuccess: string
+		failedToSaveAsErr: {
+			/**
+			 * 另​存​为​文​件​失​败
+			 */
+			summary: string
+			/**
+			 * 文​件​写​入​被​用​户​或​平​台​拒​绝
+			 */
+			detailAborted: string
 		}
 	}
 	find: {
@@ -1532,6 +1715,112 @@ export type TranslationFunctions = {
 			reloadAmll: () => LocalizedString
 		}
 	}
+	titlebar: {
+		/**
+		 * 打开
+		 */
+		open: () => LocalizedString
+		/**
+		 * 打开文件
+		 */
+		openTip: () => LocalizedString
+		openMenu: {
+			/**
+			 * 现有工程
+			 */
+			project: () => LocalizedString
+			/**
+			 * TTML 文件
+			 */
+			ttml: () => LocalizedString
+			/**
+			 * 粘贴 TTML
+			 */
+			pasteTTML: () => LocalizedString
+			/**
+			 * 导入纯文本
+			 */
+			importFromText: () => LocalizedString
+			/**
+			 * 导入其他格式
+			 */
+			importFromOtherFormats: () => LocalizedString
+			/**
+			 * 空项目
+			 */
+			blank: () => LocalizedString
+		}
+		/**
+		 * 保存
+		 */
+		save: () => LocalizedString
+		/**
+		 * 保存文件
+		 */
+		saveTip: () => LocalizedString
+		saveMenu: {
+			/**
+			 * 另存为
+			 */
+			saveAs: () => LocalizedString
+			/**
+			 * 导出为项目文件
+			 */
+			exportToProject: () => LocalizedString
+			/**
+			 * 导出为 TTML 文件
+			 */
+			exportToTTML: () => LocalizedString
+			/**
+			 * 复制 TTML
+			 */
+			copyTTML: () => LocalizedString
+			/**
+			 * 导出其他格式
+			 */
+			exportToOtherFormats: () => LocalizedString
+		}
+		/**
+		 * 偏好设置
+		 */
+		preferences: () => LocalizedString
+		/**
+		 * 撤销
+		 */
+		undo: () => LocalizedString
+		/**
+		 * 重做
+		 */
+		redo: () => LocalizedString
+		view: {
+			/**
+			 * 内容
+			 */
+			content: () => LocalizedString
+			/**
+			 * 时轴
+			 */
+			timing: () => LocalizedString
+			/**
+			 * 预览
+			 */
+			preview: () => LocalizedString
+		}
+		saveStatus: {
+			/**
+			 * 兼容读写模式
+			 */
+			compatMode: () => LocalizedString
+			/**
+			 * 未授予写入权限
+			 */
+			permissionNotGranted: () => LocalizedString
+			/**
+			 * 已保存于 {0|time}
+			 */
+			savedAt: (arg0: Date) => LocalizedString
+		}
+	}
 	ribbon: {
 		content: {
 			/**
@@ -2024,6 +2313,82 @@ export type TranslationFunctions = {
 			 * 继续
 			 */
 			acceptLabel: () => LocalizedString
+		}
+		/**
+		 * 成功加载文件
+		 */
+		loadFileSuccess: () => LocalizedString
+		failedToLoadErr: {
+			/**
+			 * 加载文件失败
+			 */
+			summary: () => LocalizedString
+			/**
+			 * 文件访问被用户或平台拒绝
+			 */
+			detailAborted: () => LocalizedString
+		}
+		/**
+		 * 剪贴板为空
+		 */
+		clipboardIsEmptyErr: () => LocalizedString
+		/**
+		 * 从剪贴板导入 TTML 失败
+		 */
+		failedToPasteTTML: () => LocalizedString
+		/**
+		 * 复制 TTML 到剪贴板失败
+		 */
+		failedToCopyTTML: () => LocalizedString
+		/**
+		 * 成功从剪贴板导入 TTML
+		 */
+		pasteTTMLSuccess: () => LocalizedString
+		/**
+		 * 成功复制 TTML 到剪贴板
+		 */
+		copyTTMLSuccess: () => LocalizedString
+		/**
+		 * 成功创建空项目
+		 */
+		newBlankProjectSuccess: () => LocalizedString
+		failedBlankProject: {
+			/**
+			 * 创建空项目失败
+			 */
+			summary: () => LocalizedString
+			/**
+			 * 操作被用户拒绝
+			 */
+			detailAborted: () => LocalizedString
+		}
+		/**
+		 * 成功保存文件
+		 */
+		saveFileSuccess: () => LocalizedString
+		failedToSaveErr: {
+			/**
+			 * 保存文件失败
+			 */
+			summary: () => LocalizedString
+			/**
+			 * 文件写入被用户或平台拒绝
+			 */
+			detailAborted: () => LocalizedString
+		}
+		/**
+		 * 成功另存为文件
+		 */
+		saveAsSuccess: () => LocalizedString
+		failedToSaveAsErr: {
+			/**
+			 * 另存为文件失败
+			 */
+			summary: () => LocalizedString
+			/**
+			 * 文件写入被用户或平台拒绝
+			 */
+			detailAborted: () => LocalizedString
 		}
 	}
 	find: {
@@ -2702,4 +3067,6 @@ export type TranslationFunctions = {
 	consoleArt: () => LocalizedString
 }
 
-export type Formatters = {}
+export type Formatters = {
+	time: (value: Date) => unknown
+}

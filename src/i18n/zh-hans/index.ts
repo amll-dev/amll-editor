@@ -82,6 +82,40 @@ const zhHans = {
       reloadAmll: '重载 AMLL',
     },
   },
+  titlebar: {
+    open: '打开',
+    openTip: '打开文件',
+    openMenu: {
+      project: '现有工程',
+      ttml: 'TTML 文件',
+      pasteTTML: '粘贴 TTML',
+      importFromText: '导入纯文本',
+      importFromOtherFormats: '导入其他格式',
+      blank: '空项目',
+    },
+    save: '保存',
+    saveTip: '保存文件',
+    saveMenu: {
+      saveAs: '另存为',
+      exportToProject: '导出为项目文件',
+      exportToTTML: '导出为 TTML 文件',
+      copyTTML: '复制 TTML',
+      exportToOtherFormats: '导出其他格式',
+    },
+    preferences: '偏好设置',
+    undo: '撤销',
+    redo: '重做',
+    view: {
+      content: '内容',
+      timing: '时轴',
+      preview: '预览',
+    },
+    saveStatus: {
+      compatMode: '兼容读写模式',
+      permissionNotGranted: '未授予写入权限',
+      savedAt: '已保存于 {0:Date|time}',
+    },
+  },
   ribbon: {
     content: {
       groupLabel: '内容',
@@ -260,6 +294,31 @@ const zhHans = {
       header: '您有未保存的工作',
       message: '如果继续，所有未保存的更改将会丢失。此操作不可撤销。',
       acceptLabel: '继续',
+    },
+    loadFileSuccess: '成功加载文件',
+    failedToLoadErr: {
+      summary: '加载文件失败',
+      detailAborted: '文件访问被用户或平台拒绝',
+    },
+    clipboardIsEmptyErr: '剪贴板为空',
+    failedToPasteTTML: '从剪贴板导入 TTML 失败',
+    failedToCopyTTML: '复制 TTML 到剪贴板失败',
+    pasteTTMLSuccess: '成功从剪贴板导入 TTML',
+    copyTTMLSuccess: '成功复制 TTML 到剪贴板',
+    newBlankProjectSuccess: '成功创建空项目',
+    failedBlankProject: {
+      summary: '创建空项目失败',
+      detailAborted: '操作被用户拒绝',
+    },
+    saveFileSuccess: '成功保存文件',
+    failedToSaveErr: {
+      summary: '保存文件失败',
+      detailAborted: '文件写入被用户或平台拒绝',
+    },
+    saveAsSuccess: '成功另存为文件',
+    failedToSaveAsErr: {
+      summary: '另存为文件失败',
+      detailAborted: '文件写入被用户或平台拒绝',
     },
   },
   find: {

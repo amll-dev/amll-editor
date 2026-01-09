@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@i18n'
 import { nextTick, ref, watch } from 'vue'
 
 import { View } from '@core/types'
@@ -7,13 +8,15 @@ import { useRuntimeStore } from '@states/stores'
 
 import { SelectButton } from 'primevue'
 
+const tt = t.titlebar.view
+
 const runtimeStore = useRuntimeStore()
 
 // Middle view selector
 const viewOptions = [
-  { name: '内容', value: View.Content },
-  { name: '时轴', value: View.Timing },
-  { name: '预览', value: View.Preview },
+  { name: tt.content(), value: View.Content },
+  { name: tt.timing(), value: View.Timing },
+  { name: tt.preview(), value: View.Preview },
 ]
 
 const stateToView = () => viewOptions.find((v) => v.value === runtimeStore.currentView)!

@@ -4,8 +4,7 @@ import type { Formatters, Locales } from './i18n-types.js'
 
 export const initFormatters: FormattersInitializer<Locales, Formatters> = (_locale: Locales) => {
   const formatters: Formatters = {
-    // add your formatter functions here
+    time: (date) => (date instanceof Date ? date.toTimeString().split(' ')[0]! : ''),
   }
-
   return formatters
 }
