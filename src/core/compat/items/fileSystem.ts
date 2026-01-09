@@ -2,12 +2,12 @@ import { t } from '@i18n'
 
 import type { Compatibility as CP } from '..'
 
-const tFs = t.compat.fileSystem
+const tt = t.compat.fileSystem
 
 const fileSystemInfo = {
   key: 'fileSystem',
-  name: tFs.name(),
-  description: tFs.description(),
+  name: tt.name(),
+  description: tt.description(),
   referenceUrls: [
     {
       label: 'Can I Use: showOpenFilePicker',
@@ -15,7 +15,7 @@ const fileSystemInfo = {
     },
   ],
   severity: 'warn',
-  effect: tFs.effect(),
+  effect: tt.effect(),
 } as const satisfies CP.CompatibilityInfo
 
 const meet =
@@ -27,7 +27,7 @@ const meet =
 function findWhy(): string | undefined {
   if (meet) return undefined
   if (!window.isSecureContext) return t.compat.sharedReasons.insecureContext()
-  return tFs.apiNotSupported()
+  return tt.apiNotSupported()
 }
 const why = findWhy()
 

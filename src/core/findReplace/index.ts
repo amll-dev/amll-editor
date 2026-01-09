@@ -14,7 +14,7 @@ export type { FindReplace } from './types'
 
 const MAX_SEARCH_STEPS = 100000
 
-const tFind = t.find
+const tt = t.find
 
 const PF = {
   Whole: 'WHOLE',
@@ -319,8 +319,8 @@ export function useFindReplaceEngine(
         if (stepCount++ > MAX_SEARCH_STEPS) {
           notifier({
             severity: 'error',
-            summary: tFind.infLoopErr.summary(),
-            detail: tFind.infLoopErr.detail(),
+            summary: tt.infLoopErr.summary(),
+            detail: tt.infLoopErr.detail(),
           })
           throw new Error('Exceeded maximum search steps in getRangedJumpPos, aborting.')
         }
@@ -530,8 +530,8 @@ export function useFindReplaceEngine(
       if (!noAlert)
         notifier({
           severity: 'warn',
-          summary: tFind.noResultWarn.summary(),
-          detail: tFind.noResultWarn.detailEmpty(),
+          summary: tt.noResultWarn.summary(),
+          detail: tt.noResultWarn.detailEmpty(),
         })
       return
     }
@@ -554,10 +554,10 @@ export function useFindReplaceEngine(
     if (!noAlert)
       notifier({
         severity: 'warn',
-        summary: tFind.noResultWarn.summary(),
+        summary: tt.noResultWarn.summary(),
         detail: state.wrapSearch
-          ? tFind.noResultWarn.detailNoMatch()
-          : tFind.noResultWarn.detailNoMatchEnd(),
+          ? tt.noResultWarn.detailNoMatch()
+          : tt.noResultWarn.detailNoMatchEnd(),
       })
   }
   function handleFindNext() {
@@ -595,14 +595,14 @@ export function useFindReplaceEngine(
     if (counter)
       notifier({
         severity: 'success',
-        summary: tFind.replaceSuccess.summary(),
-        detail: tFind.replaceSuccess.detail(counter),
+        summary: tt.replaceSuccess.summary(),
+        detail: tt.replaceSuccess.detail(counter),
       })
     else
       notifier({
         severity: 'warn',
-        summary: tFind.noResultWarn.summary(),
-        detail: tFind.noResultWarn.detailNoMatch(),
+        summary: tt.noResultWarn.summary(),
+        detail: tt.noResultWarn.detailNoMatch(),
       })
   }
 

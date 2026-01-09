@@ -2,17 +2,17 @@ import { t } from '@i18n'
 
 import type { Compatibility as CP } from '..'
 
-const tClip = t.compat.clipboard
+const tt = t.compat.clipboard
 
 const clipboardInfo = {
   key: 'clipboard',
-  name: tClip.name(),
-  description: tClip.description(),
+  name: tt.name(),
+  description: tt.description(),
   referenceUrls: [
     { label: 'Can I Use: async-clipboard', url: 'https://caniuse.com/async-clipboard' },
   ],
   severity: 'warn',
-  effect: tClip.effect(),
+  effect: tt.effect(),
 } as const satisfies CP.CompatibilityInfo
 
 const meet =
@@ -24,7 +24,7 @@ const meet =
 function findWhy(): string | undefined {
   if (meet) return undefined
   if (!window.isSecureContext) return t.compat.sharedReasons.insecureContext()
-  return tClip.apiNotSupported()
+  return tt.apiNotSupported()
 }
 const why = findWhy()
 

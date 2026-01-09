@@ -2,17 +2,17 @@ import { t } from '@i18n'
 
 import type { Compatibility as CP } from '..'
 
-const tSAB = t.compat.sharedArrayBuffer
+const tt = t.compat.sharedArrayBuffer
 
 const sharedArrayBufferInfo = {
   key: 'sharedArrayBuffer',
-  name: tSAB.name(),
-  description: tSAB.description(),
+  name: tt.name(),
+  description: tt.description(),
   referenceUrls: [
     { label: 'Can I Use: Shared Array Buffer', url: 'https://caniuse.com/sharedarraybuffer' },
   ],
   severity: 'warn',
-  effect: tSAB.effect(),
+  effect: tt.effect(),
 } as const satisfies CP.CompatibilityInfo
 
 const meet =
@@ -22,10 +22,10 @@ function findWhy(): string | undefined {
   if (meet) return undefined
   if (!window.isSecureContext) return t.compat.sharedReasons.insecureContext()
   if (!window.crossOriginIsolated) {
-    if (import.meta.env.VITE_COI_WORKAROUND) return tSAB.coiWorkaround()
-    else return tSAB.coiRequired()
+    if (import.meta.env.VITE_COI_WORKAROUND) return tt.coiWorkaround()
+    else return tt.coiRequired()
   }
-  return tSAB.apiNotSupported()
+  return tt.apiNotSupported()
 }
 const why = findWhy()
 

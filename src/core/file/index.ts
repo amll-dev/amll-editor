@@ -37,6 +37,8 @@ export const fileBackend: FileBackend = compatibilityMap.fileSystem
 // Other formats are supported via import/export services
 // Won't be saved directly
 
+const tt = t.file
+
 const BackingFmt = {
   TTML: 'TTML',
   ALP: 'ALP',
@@ -61,7 +63,7 @@ const alpPickerType: FilePickerAcceptType[] = [manifest2formats('alp', FORMAT_MA
 const ttmlPickerType: FilePickerAcceptType[] = [manifest2formats('ttml', FORMAT_MANIFEST.ttml)]
 const allPickerTypes: FilePickerAcceptType[] = [
   {
-    description: t.file.allSupportedFormats(),
+    description: tt.allSupportedFormats(),
     accept: { 'application/x-amll-editor-allsupported': allSupportedExtArr },
   },
   ...alpPickerType,
@@ -89,7 +91,7 @@ function setFileState(state: Partial<FileState> | null) {
   currHandle = state.handle ?? null
   currBackingFmt = state.currBackingFmt ?? currBackingFmt
   createdAtRef.value = state.createdAt ?? null
-  displayFilenameRef.value = state.displayFilename ?? t.file.untitled()
+  displayFilenameRef.value = state.displayFilename ?? tt.untitled()
   readonlyRef.value = state.isReadonly ?? true
   savedAtRef.value = state.savedAt ?? null
 }
@@ -147,7 +149,7 @@ const askForWrite = async (handle: FileHandle) => {
 }
 async function handleFile(result: FileReadResult) {
   const [, ext] = breakExtension(result.filename)
-  if (!allSupportedExt.has(`.${ext}`)) throw new Error(t.file.failedToReadErr.typeNotSupported(ext))
+  if (!allSupportedExt.has(`.${ext}`)) throw new Error(tt.failedToReadErr.typeNotSupported(ext))
   if (ext === 'alp') await handleProjFile(result)
   else if (ext === 'ttml') await handleTTMLFile(result)
   else await handleMiscFile(result)
@@ -191,7 +193,7 @@ async function handleMiscFile(result: FileReadResult) {
     ...useDefaultFormat(name),
   })
 }
-async function importPersist(data: Persist, name: string = t.file.untitled()) {
+async function importPersist(data: Persist, name: string = tt.untitled()) {
   if (!(await checkDataDropConfirm())) throwUserAbort()
   applyPersist(data)
   setFileState({
@@ -230,7 +232,7 @@ async function saveFile() {
 
 function suggestName() {
   const [displayName] = breakExtension(displayFilenameRef.value)
-  if (!displayName.startsWith(t.file.untitled())) return displayName
+  if (!displayName.startsWith(tt.untitled())) return displayName
   const coreStore = useCoreStore()
   const title = (coreStore.metadata.musicName ?? coreStore.metadata.ti)?.[0]
   if (title) return title
@@ -347,20 +349,20 @@ function initDragListener(notifier: Notifier) {
     }
     if (!allSupportedExt.has(`.${ext}`))
       return notifier(
-        t.file.failedToReadErr.summary(),
-        t.file.failedToReadErr.typeNotSupported(ext),
+        tt.failedToReadErr.summary(),
+        tt.failedToReadErr.typeNotSupported(ext),
         'error',
       )
 
     getFileBackendAdapter(fileBackend)
       .dragDrop(e)
       .then(async (result) => {
-        if (!result) throw new Error(t.file.failedToReadErr.summary())
+        if (!result) throw new Error(tt.failedToReadErr.summary())
         await handleFile(result)
-        notifier(t.file.loaded(), file.name, 'success')
+        notifier(tt.loaded(), file.name, 'success')
       })
       .catch((err) => {
-        notifier(t.file.failedToReadErr.summary(), String(err), 'error')
+        notifier(tt.failedToReadErr.summary(), String(err), 'error')
       })
   })
 }
@@ -370,24 +372,16 @@ function initPwaLaunch(notifier: Notifier) {
   window.launchQueue.setConsumer(async (launchParams) => {
     const [file] = launchParams.files.filter((f) => f instanceof FileSystemFileHandle)
     if (!file)
-      return notifier(
-        t.file.failedToReadErr.summary(),
-        t.file.failedToReadErr.noHandleProvided(),
-        'error',
-      )
+      return notifier(tt.failedToReadErr.summary(), tt.failedToReadErr.noHandleProvided(), 'error')
     const result = await getFileBackendAdapter(fileBackend).fsHandle(file)
     if (!result)
-      return notifier(
-        t.file.failedToReadErr.summary(),
-        t.file.failedToReadErr.unableToGetFile(),
-        'error',
-      )
+      return notifier(tt.failedToReadErr.summary(), tt.failedToReadErr.unableToGetFile(), 'error')
     if (editHistory.isDirty && !(await checkDataDropConfirm())) return
     try {
       await handleFile(result)
-      notifier(t.file.loaded(), result.filename, 'success')
+      notifier(tt.loaded(), result.filename, 'success')
     } catch (err) {
-      notifier(t.file.failedToReadErr.summary(), String(err), 'error')
+      notifier(tt.failedToReadErr.summary(), String(err), 'error')
     }
   })
 }
@@ -395,7 +389,7 @@ function initPwaLaunch(notifier: Notifier) {
 function init(notifier: Notifier) {
   setFileState({
     createdAt: new Date(),
-    ...useDefaultFormat(t.file.untitled()),
+    ...useDefaultFormat(tt.untitled()),
   })
   initDragListener(notifier)
   initPwaLaunch(notifier)

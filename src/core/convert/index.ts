@@ -22,11 +22,11 @@ const portFormatHandlers: Record<CV.PortFormatKey, CV.FormatHandler> = {
   spl: splReg,
 } as const
 
-const tRefs = t.formats.sharedReferences
+const tt = t.formats.sharedReferences
 const formatReferences: Partial<Record<CV.PortFormatKey, CV.FormatCaption['reference']>> = {
-  lrc: [{ name: tRefs.wikipedia(), url: 'https://wikipedia.org/wiki/LRC_(file_format)' }],
-  lrcA2: [{ name: tRefs.wikipedia(), url: 'https://en.wikipedia.org/wiki/LRC_(file_format)' }],
-  spl: [{ name: tRefs.officialDoc(), url: 'https://moriafly.com/standards/spl.html' }],
+  lrc: [{ name: tt.wikipedia(), url: 'https://wikipedia.org/wiki/LRC_(file_format)' }],
+  lrcA2: [{ name: tt.wikipedia(), url: 'https://en.wikipedia.org/wiki/LRC_(file_format)' }],
+  spl: [{ name: tt.officialDoc(), url: 'https://moriafly.com/standards/spl.html' }],
 }
 
 export const portFormatRegister: CV.PortFormatWithKey[] = (

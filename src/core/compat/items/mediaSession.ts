@@ -2,17 +2,17 @@ import { t } from '@i18n'
 
 import type { Compatibility as CP } from '..'
 
-const tMs = t.compat.mediaSession
+const tt = t.compat.mediaSession
 
 const mediaSessionInfo = {
   key: 'mediaSession',
-  name: tMs.name(),
-  description: tMs.description(),
+  name: tt.name(),
+  description: tt.description(),
   referenceUrls: [
     { label: 'Can I Use: Media Session', url: 'https://caniuse.com/wf-media-session' },
   ],
   severity: 'info',
-  effect: tMs.effect(),
+  effect: tt.effect(),
 } as const satisfies CP.CompatibilityInfo
 
 const meet =
@@ -22,7 +22,7 @@ const meet =
 
 function findWhy(): string | undefined {
   if (meet) return undefined
-  return tMs.apiNotSupported()
+  return tt.apiNotSupported()
 }
 const why = findWhy()
 

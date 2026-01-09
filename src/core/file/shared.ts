@@ -4,17 +4,17 @@ import { editHistory } from '@states/services/history'
 import { useStaticStore } from '@states/stores'
 
 const staticStore = useStaticStore()
-const tDrop = t.file.dataDropConfirm
+const tt = t.file.dataDropConfirm
 
 export async function checkDataDropConfirm() {
   if (!editHistory.isDirty.value) return true
   if (staticStore.waitForConfirmHook)
     return await staticStore.waitForConfirmHook({
-      header: tDrop.header(),
-      message: tDrop.message(),
+      header: tt.header(),
+      message: tt.message(),
       icon: 'pi pi-exclamation-triangle',
       severity: 'danger',
-      acceptLabel: tDrop.acceptLabel(),
+      acceptLabel: tt.acceptLabel(),
       acceptIcon: 'pi pi-arrow-right',
     })
   return true
