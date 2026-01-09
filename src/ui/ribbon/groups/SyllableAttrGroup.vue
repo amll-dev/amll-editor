@@ -1,8 +1,8 @@
 <template>
-  <RibbonGroup label="音节属性">
+  <RibbonGroup :label="tt.groupLabel()">
     <div class="hflex" style="align-items: center; gap: 1rem">
       <div class="kvgrid">
-        <span>开始时间</span>
+        <span>{{ tt.startTime() }}</span>
         <InputText
           class="timeinput"
           placeholder="00:00.000"
@@ -11,7 +11,7 @@
           v-model.lazy="sylStartTime"
           v-keyfilter="/[0-9:.]/"
         />
-        <span>结束时间</span>
+        <span>{{ tt.endTime() }}</span>
         <InputText
           class="timeinput"
           placeholder="00:00.000"
@@ -20,7 +20,7 @@
           v-model.lazy="sylEndTime"
           v-keyfilter="/[0-9:.]/"
         />
-        <span>持续时长</span>
+        <span>{{ tt.duration() }}</span>
         <InputNumber
           class="durationinput"
           size="small"
@@ -32,7 +32,7 @@
       </div>
       <div class="vflex" style="gap: 0.5rem; width: 7.5rem">
         <span style="text-align: center">
-          占位拍
+          {{ tt.placeholdingBeat() }}
           <span style="font-family: var(--font-monospace)"
             >{{ currPhBeatInput ?? 'N' }}/{{ phBeatInput ?? 'A' }}</span
           >
@@ -58,7 +58,7 @@
                 fluid
                 :disabled="sylSelectionEmpty || !phBeatApplyToAllEnabled"
                 @click="phBeatApplyToAll"
-                v-tooltip="'应用到所有相同音节'"
+                v-tooltip="tt.applyToAllSameSyls()"
               />
             </InputGroupAddon>
           </InputGroup>
@@ -77,6 +77,7 @@
 </template>
 
 <script setup lang="ts">
+import { t } from '@i18n'
 import { computed } from 'vue'
 
 import { useCoreStore, useRuntimeStore } from '@states/stores'
@@ -86,6 +87,8 @@ import InputText from '@ui/components/InputText.vue'
 import { Button, InputGroup, InputGroupAddon, InputNumber, Slider } from 'primevue'
 
 import { itemTimeInput } from '../common'
+
+const tt = t.ribbon.syllableAttr
 
 const runtimeStore = useRuntimeStore()
 const coreStore = useCoreStore()

@@ -4,7 +4,7 @@
       <template #content>
         <ContentProcessGroup />
         <LineAttrGroup />
-        <WordAttrGroup />
+        <SylAttrGroup />
         <TimeShiftGroup />
         <MarkGroup />
         <ViewGroup />
@@ -20,10 +20,10 @@ import { onMounted, ref } from 'vue'
 import ContentProcessGroup from './groups/ContentGroup.vue'
 import LineAttrGroup from './groups/LineAttrGroup.vue'
 import MarkGroup from './groups/MarkGroup.vue'
+import SylAttrGroup from './groups/SyllableAttrGroup.vue'
 // import PerformanceGroup from './groups/PerformanceGroup.vue'
 import TimeShiftGroup from './groups/TimeShiftGroup.vue'
 import ViewGroup from './groups/ViewGroup.vue'
-import WordAttrGroup from './groups/WordAttrGroup.vue'
 import { Card } from 'primevue'
 
 function handleWheel(e: WheelEvent) {

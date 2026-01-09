@@ -185,6 +185,186 @@ type RootTranslation = {
 			reloadAmll: string
 		}
 	}
+	ribbon: {
+		content: {
+			/**
+			 * 内​容
+			 */
+			groupLabel: string
+			/**
+			 * 批​量​断​字
+			 */
+			batchSyllabify: string
+			/**
+			 * 打​开​批​量​断​字​侧​边​栏​，​将​多​行​歌​词​文​本​拆​分​为​音​节​。
+			 */
+			batchSyllabifyDesc: string
+			/**
+			 * 元​数​据
+			 */
+			metadata: string
+			/**
+			 * 打​开​元​数​据​侧​边​栏​，​编​辑​歌​词​文​件​元​数​据​。
+			 */
+			metadataDesc: string
+			/**
+			 * 查​找​替​换
+			 */
+			findReplace: string
+			/**
+			 * 打​开​查​找​替​换​对​话​框​，​在​歌​词​中​查​找​或​替​换​文​本​。
+			 */
+			findReplaceDesc: string
+		}
+		lineAttr: {
+			/**
+			 * 行​属​性
+			 */
+			groupLabel: string
+			/**
+			 * 对​唱​行
+			 */
+			duet: string
+			/**
+			 * 背​景​行
+			 */
+			background: string
+			/**
+			 * 时​轴​中​忽​略
+			 */
+			ignoreInTiming: string
+			/**
+			 * 始​终​忽​略​背​景​行
+			 */
+			alwaysIgnoreBackground: string
+			/**
+			 * 开​始​时​间
+			 */
+			startTime: string
+			/**
+			 * 结​束​时​间
+			 */
+			endTime: string
+			/**
+			 * 持​续​时​长
+			 */
+			duration: string
+		}
+		syllableAttr: {
+			/**
+			 * 音​节​属​性
+			 */
+			groupLabel: string
+			/**
+			 * 开​始​时​间
+			 */
+			startTime: string
+			/**
+			 * 结​束​时​间
+			 */
+			endTime: string
+			/**
+			 * 持​续​时​长
+			 */
+			duration: string
+			/**
+			 * 占​位​拍
+			 */
+			placeholdingBeat: string
+			/**
+			 * 应​用​到​所​有​相​同​音​节
+			 */
+			applyToAllSameSyls: string
+		}
+		timeShift: {
+			/**
+			 * 时​移
+			 */
+			groupLabel: string
+			/**
+			 * 延​迟​测​试
+			 */
+			delayTest: string
+			/**
+			 * 延​迟
+			 */
+			delay: string
+			/**
+			 * 批​量​时​移
+			 */
+			batchTimeShift: string
+			/**
+			 * 打​开​批​量​时​移​对​话​框​，​调​整​多​个​音​节​或​行​的​时​间​戳​。
+			 */
+			batchTimeShiftDesc: string
+		}
+		view: {
+			/**
+			 * 视​图
+			 */
+			groupLabel: string
+			/**
+			 * 启​用​逐​字​音​译
+			 */
+			enableSylRoman: string
+			/**
+			 * 随​播​放​自​动​滚​动
+			 */
+			scrollWithPlayback: string
+			/**
+			 * 交​换​翻​译​音​译​框
+			 */
+			swapTranslateRoman: string
+		}
+		mark: {
+			/**
+			 * 标​记
+			 */
+			groupLabel: string
+			/**
+			 * 添​加​书​签
+			 */
+			addBookmark: string
+			/**
+			 * 移​除​书​签
+			 */
+			removeBookmark: string
+			/**
+			 * 在​选​定​行​或​音​节​上​添​加​或​移​除​书​签​。​书​签​可​以​用​于​标​记​重​要​的​部​分​，​且​不​会​导​出​到​歌​词​文​件​中​。
+			 */
+			bookmarkDesc: string
+			/**
+			 * 添​加​批​注
+			 */
+			addComment: string
+			/**
+			 * 移​除​全​部
+			 */
+			removeAll: string
+			/**
+			 * 移​除​全​文​所​有​行​和​音​节​的​书​签​与​批​注​。​您​可​以​稍​后​撤​销​。
+			 */
+			removeAllDesc: string
+		}
+		performance: {
+			/**
+			 * 性​能
+			 */
+			groupLabel: string
+			/**
+			 * 已​使​用
+			 */
+			usedHeapSize: string
+			/**
+			 * 已​分​配
+			 */
+			totalHeapSize: string
+			/**
+			 * 帧​速​率
+			 */
+			frameRate: string
+		}
+	}
 	player: {
 		/**
 		 * 选​择​音​频​文​件
@@ -1350,6 +1530,186 @@ export type TranslationFunctions = {
 			 * 重载 AMLL
 			 */
 			reloadAmll: () => LocalizedString
+		}
+	}
+	ribbon: {
+		content: {
+			/**
+			 * 内容
+			 */
+			groupLabel: () => LocalizedString
+			/**
+			 * 批量断字
+			 */
+			batchSyllabify: () => LocalizedString
+			/**
+			 * 打开批量断字侧边栏，将多行歌词文本拆分为音节。
+			 */
+			batchSyllabifyDesc: () => LocalizedString
+			/**
+			 * 元数据
+			 */
+			metadata: () => LocalizedString
+			/**
+			 * 打开元数据侧边栏，编辑歌词文件元数据。
+			 */
+			metadataDesc: () => LocalizedString
+			/**
+			 * 查找替换
+			 */
+			findReplace: () => LocalizedString
+			/**
+			 * 打开查找替换对话框，在歌词中查找或替换文本。
+			 */
+			findReplaceDesc: () => LocalizedString
+		}
+		lineAttr: {
+			/**
+			 * 行属性
+			 */
+			groupLabel: () => LocalizedString
+			/**
+			 * 对唱行
+			 */
+			duet: () => LocalizedString
+			/**
+			 * 背景行
+			 */
+			background: () => LocalizedString
+			/**
+			 * 时轴中忽略
+			 */
+			ignoreInTiming: () => LocalizedString
+			/**
+			 * 始终忽略背景行
+			 */
+			alwaysIgnoreBackground: () => LocalizedString
+			/**
+			 * 开始时间
+			 */
+			startTime: () => LocalizedString
+			/**
+			 * 结束时间
+			 */
+			endTime: () => LocalizedString
+			/**
+			 * 持续时长
+			 */
+			duration: () => LocalizedString
+		}
+		syllableAttr: {
+			/**
+			 * 音节属性
+			 */
+			groupLabel: () => LocalizedString
+			/**
+			 * 开始时间
+			 */
+			startTime: () => LocalizedString
+			/**
+			 * 结束时间
+			 */
+			endTime: () => LocalizedString
+			/**
+			 * 持续时长
+			 */
+			duration: () => LocalizedString
+			/**
+			 * 占位拍
+			 */
+			placeholdingBeat: () => LocalizedString
+			/**
+			 * 应用到所有相同音节
+			 */
+			applyToAllSameSyls: () => LocalizedString
+		}
+		timeShift: {
+			/**
+			 * 时移
+			 */
+			groupLabel: () => LocalizedString
+			/**
+			 * 延迟测试
+			 */
+			delayTest: () => LocalizedString
+			/**
+			 * 延迟
+			 */
+			delay: () => LocalizedString
+			/**
+			 * 批量时移
+			 */
+			batchTimeShift: () => LocalizedString
+			/**
+			 * 打开批量时移对话框，调整多个音节或行的时间戳。
+			 */
+			batchTimeShiftDesc: () => LocalizedString
+		}
+		view: {
+			/**
+			 * 视图
+			 */
+			groupLabel: () => LocalizedString
+			/**
+			 * 启用逐字音译
+			 */
+			enableSylRoman: () => LocalizedString
+			/**
+			 * 随播放自动滚动
+			 */
+			scrollWithPlayback: () => LocalizedString
+			/**
+			 * 交换翻译音译框
+			 */
+			swapTranslateRoman: () => LocalizedString
+		}
+		mark: {
+			/**
+			 * 标记
+			 */
+			groupLabel: () => LocalizedString
+			/**
+			 * 添加书签
+			 */
+			addBookmark: () => LocalizedString
+			/**
+			 * 移除书签
+			 */
+			removeBookmark: () => LocalizedString
+			/**
+			 * 在选定行或音节上添加或移除书签。书签可以用于标记重要的部分，且不会导出到歌词文件中。
+			 */
+			bookmarkDesc: () => LocalizedString
+			/**
+			 * 添加批注
+			 */
+			addComment: () => LocalizedString
+			/**
+			 * 移除全部
+			 */
+			removeAll: () => LocalizedString
+			/**
+			 * 移除全文所有行和音节的书签与批注。您可以稍后撤销。
+			 */
+			removeAllDesc: () => LocalizedString
+		}
+		performance: {
+			/**
+			 * 性能
+			 */
+			groupLabel: () => LocalizedString
+			/**
+			 * 已使用
+			 */
+			usedHeapSize: () => LocalizedString
+			/**
+			 * 已分配
+			 */
+			totalHeapSize: () => LocalizedString
+			/**
+			 * 帧速率
+			 */
+			frameRate: () => LocalizedString
 		}
 	}
 	player: {
