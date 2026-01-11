@@ -25,7 +25,7 @@
         @click="runtimeStore.toogleSidebar(SidebarKey.Preference)"
       />
       <Button
-        icon="pi pi-undo"
+        :icon="i.undo"
         variant="text"
         severity="secondary"
         @click="editHistory.undo()"
@@ -33,7 +33,7 @@
         v-tooltip="tipHotkey(tt.undo(), 'undo')"
       />
       <Button
-        icon="pi pi-refresh"
+        :icon="i.redo"
         variant="text"
         severity="secondary"
         @click="editHistory.redo()"
@@ -91,6 +91,7 @@ import { useRuntimeStore } from '@states/stores'
 
 import { tipHotkey } from '@utils/generateTooltip'
 
+import { i } from '@ui/icon'
 import { SidebarKey } from '@ui/sidebar'
 
 import ViewSwitcher from './ViewSwitcher.vue'

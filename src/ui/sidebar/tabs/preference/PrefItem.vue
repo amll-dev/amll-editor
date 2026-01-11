@@ -5,7 +5,7 @@
         {{ props.label
         }}<i
           v-if="props.experimental"
-          class="pi pi-filter exp-icon"
+          :class="`exp-icon ${i.experiment}`"
           v-tooltip="tt.experimentalWarning()"
         ></i>
       </div>
@@ -19,6 +19,8 @@
 
 <script setup lang="ts">
 import { t } from '@i18n'
+
+import { i } from '@ui/icon'
 
 const props = defineProps<{
   label: string
@@ -53,10 +55,7 @@ const tt = t.sidebar.preference
     opacity: 0.6;
   }
   .exp-icon {
-    font-size: 0.9rem;
-    margin-left: 0.3rem;
-    transform: rotate(180deg);
-    opacity: 0.8;
+    margin-left: 0.2rem;
     color: var(--p-primary-color);
   }
 }
