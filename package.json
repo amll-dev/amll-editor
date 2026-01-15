@@ -94,5 +94,6 @@
     "patchedDependencies": {
       "@types/wicg-file-system-access": "patches/@types__wicg-file-system-access.patch"
     }
-  }
+  },
+  "packageManager": "pnpm@10.28.0"
 }
