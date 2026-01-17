@@ -76,6 +76,7 @@ import type { LyricLine } from '@core/types'
 
 import { usePrefStore, useRuntimeStore } from '@states/stores'
 
+import { forceOutsideBlur } from '@utils/forceOutsideBlur'
 import { tipMultiLine } from '@utils/generateTooltip'
 
 import Timestamp from './Timestamp.vue'
@@ -96,6 +97,7 @@ const prefStore = usePrefStore()
 const runtimeStore = useRuntimeStore()
 
 function handleMouseDown() {
+  forceOutsideBlur()
   runtimeStore.selectLine(props.line)
 }
 </script>

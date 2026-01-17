@@ -50,6 +50,7 @@ import { type LyricLine, type LyricSyllable, View } from '@core/types'
 import { useCoreStore, usePrefStore, useRuntimeStore, useStaticStore } from '@states/stores'
 import type { EditorComponentActions } from '@states/stores/static'
 
+import { forceOutsideBlur } from '@utils/forceOutsideBlur'
 import { tryRaf } from '@utils/tryRaf'
 
 import Line from './Line.vue'
@@ -269,6 +270,7 @@ useGlobalKeyboard('playCurrSyl', () => {
 })
 
 function handleMouseDown(e: MouseEvent) {
+  forceOutsideBlur()
   if (e.button !== 0) return
   runtimeStore.clearSelection()
 }
