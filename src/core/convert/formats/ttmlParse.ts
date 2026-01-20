@@ -189,7 +189,11 @@ export function parseTTML(ttmlText: string): Persist {
     duet = false,
     parentItunesKey: string | null = null,
   ) {
-    if (background) duet = lineEl.getAttribute('ttm:agent') !== mainAgentId
+    if (!background) {
+      const agentAttr = lineEl.getAttribute('ttm:agent')
+      duet = agentAttr !== null && agentAttr !== mainAgentId
+      console.log(agentAttr, mainAgentId, duet)
+    }
 
     const startTime = str2ms(lineEl.getAttribute('begin'))
     const endTime = str2ms(lineEl.getAttribute('end'))
