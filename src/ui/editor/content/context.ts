@@ -198,9 +198,5 @@ export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
     syl: sylMenuItems,
   } as const
 
-  return {
-    menuItemsMap,
-    toggleDuet,
-    toggleBackground,
-  }
+  return menuItemsMap
 }
