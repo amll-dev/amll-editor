@@ -22,6 +22,8 @@ const aliasRelMap: Record<string, string> = {
   '@i18n': './src/i18n',
 }
 
+const isTauri = Boolean(process.env.TAURI)
+
 const isBeta = process.env.VITE_BUILD_CHANNEL === 'BETA'
 const defineObjMap: Record<string, string | number | boolean | undefined> = {
   __APP_VERSION__: packageJSON.version,
@@ -33,6 +35,7 @@ const defineObjMap: Record<string, string | number | boolean | undefined> = {
   __APP_BUILD_TIMESTAMP__: Date.now(),
   __AMLL_CORE_VERSION__: packageJSON.dependencies['@applemusic-like-lyrics/core'],
   __AMLL_VUE_VERSION__: packageJSON.dependencies['@applemusic-like-lyrics/vue'],
+  __IS_TAURI__: isTauri,
 }
 
 const channelColors: Record<string, ChalkInstance> = {
@@ -60,10 +63,7 @@ export default defineConfig(({ mode }) => ({
     }),
   ],
   clearScreen: false,
-  server: {
-    port: 8080,
-    strictPort: true,
-  },
+  server: isTauri ? { port: 6173, strictPort: true } : undefined,
   envPrefix: ['VITE_', 'TAURI_'],
   worker: { format: 'es' },
   resolve: {

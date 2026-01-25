@@ -1,18 +1,18 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "amll-editor",
-  "version": "0.1.0",
+  "productName": "AMLL Editor",
+  "version": "0.0.0",
   "identifier": "com.linho.amlleditor",
   "build": {
     "frontendDist": "../dist",
-    "devUrl": "http://localhost:8080",
+    "devUrl": "http://localhost:6173",
     "beforeDevCommand": "pnpm run dev",
     "beforeBuildCommand": "pnpm run build"
   },
   "app": {
     "windows": [
       {
-        "title": "amll-editor",
+        "title": "AMLL Editor",
         "width": 800,
         "height": 600,
         "resizable": true,

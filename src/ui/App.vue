@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import { t } from '@i18n'
 import { useMediaQuery } from '@vueuse/core'
-import { onMounted, onUnmounted, watch } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 
 import { fileState } from '@core/file'
 import { View } from '@core/types'
@@ -63,7 +63,7 @@ const notifier = (summary: string, detail: string, severity: ToastMessageOptions
 
 fileState.init(notifier)
 
-const isStandalone = useMediaQuery('(display-mode: standalone)')
+const isStandalone = __IS_TAURI__ ? ref(true) : useMediaQuery('(display-mode: standalone)')
 watch(
   [isStandalone, fileState.displayFilenameComputed, editHistory.isDirty],
   ([standalone, filename, isDirty]) => {
@@ -75,6 +75,10 @@ watch(
   },
   { immediate: true },
 )
+if (__IS_TAURI__)
+  onMounted(() => {
+    document.documentElement.dataset.displayMode = 'standalone'
+  })
 
 const modalDialogActivated = () => document.querySelector('.p-dialog-mask.p-overlay-mask') !== null
 const handleRootKeydown = (e: KeyboardEvent) => {

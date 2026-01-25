@@ -192,6 +192,9 @@ useGlobalKeyboard('importFromClipboard', handleImportFromClipboard)
     @media (display-mode: standalone) {
       display: none;
     }
+    html[data-display-mode='standalone'] & {
+      display: none;
+    }
   }
   .save-state-section {
     display: flex;

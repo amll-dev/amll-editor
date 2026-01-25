@@ -12,6 +12,8 @@
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
+    "tauri:dev": "cross-env TAURI=true tauri dev",
+    "tauri:build": "cross-env TAURI=true tauri build",
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
@@ -76,6 +78,7 @@
     "@vue/eslint-config-typescript": "^14.6.0",
     "@vue/tsconfig": "^0.8.1",
     "chalk": "^5.6.2",
+    "cross-env": "^10.1.0",
     "dotenv": "^17.2.3",
     "eslint": "^9.39.2",
     "eslint-plugin-vue": "~10.6.2",
