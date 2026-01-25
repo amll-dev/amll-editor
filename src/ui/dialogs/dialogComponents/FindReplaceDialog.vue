@@ -84,23 +84,23 @@
       <div class="findreplace-params">
         <div class="findreplace-range">
           <div class="findreplace-range-title">{{ tt.scopeHeader() }}</div>
-          <div class="findreplace-range-options" :class="{ 'two-cols': prefStore.sylRomanEnabled }">
+          <div class="findreplace-range-options">
             <div class="findreplace-range-option-item">
               <Checkbox v-model="findInSyls" input-id="findInWords" binary />
               <label for="findInWords" class="findreplace-range-option-label">{{
                 tt.scope.sylContent()
               }}</label>
             </div>
+            <div class="findreplace-range-option-item">
+              <Checkbox v-model="findInTranslations" input-id="findInTranslations" binary />
+              <label for="findInTranslations" class="findreplace-range-option-label">{{
+                prefStore.sylRomanEnabled ? tt.scope.lineTrans() : tt.scope.trans()
+              }}</label>
+            </div>
             <div class="findreplace-range-option-item" v-if="prefStore.sylRomanEnabled">
               <Checkbox v-model="findInSylRomanModel" input-id="findInSylRoman" binary />
               <label for="findInSylRoman" class="findreplace-range-option-label">{{
                 tt.scope.sylRoman()
-              }}</label>
-            </div>
-            <div class="findreplace-range-option-item">
-              <Checkbox v-model="findInTranslations" input-id="findInTranslations" binary />
-              <label for="findInTranslations" class="findreplace-range-option-label">{{
-                tt.scope.trans()
               }}</label>
             </div>
             <div class="findreplace-range-option-item">
@@ -573,14 +573,11 @@ function handleDrop(where: 'find' | 'replace') {
   flex-shrink: 0;
 }
 .findreplace-range-options {
-  display: grid;
+  display: flex;
   row-gap: 0.4rem;
   column-gap: 1.2rem;
   align-items: center;
-  grid-template-columns: auto auto auto;
-  &.two-cols {
-    grid-template-columns: auto auto;
-  }
+  flex-wrap: wrap;
 }
 .findreplace-range-option-item {
   display: flex;
@@ -602,10 +599,10 @@ function handleDrop(where: 'find' | 'replace') {
 }
 
 .findreplace-options-list {
-  display: grid;
+  display: flex;
   row-gap: 0.4rem;
   column-gap: 1.5rem;
-  grid-template-columns: auto auto;
+  flex-wrap: wrap;
 }
 .findreplace-option-item {
   display: flex;

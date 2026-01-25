@@ -1,6 +1,6 @@
 import saveFile from 'save-file'
 
-import { defineFileBackend, registerFileBackendAdapter } from '../types'
+import { defineFileBackend } from '../types'
 
 interface H5NativeFileHandle {
   filename: string
@@ -62,18 +62,15 @@ export const h5NativeBackend = defineFileBackend<H5NativeFileHandle>({
       blob,
     }
   },
-})
-registerFileBackendAdapter<H5NativeFileHandle>(h5NativeBackend, {
-  async dragDrop(e: DragEvent) {
-    const file = e.dataTransfer?.files[0]
-    if (!file) return null
-    return {
-      handle: { filename: file.name },
-      filename: file.name,
-      blob: file,
-    }
-  },
-  async fsHandle(_handle: FileSystemHandle) {
-    return null
+  adapters: {
+    async dragDrop(e: DragEvent) {
+      const file = e.dataTransfer?.files[0]
+      if (!file) return null
+      return {
+        handle: { filename: file.name },
+        filename: file.name,
+        blob: file,
+      }
+    },
   },
 })

@@ -436,8 +436,6 @@ const en = {
     failedToReadErr: {
       summary: 'Failed to read file',
       typeNotSupported: 'Unsupported file type: {0}',
-      noHandleProvided: 'No file handle provided',
-      unableToGetFile: 'Unable to access provided file',
     },
     dataDropConfirm: {
       header: 'Unsaved changes',
@@ -481,7 +479,7 @@ const en = {
       replace: 'Replace with',
     },
     moreOptionSwitch: 'More Options',
-    optionsHeader: 'Match Options',
+    optionsHeader: 'Options',
     options: {
       caseSensitive: 'Case Sensitive',
       wholeWord: 'Whole Word',
@@ -490,13 +488,14 @@ const en = {
       useRegex: 'Use Regular Expression',
       loopSearch: 'Wrap Around',
     },
-    scopeHeader: 'Search Scope',
+    scopeHeader: 'Scope',
     scope: {
       sylContent: 'Syllable',
       sylRoman: 'Syllable Romanization',
       trans: 'Translation',
       roman: 'Romanization',
       lineRoman: 'Line Romanization',
+      lineTrans: 'Translation',
     },
     actions: {
       replace: 'Replace',

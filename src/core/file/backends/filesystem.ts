@@ -1,4 +1,4 @@
-import { defineFileBackend, registerFileBackendAdapter } from '../types'
+import { defineFileBackend } from '../types'
 
 export const fileSystemBackend = defineFileBackend<FileSystemFileHandle>({
   async read(id, types, startIn = 'desktop') {
@@ -45,26 +45,28 @@ export const fileSystemBackend = defineFileBackend<FileSystemFileHandle>({
       blob,
     }
   },
-})
-
-registerFileBackendAdapter<FileSystemFileHandle>(fileSystemBackend, {
-  async dragDrop(e: DragEvent) {
-    const handle = await e.dataTransfer?.items[0]?.getAsFileSystemHandle()
-    if (!(handle instanceof FileSystemFileHandle)) return null
-    const file = await handle.getFile()
-    return {
-      handle,
-      filename: handle.name,
-      blob: file,
-    }
+  adapters: {
+    async dragDrop(e: DragEvent) {
+      const handle = await e.dataTransfer?.items[0]?.getAsFileSystemHandle()
+      if (!(handle instanceof FileSystemFileHandle)) return null
+      const file = await handle.getFile()
+      return {
+        handle,
+        filename: handle.name,
+        blob: file,
+      }
+    },
   },
-  async fsHandle(handle: FileSystemHandle) {
-    if (!(handle instanceof FileSystemFileHandle)) return null
-    const file = await handle.getFile()
-    return {
-      handle,
-      filename: handle.name,
-      blob: file,
-    }
-  },
+  launchFile: new Promise((resolve, reject) => {
+    if (!('launchQueue' in window)) return
+    window.launchQueue.setConsumer(async (launchParams) => {
+      const [handle] = launchParams.files.filter((f) => f instanceof FileSystemFileHandle)
+      if (!handle) return reject('No file handle provided.')
+      resolve({
+        handle,
+        filename: handle.name,
+        blob: await handle.getFile(),
+      })
+    })
+  }),
 })
