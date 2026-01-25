@@ -57,16 +57,16 @@ export const fileSystemBackend = defineFileBackend<FileSystemFileHandle>({
       }
     },
   },
-  launchFile: new Promise((resolve, reject) => {
+  onLaunchFile(callback) {
     if (!('launchQueue' in window)) return
     window.launchQueue.setConsumer(async (launchParams) => {
       const [handle] = launchParams.files.filter((f) => f instanceof FileSystemFileHandle)
-      if (!handle) return reject('No file handle provided.')
-      resolve({
+      if (!handle) return
+      callback({
         handle,
         filename: handle.name,
         blob: await handle.getFile(),
       })
     })
-  }),
+  },
 })
