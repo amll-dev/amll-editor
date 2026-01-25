@@ -69,8 +69,11 @@ interface __FileBackend<BackendFileHandle> {
   ): Promise<__FileReadResult<BackendFileHandle>>
   /** Adapters to extract file handles from various sources */
   adapters: __AdapterEntry<BackendFileHandle>
-  /** (Optional) Promise that resolves to a file backend when the app is launched with a file open request */
-  launchFile?: Promise<__FileReadResult<BackendFileHandle>>
+  /**
+   * Handle launching file from outside the app
+   * The callback should be called when a file is launched
+   */
+  onLaunchFile?: (callback: (result: __FileReadResult<BackendFileHandle>) => void) => void
 }
 
 /**

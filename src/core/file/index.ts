@@ -368,7 +368,8 @@ function init(notifier: Notifier) {
     ...useDefaultFormat(tt.untitled()),
   })
   initDragListener(notifier)
-  fileBackend.launchFile?.then(async (result) => {
+  fileBackend.onLaunchFile?.(async (result) => {
+    if (!(await checkDataDropConfirm())) return
     try {
       await handleFile(result)
       notifier(tt.loaded(), result.filename, 'success')
