@@ -18,12 +18,7 @@ import { fileSystemBackend } from './backends/filesystem'
 import { h5NativeBackend } from './backends/h5native'
 import { collectProjectData, makeProjectFile, mountProjectData, parseProjectFile } from './project'
 import { breakExtension, checkDataDropConfirm } from './shared'
-import {
-  type FileBackend,
-  type FileHandle,
-  type FileReadResult,
-  getFileBackendAdapter,
-} from './types'
+import { type FileBackend, type FileHandle, type FileReadResult } from './types'
 
 export { simpleChooseTextFile, simpleSaveTextFile } from './simple'
 
@@ -354,7 +349,7 @@ function initDragListener(notifier: Notifier) {
         'error',
       )
 
-    getFileBackendAdapter(fileBackend)
+    fileBackend.adapters
       .dragDrop(e)
       .then(async (result) => {
         if (!result) throw new Error(tt.failedToReadErr.summary())
@@ -367,16 +362,13 @@ function initDragListener(notifier: Notifier) {
   })
 }
 
-function initPwaLaunch(notifier: Notifier) {
-  if (!('launchQueue' in window)) return
-  window.launchQueue.setConsumer(async (launchParams) => {
-    const [file] = launchParams.files.filter((f) => f instanceof FileSystemFileHandle)
-    if (!file)
-      return notifier(tt.failedToReadErr.summary(), tt.failedToReadErr.noHandleProvided(), 'error')
-    const result = await getFileBackendAdapter(fileBackend).fsHandle(file)
-    if (!result)
-      return notifier(tt.failedToReadErr.summary(), tt.failedToReadErr.unableToGetFile(), 'error')
-    if (editHistory.isDirty && !(await checkDataDropConfirm())) return
+function init(notifier: Notifier) {
+  setFileState({
+    createdAt: new Date(),
+    ...useDefaultFormat(tt.untitled()),
+  })
+  initDragListener(notifier)
+  fileBackend.launchFile?.then(async (result) => {
     try {
       await handleFile(result)
       notifier(tt.loaded(), result.filename, 'success')
@@ -384,15 +376,6 @@ function initPwaLaunch(notifier: Notifier) {
       notifier(tt.failedToReadErr.summary(), String(err), 'error')
     }
   })
-}
-
-function init(notifier: Notifier) {
-  setFileState({
-    createdAt: new Date(),
-    ...useDefaultFormat(tt.untitled()),
-  })
-  initDragListener(notifier)
-  initPwaLaunch(notifier)
 }
 
 export const fileState = {

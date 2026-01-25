@@ -1218,14 +1218,6 @@ type RootTranslation = {
 			 * @param {unknown} 0
 			 */
 			typeNotSupported: RequiredParams<'0'>
-			/**
-			 * 未​提​供​文​件​句​柄
-			 */
-			noHandleProvided: string
-			/**
-			 * 无​法​获​取​提​供​的​文​件
-			 */
-			unableToGetFile: string
 		}
 		dataDropConfirm: {
 			/**
@@ -3201,14 +3193,6 @@ export type TranslationFunctions = {
 			 * 不支持的文件类型：{0}
 			 */
 			typeNotSupported: (arg0: unknown) => LocalizedString
-			/**
-			 * 未提供文件句柄
-			 */
-			noHandleProvided: () => LocalizedString
-			/**
-			 * 无法获取提供的文件
-			 */
-			unableToGetFile: () => LocalizedString
 		}
 		dataDropConfirm: {
 			/**

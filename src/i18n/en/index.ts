@@ -436,8 +436,6 @@ const en = {
     failedToReadErr: {
       summary: 'Failed to read file',
       typeNotSupported: 'Unsupported file type: {0}',
-      noHandleProvided: 'No file handle provided',
-      unableToGetFile: 'Unable to access provided file',
     },
     dataDropConfirm: {
       header: 'Unsaved changes',

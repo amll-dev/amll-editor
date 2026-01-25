@@ -419,8 +419,6 @@ const zhHans = {
     failedToReadErr: {
       summary: '读取文件失败',
       typeNotSupported: '不支持的文件类型：{0}',
-      noHandleProvided: '未提供文件句柄',
-      unableToGetFile: '无法获取提供的文件',
     },
     dataDropConfirm: {
       header: '您有未保存的工作',
