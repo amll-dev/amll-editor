@@ -98,7 +98,8 @@ function handleApplyToAll() {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  width: 12rem;
+  width: fit-content;
+  min-width: 12rem;
 }
 .timeshift-description {
   font-size: 0.9rem;
@@ -106,9 +107,10 @@ function handleApplyToAll() {
 }
 .timeshift-ms-input {
   --p-inputtext-padding-y: 0.4rem;
-  .p-inputtext {
+  .p-inputtext.p-inputtext {
     font-family: var(--font-monospace);
     font-size: 1.1rem;
+    width: 0;
   }
   position: relative;
   &::after {

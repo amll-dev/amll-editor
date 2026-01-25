@@ -468,7 +468,7 @@ const zhHans = {
       wholeWord: '全字匹配',
       wholeField: '全字段匹配',
       crossSyl: '跨音节匹配',
-      useRegex: '使用正则',
+      useRegex: '正则表达式',
       loopSearch: '循环搜索',
     },
     scopeHeader: '匹配范围',
@@ -478,6 +478,7 @@ const zhHans = {
       trans: '翻译',
       roman: '音译',
       lineRoman: '行音译',
+      lineTrans: '行翻译',
     },
     actions: {
       replace: '替换',

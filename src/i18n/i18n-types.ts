@@ -1361,7 +1361,7 @@ type RootTranslation = {
 			 */
 			crossSyl: string
 			/**
-			 * 使​用​正​则
+			 * 正​则​表​达​式
 			 */
 			useRegex: string
 			/**
@@ -1394,6 +1394,10 @@ type RootTranslation = {
 			 * 行​音​译
 			 */
 			lineRoman: string
+			/**
+			 * 行​翻​译
+			 */
+			lineTrans: string
 		}
 		actions: {
 			/**
@@ -3336,7 +3340,7 @@ export type TranslationFunctions = {
 			 */
 			crossSyl: () => LocalizedString
 			/**
-			 * 使用正则
+			 * 正则表达式
 			 */
 			useRegex: () => LocalizedString
 			/**
@@ -3369,6 +3373,10 @@ export type TranslationFunctions = {
 			 * 行音译
 			 */
 			lineRoman: () => LocalizedString
+			/**
+			 * 行翻译
+			 */
+			lineTrans: () => LocalizedString
 		}
 		actions: {
 			/**
