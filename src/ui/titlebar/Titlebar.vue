@@ -165,6 +165,7 @@ useGlobalKeyboard('importFromClipboard', handleImportFromClipboard)
     white-space: pre;
     overflow-x: hidden;
     position: relative;
+    mask-image: linear-gradient(to left, transparent, black 1.5rem);
     .filename-text {
       line-height: 1;
       .name {
@@ -177,17 +178,6 @@ useGlobalKeyboard('importFromClipboard', handleImportFromClipboard)
         margin-left: 0.1rem;
         user-select: none;
       }
-    }
-    &::after {
-      content: '';
-      z-index: 2;
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 2rem;
-      height: 100%;
-      pointer-events: none;
-      background: linear-gradient(to right, transparent, var(--global-background));
     }
     @media (display-mode: standalone) {
       display: none;

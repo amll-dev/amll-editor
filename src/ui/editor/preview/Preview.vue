@@ -98,19 +98,15 @@ onUnmounted(() => {
     right: 1rem;
     z-index: 10;
   }
-  &::after {
-    content: '';
-    pointer-events: none;
-    z-index: 2;
-    position: absolute;
-    top: 0;
-    right: -2rem;
-    bottom: 0;
-    left: -2rem;
-    box-shadow: var(--global-background) 0 0 1rem 1rem inset;
-  }
 }
 .amll-lyric-player.dom {
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 2rem,
+    black calc(100% - 2rem),
+    transparent
+  );
   line-height: 1.5;
   --bright-mask-alpha: 1;
   --dark-mask-alpha: 0.4;
