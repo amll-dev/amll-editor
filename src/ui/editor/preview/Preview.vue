@@ -129,7 +129,6 @@ function passToPlayer(event: Event) {
     transparent
   );
   font-weight: 500;
-  line-height: 1.5;
   --bright-mask-alpha: 1;
   --dark-mask-alpha: 0.4;
   --amll-lp-font-size: max(max(4.5vh, 2.3vw), 3rem);
@@ -138,6 +137,13 @@ function passToPlayer(event: Event) {
 
   [class^='_lyricMainLine'] {
     font-weight: bold;
+    line-height: 1.25;
+  }
+  [class^='_lyricSubLine'] {
+    margin-top: 0.65rem;
+    & + [class^='_lyricSubLine'] {
+      margin-top: 0;
+    }
   }
 
   // Fix padding issue: letters like 'j' get cut off
