@@ -6,10 +6,10 @@
       :current-time="amendedProgressComputed"
       :playing="playingComputed"
       :enable-blur="false"
-      :enable-spring="false"
       :word-fade-width="0.25"
       @line-click="jumpSeek"
       :key="playerKey"
+      ref="playerRef"
     />
     <Button
       class="preview-reload-button"
@@ -22,12 +22,13 @@
   </div>
 </template>
 <script setup lang="ts">
+import type { DomLyricPlayer } from '@applemusic-like-lyrics/core'
 import { LyricPlayer } from '@applemusic-like-lyrics/vue'
 import { t } from '@i18n'
-import { onMounted, onUnmounted, ref, shallowRef, watch } from 'vue'
+import { onMounted, onUnmounted, ref, shallowRef, useTemplateRef, watch } from 'vue'
 
 import { audioEngine } from '@core/audio'
-import { type AMLLLine, convertToAMLL } from '@core/convert/amll'
+import { convertToAMLL } from '@core/convert/amll'
 
 import { collectPersist } from '@states/services/port'
 import { useCoreStore, useRuntimeStore, useStaticStore } from '@states/stores'
@@ -44,20 +45,19 @@ const coreStore = useCoreStore()
 const { progressComputed, playingComputed, amendedProgressComputed, seek } = audioEngine
 
 const playerKey = ref(Symbol())
-const amllLyricLines = shallowRef<AMLLLine[]>([])
+const playerRef = useTemplateRef('playerRef')
+const amllLyricLines = shallowRef(convertToAMLL(collectPersist()))
 watch(
   () => coreStore.lyricLines,
-  () => {
-    amllLyricLines.value = convertToAMLL(collectPersist())
-    playerKey.value = Symbol()
-  },
-  { immediate: true, deep: true },
+  () => (amllLyricLines.value = convertToAMLL(collectPersist())),
+  { deep: true },
 )
 
 const jumpSeek = (line: any) => {
-  if (!line?.line?.lyricLine?.startTime) return
-  const time = line.line.lyricLine.startTime
+  const time = line?.line?.lyricLine?.startTime
+  if (typeof time !== 'number') return
   seek(time)
+  ;(playerRef.value?.lyricPlayer as DomLyricPlayer | undefined)?.resetScroll()
 }
 
 const runtimeStore = useRuntimeStore()
@@ -117,6 +117,10 @@ onUnmounted(() => {
   span[class^='_emphasizeWrapper'] span {
     padding: 1em;
     margin: -1em;
+  }
+
+  [class^='_interludeDots']:not([style]) {
+    display: none;
   }
 }
 </style>
