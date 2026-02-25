@@ -16,7 +16,8 @@
           icon="pi pi-sliders-v"
           severity="secondary"
           @click="tooglePopover"
-          v-tooltip="tt.playOptions()"
+          v-tooltip="tipMultiLine(tt.playOptions(), tt.playOptionsWheel())"
+          @wheel="handlePopBtnWheel"
         />
         <Popover ref="popover"> <PopoverPane /> </Popover>
         <Button
@@ -70,6 +71,7 @@
 <script setup lang="ts">
 import { t } from '@i18n'
 import { useDark } from '@vueuse/core'
+import { clamp } from 'lodash-es'
 import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue'
 
 import { audioEngine } from '@core/audio'
@@ -80,7 +82,7 @@ import { useGlobalKeyboard } from '@core/hotkey'
 import { usePrefStore } from '@states/stores'
 
 import { ms2str } from '@utils/formatTime'
-import { tipHotkey } from '@utils/generateTooltip'
+import { tipHotkey, tipMultiLine } from '@utils/generateTooltip'
 
 import PopoverPane from './Popover.vue'
 import Waveform from './Waveform.vue'
@@ -177,6 +179,15 @@ const percentageRef = computed(() => {
 
 const popover = useTemplateRef('popover')
 const tooglePopover = (e: MouseEvent) => popover.value?.toggle(e)
+function handlePopBtnWheel(e: WheelEvent) {
+  if (!e.deltaY) return
+  popover.value?.show(e)
+  audioEngine.volumeRef.value = clamp(
+    audioEngine.volumeRef.value - Math.sign(e.deltaY) * 0.05,
+    0,
+    1,
+  )
+}
 
 const showSpectrogram = ref(false)
 

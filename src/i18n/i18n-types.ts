@@ -948,6 +948,10 @@ type RootTranslation = {
 		 */
 		playOptions: string
 		/**
+		 * 使​用​鼠​标​滚​轮​调​整​音​量
+		 */
+		playOptionsWheel: string
+		/**
 		 * 音​量
 		 */
 		volume: string
@@ -2940,6 +2944,10 @@ export type TranslationFunctions = {
 		 * 播放选项
 		 */
 		playOptions: () => LocalizedString
+		/**
+		 * 使用鼠标滚轮调整音量
+		 */
+		playOptionsWheel: () => LocalizedString
 		/**
 		 * 音量
 		 */

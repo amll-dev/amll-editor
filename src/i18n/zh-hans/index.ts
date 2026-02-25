@@ -312,6 +312,7 @@ const zhHans = {
   player: {
     chooseAudioFile: '选择音频文件',
     playOptions: '播放选项',
+    playOptionsWheel: '使用鼠标滚轮调整音量',
     volume: '音量',
     rate: '速率',
     resetTo: '重置到 {0}',

@@ -320,6 +320,7 @@ const en = {
   player: {
     chooseAudioFile: 'Choose audio file',
     playOptions: 'Playback options',
+    playOptionsWheel: 'Use mouse wheel to adjust volume',
     volume: 'Volume',
     rate: 'Rate',
     resetTo: 'Reset to {0}',
