@@ -3,10 +3,10 @@
 # AMLL Editor
 
 [![Version](https://img.shields.io/github/package-json/v/amll-dev/amll-editor?label=Version)](https://github.com/amll-dev/amll-editor/releases)
-[![Vite Version](https://img.shields.io/github/package-json/dependency-version/amll-dev/amll-editor/dev/vite?label=Vite&color=646CFF&logo=vite&logoColor=white)](https://vite.dev/)
+[![Vite Version](https://img.shields.io/github/package-json/dependency-version/amll-dev/amll-editor/dev/vite?label=Vite&color=9135FF&logo=vite&logoColor=white)](https://vite.dev/)
 [![Vue Version](https://img.shields.io/github/package-json/dependency-version/amll-dev/amll-editor/vue?label=Vue&color=4FC08D&logo=vuedotjs&logoColor=white)](https://vuejs.org/)
 [![PrimeVue Version](https://img.shields.io/github/package-json/dependency-version/amll-dev/amll-editor/primevue?label=PrimeVue&color=41B883&logo=primevue&logoColor=white)](https://primevue.org/)
-[![AMLL Core Version](https://img.shields.io/github/package-json/dependency-version/amll-dev/amll-editor/%40applemusic-like-lyrics%2Fcore?label=AMLL%20Core&color=FA243C&logo=applemusic&logoColor=white)](https://amll.dev)  
+[![AMLL Core Version](https://img.shields.io/github/package-json/dependency-version/amll-dev/amll-editor/%40applemusic-like-lyrics%2Fcore?label=AMLL&color=FA243C&logo=applemusic&logoColor=white)](https://amll.dev)  
 [![Cloudflare Pages: STABLE](https://img.shields.io/website?url=https%3A%2F%2Feditor.amll.dev%2F&logo=cloudflare&logoColor=white&label=Pages%2fSTABLE)](https://editor.amll.dev/)
 [![Cloudflare Pages: BETA](https://img.shields.io/website?url=https%3A%2F%2Fbeta-editor.amll.dev%2F&logo=cloudflare&logoColor=white&label=Pages%2fBETA)](https://beta-editor.amll.dev/)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/amll-dev/amll-editor)
