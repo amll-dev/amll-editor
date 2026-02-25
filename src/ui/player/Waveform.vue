@@ -90,7 +90,7 @@ const createWs = () => {
   wsInstance = WaveSurfer.create({
     media: audioEngine.audioEl,
     container: wavesurferEl.value,
-    height: containerEl.value.clientHeight,
+    height: containerEl.value.clientHeight + 1,
     hideScrollbar: true,
     waveColor: primaryColor.value,
     progressColor: primaryColor.value,
@@ -167,8 +167,12 @@ onBeforeUnmount(() => {
   }
 }
 .wavesurfer-container {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
   ::part(canvases) {
     opacity: 0.3;
   }

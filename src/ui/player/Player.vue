@@ -49,7 +49,7 @@
             </div>
           </div>
         </div>
-        <Waveform :audio="audioEngine" />
+        <Waveform />
         <Button
           icon="pi pi-chart-bar"
           :severity="showSpectrogram ? 'primary' : 'secondary'"
