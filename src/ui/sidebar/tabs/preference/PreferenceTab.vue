@@ -24,7 +24,7 @@ async function handleReset() {
     header: tt.resetConfirm.header(),
     message: tt.resetConfirm.message(),
     acceptLabel: tt.resetConfirm.action(),
-    acceptIcon: 'pi pi-sync',
+    acceptIcon: 'mdi mdi-restore',
   })
   if (!confirmed) return
   const defaultPrefs = getDefaultPref()
@@ -60,6 +60,7 @@ watch(selectedLanguageItem, (val) => {
       <PrefNumberItem pref-key="maxUndoSteps" :min="1" :max="5000" placeholder="100" />
       <PrefSwitchItem pref-key="packAudioToProject" />
       <PrefSwitchItem pref-key="ttmlAsDefault" experimental />
+      <PrefSwitchItem pref-key="askPermissionOnOpen" />
     </div>
     <div class="pref-group">
       <div class="pref-group-title">{{ tt.groups.key() }}</div>
@@ -67,8 +68,7 @@ watch(selectedLanguageItem, (val) => {
         <Button
           severity="secondary"
           :label="tt.items.keyBindingAction()"
-          icon="pi pi-arrow-up-right"
-          iconPos="right"
+          icon="mdi mdi-keyboard-outline"
           @click="runtimeStore.dialogShown.keyBinding = !runtimeStore.dialogShown.keyBinding"
         />
       </PrefItem>
@@ -85,18 +85,8 @@ watch(selectedLanguageItem, (val) => {
       <div class="pref-group-title">{{ tt.groups.timing() }}</div>
       <PrefNumberItem pref-key="globalLatencyMs" placeholder="0" :min="-5000" :max="5000" />
       <PrefSwitchItem pref-key="alwaysIgnoreBackground" />
-      <PrefSwitchItem pref-key="hideLineTiming" experimental />
-      <!-- <PrefSwitchItem
-        pref-key="autoConnectLineTimes"
-        :disabled="!prefStore.hideLineTiming"
-        experimental
-      />
-      <PrefNumberItem
-        pref-key="autoConnectThresholdMs"
-        :min="0"
-        :max="5000"
-        :disabled="!prefStore.hideLineTiming || !prefStore.autoConnectLineTimes"
-      /> -->
+      <PrefSwitchItem pref-key="hideLineTiming" />
+      <PrefSwitchItem pref-key="highlightSelectedLineOnProgress" experimental />
     </div>
     <!-- <div class="pref-group">
       <div class="pref-group-title">{{ tt.groups.spectrogram() }}</div>
@@ -109,8 +99,7 @@ watch(selectedLanguageItem, (val) => {
         <Button
           severity="secondary"
           :label="tt.items.compatibilityReportAction()"
-          icon="pi pi-arrow-up-right"
-          iconPos="right"
+          icon="mdi mdi-monitor"
           @click="runtimeStore.dialogShown.compatibility = !runtimeStore.dialogShown.compatibility"
         />
       </PrefItem>
@@ -121,14 +110,17 @@ watch(selectedLanguageItem, (val) => {
         <Select v-model="selectedLanguageItem" :options="localeItemList" optionLabel="name" />
       </PrefItem>
       <AnimatedFold :folded="!localeOptNotMatch">
-        <div class="refresh-tip p-color-warn">{{ tt.refreshToTakeEffect() }}</div>
+        <div class="refresh-tip p-color-warn">
+          <i class="mdi mdi-refresh"></i>
+          {{ tt.refreshToTakeEffect() }}
+        </div>
       </AnimatedFold>
       <PrefItem :label="tt.items.resetAll()" :desc="tt.items.resetAllDesc()">
         <Button
           severity="danger"
           variant="outlined"
           :label="tt.items.resetAllAction()"
-          icon="pi pi-sync"
+          icon="mdi mdi-restore"
           @click="handleReset"
         />
       </PrefItem>
@@ -139,8 +131,7 @@ watch(selectedLanguageItem, (val) => {
         <Button
           severity="secondary"
           :label="tt.items.aboutAppAction()"
-          icon="pi pi-arrow-up-right"
-          iconPos="right"
+          icon="mdi mdi-information-outline"
           @click="runtimeStore.dialogShown.about = !runtimeStore.dialogShown.about"
         />
       </PrefItem>

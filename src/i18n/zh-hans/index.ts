@@ -32,6 +32,7 @@ const zhHans = {
       line: {
         toggleDuet: '设置对唱',
         toggleBackground: '设置背景',
+        combineLines: '合并行',
         insertLineAbove: '在前插入行',
         insertLineBelow: '在后插入行',
         duplicateLine: '克隆行',
@@ -263,6 +264,8 @@ const zhHans = {
         packAudioToProjectDesc: '将音频文件打包在项目文件中，以便归档或分享',
         ttmlAsDefault: '以 TTML 为默认格式',
         ttmlAsDefaultDesc: '新建和保存文档时默认使用 TTML 而非 ALP 格式',
+        askPermissionOnOpen: '打开文件时请求写权限',
+        askPermissionOnOpenDesc: '打开文件时立即请求写入权限，以启用自动保存',
         keyBinding: '按键绑定',
         keyBindingDesc: '打开快捷键设置窗口',
         keyBindingAction: '设置',
@@ -282,12 +285,10 @@ const zhHans = {
         alwaysIgnoreBackgroundDesc: '在时轴页上始终跳过背景行',
         hideLineTiming: '隐藏行时间戳',
         hideLineTimingDesc: '自动从音节生成行时间戳',
-        // autoConnectLineTimes: '自动连接行时间',
-        // autoConnectLineTimesDesc: '自动连接间隔较近的相邻行时间戳',
-        // autoConnectThresholdMs: '行时间自动连接阈值',
-        // autoConnectThresholdMsDesc: '连接相邻行时允许的最大间隔 (毫秒)',
         scrollWithPlayback: '随播放自动滚动',
         scrollWithPlaybackDesc: '时轴视图中随播放进度自动滚动',
+        highlightSelectedLineOnProgress: '进度条高亮选中行',
+        highlightSelectedLineOnProgressDesc: '在进度波形条上高亮显示当前选中行的时间段',
         compatibilityReport: '兼容性报告',
         compatibilityReportDesc: '打开兼容性报告窗口',
         compatibilityReportAction: '打开',
@@ -312,6 +313,7 @@ const zhHans = {
   player: {
     chooseAudioFile: '选择音频文件',
     playOptions: '播放选项',
+    playOptionsWheel: '使用鼠标滚轮调整音量',
     volume: '音量',
     rate: '速率',
     resetTo: '重置到 {0}',
@@ -385,7 +387,7 @@ const zhHans = {
       officialDoc: '官方文档',
     },
     alp: {
-      name: 'AMLL Editor 工程文件',
+      name: 'AMLL Editor 工程',
       description: 'AMLL Editor 的项目文件格式，内嵌音频文件和歌词数据，适合项目保存和传输。',
     },
     ttml: {
@@ -395,7 +397,7 @@ const zhHans = {
     lrc: {
       name: '基本 LRC',
       description:
-        '最常见的歌词格式。支持以行时间戳，不支持逐字时间戳。此处指基本 LRC 格式，若导入基于 LRC 的扩展格式，请选择对应扩展格式选项。',
+        '最常见的歌词格式。支持行时间戳，不支持逐字时间戳。此处指基本 LRC 格式，若要导入基于 LRC 的扩展格式，请选择对应扩展格式选项。',
     },
     lrcA2: {
       name: 'LRC A2 扩展',
@@ -408,6 +410,14 @@ const zhHans = {
     qrc: {
       name: 'QQ 音乐逐字',
       description: 'QQ 音乐的私有逐字歌词格式。支持行时间戳和逐字时间戳。',
+    },
+    lyl: {
+      name: 'Lyricify Lines',
+      description: 'Lyricify 的私有行时间戳歌词格式，不支持逐字时间戳。',
+    },
+    lys: {
+      name: 'Lyricify Syllable',
+      description: 'Lyricify 的私有逐字时间戳歌词格式，支持逐字、背景与对唱。',
     },
     spl: {
       name: '椒盐音乐逐字',
@@ -549,6 +559,7 @@ const zhHans = {
       duet: '设为对唱行',
       background: '设为背景行',
       connectNextLine: '续至下行',
+      combineLines: '合并行',
 
       goPrevLine: '上一行',
       goPrevSyl: '上一音节',
@@ -632,6 +643,7 @@ const zhHans = {
     },
     toolBtns: {
       removeTimestamps: '移除时间戳',
+      removeEmptyLines: '移除空白行',
       normalizeSpaces: '规范化空格',
       capitalizeFirstLetter: '首字母大写',
       removeTrailingPunc: '去除尾标点',

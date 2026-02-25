@@ -21,7 +21,7 @@
       <div
         class="spectrogram-container"
         ref="containerEl"
-        :style="{ height: ctx.displayHeight.value + 'px' }"
+        :style="{ height: `${ctx.displayHeight.value}px` }"
       >
         <div
           class="spectrogram-content"

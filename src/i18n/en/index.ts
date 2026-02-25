@@ -32,6 +32,7 @@ const en = {
       line: {
         toggleDuet: 'Duet',
         toggleBackground: 'Background',
+        combineLines: 'Combine lines',
         insertLineAbove: 'Insert line above',
         insertLineBelow: 'Insert line below',
         duplicateLine: 'Duplicate line',
@@ -271,6 +272,9 @@ const en = {
         packAudioToProjectDesc: 'For archiving or sharing',
         ttmlAsDefault: 'Use TTML as default format',
         ttmlAsDefaultDesc: 'For new documents and saves',
+        askPermissionOnOpen: 'Request write permission on open',
+        askPermissionOnOpenDesc:
+          'Request write permission immediately on file open to enable auto-saving',
         keyBinding: 'Key bindings',
         keyBindingDesc: 'Open keyboard shortcut settings',
         keyBindingAction: 'Configure',
@@ -290,12 +294,10 @@ const en = {
         alwaysIgnoreBackgroundDesc: 'Always skip background lines in the timeline view',
         hideLineTiming: 'Hide line timestamps',
         hideLineTimingDesc: 'Automatically generate line timestamps from syllables',
-        // autoConnectLineTimes: 'Auto connect line times',
-        // autoConnectLineTimesDesc: 'Automatically connect timestamps of adjacent lines when close',
-        // autoConnectThresholdMs: 'Auto connect threshold',
-        // autoConnectThresholdMsDesc: 'Maximum allowed gap between lines to auto-connect (ms)',
         scrollWithPlayback: 'Auto-scroll with playback',
         scrollWithPlaybackDesc: 'Timeline view automatically scrolls following playback position',
+        highlightSelectedLineOnProgress: 'Highlight selected line on progress',
+        highlightSelectedLineOnProgressDesc: 'Highlight selected line on progress bar',
         compatibilityReport: 'Compatibility report',
         compatibilityReportDesc: 'Open compatibility report window',
         compatibilityReportAction: 'Open',
@@ -320,6 +322,7 @@ const en = {
   player: {
     chooseAudioFile: 'Choose audio file',
     playOptions: 'Playback options',
+    playOptionsWheel: 'Use mouse wheel to adjust volume',
     volume: 'Volume',
     rate: 'Rate',
     resetTo: 'Reset to {0}',
@@ -425,6 +428,16 @@ const en = {
       name: 'QQ Music Lyrics',
       description:
         'QQ Music proprietary per-syllable lyric format. Supports line and syllable timestamps.',
+    },
+    lyl: {
+      name: 'Lyricify Lines',
+      description:
+        'Lyricify proprietary line timestamp format, does not support syllable-level timestamps.',
+    },
+    lys: {
+      name: 'Lyricify Syllable',
+      description:
+        'Lyricify proprietary syllable timestamp format, supports syllable-level, background and duet lyrics.',
     },
     spl: {
       name: 'SaltPlayer Lyrics',
@@ -567,6 +580,7 @@ const en = {
       duet: 'Toggle Duet Line',
       background: 'Toggle Background Line',
       connectNextLine: 'Toggle Sibling Line Connection',
+      combineLines: 'Combine Lines',
 
       goPrevLine: 'Previous Line',
       goPrevSyl: 'Previous Syllable',
@@ -652,6 +666,7 @@ const en = {
     },
     toolBtns: {
       removeTimestamps: 'Remove Timestamps',
+      removeEmptyLines: 'Remove Empty Lines',
       normalizeSpaces: 'Normalize Spaces',
       capitalizeFirstLetter: 'Capitalize First Letter',
       removeTrailingPunc: 'Remove Trailing Punctuation',

@@ -146,6 +146,7 @@ async function openTTMLFile() {
 const askForWrite = async (handle: FileHandle) => {
   const hasPermission = await fileBackend.askForWritePermission(handle)
   readonlyRef.value = !hasPermission
+  return hasPermission
 }
 async function handleFile(result: FileReadResult) {
   const [, ext] = breakExtension(result.filename)
@@ -165,7 +166,9 @@ async function handleProjFile(result: FileReadResult) {
     displayFilename: filename,
   })
   editHistory.markSaved()
-  askForWrite(handle).then(scheduleAutoSave)
+  if (usePrefStore().askPermissionOnOpen) {
+    if (await askForWrite(handle)) scheduleAutoSave()
+  }
 }
 async function handleTTMLFile(result: FileReadResult) {
   const { handle, blob, filename } = result
@@ -179,7 +182,9 @@ async function handleTTMLFile(result: FileReadResult) {
     displayFilename: filename,
   })
   editHistory.markSaved()
-  askForWrite(handle).then(scheduleAutoSave)
+  if (usePrefStore().askPermissionOnOpen) {
+    if (await askForWrite(handle)) scheduleAutoSave()
+  }
 }
 async function handleMiscFile(result: FileReadResult) {
   const { blob, filename } = result

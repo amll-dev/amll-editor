@@ -1,4 +1,4 @@
-import cloneDeep from 'lodash-es/cloneDeep'
+import { cloneDeep } from 'lodash-es'
 import { computed, nextTick, reactive, ref, toRaw, watch } from 'vue'
 
 import type { LyricLine, LyricSyllable, RuntimeSnapShot, Snapshot } from '@core/types'

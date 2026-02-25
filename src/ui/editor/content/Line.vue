@@ -18,7 +18,7 @@
     <div class="cline-drag-ghost" ref="dragGhostEl"></div>
     <div class="cline-head" draggable="true">
       <div class="cline-drag-indicator">
-        <i class="cline-drag-icon pi pi-bars"></i>
+        <i class="cline-drag-icon mdi mdi-menu"></i>
       </div>
       <div class="cline-head-info" :class="{ compact: prefStore.hideTranslateRoman }">
         <div class="cline-head-info-primary">
@@ -26,7 +26,7 @@
             class="cline-tag cline-bookmark"
             :severity="props.line.bookmarked ? 'warn' : 'secondary'"
             variant="text"
-            :icon="'pi pi-bookmark' + (props.line.bookmarked ? '-fill' : '')"
+            :icon="`mdi mdi-bookmark${props.line.bookmarked ? '' : '-outline'}`"
             :class="{ active: props.line.bookmarked }"
             @click.stop="props.line.bookmarked = !props.line.bookmarked"
             v-tooltip="tt.bookmark()"
@@ -45,7 +45,7 @@
             :severity="props.line.duet ? undefined : 'secondary'"
             variant="text"
             size="small"
-            icon="pi pi-align-right"
+            icon="mdi mdi-align-horizontal-right"
             :class="{ active: props.line.duet }"
             @click.stop="props.line.duet = !props.line.duet"
             v-tooltip="tt.duet()"
@@ -55,7 +55,7 @@
             :severity="props.line.background ? undefined : 'secondary'"
             variant="text"
             size="small"
-            icon="pi pi-expand"
+            icon="mdi mdi-focus-field"
             :class="{ active: props.line.background }"
             @click.stop="props.line.background = !props.line.background"
             v-tooltip="tt.background()"
@@ -79,11 +79,12 @@
                 @click.stop
                 @dragstart.stop
                 :data-line-field-key="f.key"
+                :name="`line-${f.model}/${props.line.id}`"
               />
               <template v-if="f.key === 'roman' && prefStore.sylRomanEnabled">
                 <InputGroupAddon>
                   <Button
-                    :icon="i.upline"
+                    icon="mdi mdi-format-align-top"
                     severity="secondary"
                     @click="handleRomanApply"
                     v-tooltip="tt.applyRomanToSyl()"
@@ -91,7 +92,7 @@
                 </InputGroupAddon>
                 <InputGroupAddon>
                   <Button
-                    :icon="i.downline"
+                    icon="mdi mdi-format-align-bottom"
                     severity="secondary"
                     @click="handleRomanGenerate"
                     v-tooltip="tt.generateRomanFromSyl()"
@@ -120,8 +121,6 @@ import { forceOutsideBlur } from '@utils/forceOutsideBlur'
 import { tipMultiLine } from '@utils/generateTooltip'
 import { sortIndex } from '@utils/sortLineSyls'
 import type { TimeoutHandle } from '@utils/types'
-
-import { i } from '@ui/icon'
 
 import InputText from '@ui/components/InputText.vue'
 import { Button, FloatLabel, InputGroup, InputGroupAddon } from 'primevue'
@@ -346,7 +345,7 @@ function handleRomanGenerate() {
 }
 .cline-drag-icon {
   opacity: 0.5;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   .cline.selected & {
     opacity: 0.8;
   }

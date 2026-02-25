@@ -108,7 +108,7 @@ hr {
   }
 }
 
-::-webkit-scrollbar {
+[data-scrollbar='normal'] ::-webkit-scrollbar {
   background-color: transparent;
   width: 12px;
   height: 12px;
@@ -232,4 +232,9 @@ hr {
   &-info {
     color: var(--p-button-info-background) !important;
   }
+}
+
+.mdi::before {
+  transform: scale(1.25);
+  transform-origin: 50% 40%;
 }

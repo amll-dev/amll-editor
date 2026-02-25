@@ -15,12 +15,11 @@ import KeyFilter from 'primevue/keyfilter'
 import ToastService from 'primevue/toastservice'
 
 import '@assets/fonts/index.scss'
-import '@ui/icon/index.scss'
+import '@mdi/font/css/materialdesignicons.css'
 import '@ui/styles/common.scss'
 import '@ui/styles/rewrites.scss'
 import 'floating-vue/dist/style.css'
 import 'primeicons/primeicons.css'
-import 'virtual:iconify-icons.css'
 
 console.log(t.consoleArt())
 

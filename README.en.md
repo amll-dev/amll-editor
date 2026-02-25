@@ -11,42 +11,49 @@
 [![Cloudflare Pages: BETA](https://img.shields.io/website?url=https%3A%2F%2Fbeta-editor.amll.dev%2F&logo=cloudflare&logoColor=white&label=Pages%2fBETA)](https://beta-editor.amll.dev/)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/amll-dev/amll-editor)
 
-简体中文 | [English](./README.en.md)
+[简体中文](./README.md) | English
 
-基于 Vue 的开源逐音节歌词编辑器。  
-目标成为 [AMLL TTML Tool](https://github.com/amll-dev/amll-ttml-tool) 的继任者，可与 [AMLL](https://github.com/amll-dev/applemusic-like-lyrics) 生态协作。
+An open-source lyrics editor with per-syllable timing support, built with Vue.
 
-**暂处于早期开发阶段。**
+Aiming to become the successor to [AMLL TTML Tool](https://github.com/amll-dev/amll-ttml-tool) and work seamlessly with the [AMLL](https://github.com/amll-dev/applemusic-like-lyrics) ecosystem.
 
-访问稳定版：<https://editor.amll.dev/>  
-开发分支部署：<https://beta-editor.amll.dev/>
+**Currently in early development stage.**
 
-## 部署
+- **Stable version**: https://editor.amll.dev/
+- **Development branch**: https://beta-editor.amll.dev/
 
-本项目部署在 Cloudflare Pages 上，你可以直接从上方的链接访问。
+## Deployment
 
-若你希望自行部署，需要注意：频谱图功能需要**跨站隔离（Cross Origin Isolation, COI）**。因此服务端需要在响应时添加标头：
+This project is hosted on Cloudflare Pages — you can access it directly via the links above.
+
+If you want to self-host the project, please note:
+
+The spectrogram feature requires **Cross Origin Isolation (COI)** to be enabled. Your server must include the following response headers:
 
 ```http
 Cross-Origin-Opener-Policy: same-origin
 Cross-Origin-Embedder-Policy: require-corp
 ```
 
-本项目在构建产物中包含适用于 Cloudflare Pages 的 `_headers` 文件，用于自动配置所需的响应头。若你需要在其他平台部署（如 Vercel 等），请自行参考相应平台文档。
+This repository already includes a `_headers` file compatible with Cloudflare Pages that automatically applies these headers during deployment.
 
-**GitHub Pages 不支持自定义响应头**，因此无法原生满足跨站隔离要求。为此，本项目提供一个可选的兼容方案：当环境变量 `VITE_COI_WORKAROUND` 为真值时，将通过 Service Worker 模拟跨站隔离环境（解决方案来自 [gzuidhof/coi-serviceworker](https://github.com/gzuidhof/coi-serviceworker)）。该方案存在一定限制：启用后，页面在首次加载时会触发一次额外的自动刷新，刷新后 Service Worker 才会接管并生效。相应地，兼容性检查将延迟 3 秒触发，以等待 Service Worker 完成装载。
+For other platforms (Vercel, Netlify, etc.), please refer to their respective documentation to configure custom response headers.
+
+**GitHub Pages does not support custom response headers**, so it cannot natively satisfy the COI requirement. This project includes an optional workaround: When the environment variable `VITE_COI_WORKAROUND` is set to a truthy value, a Service Worker (based on [gzuidhof/coi-serviceworker](https://github.com/gzuidhof/coi-serviceworker)) will be activated to emulate a cross-origin isolated environment.
+
+Known limitations of this workaround:
+
+- The page will perform an additional automatic reload on first visit
+- The Service Worker only takes effect after this reload
+- Compatibility checks are delayed by ~3 seconds to allow the Service Worker to fully register
 
 ## License
-
-本项目以 GNU Affero General Public License v3.0 only 许可授权。
 
 This project is licensed under the GNU Affero General Public License v3.0 only. See [LICENSE](./LICENSE) for details.
 
 SPDX-License-Identifier: AGPL-3.0-only
 
 ## Legal Notice
-
-本项目仅提供多种音频封装格式的播放兼容能力，不包含、分发或破解任何 DRM 技术。用户自行导入的音频或歌词文件仅在本地处理，项目不附带任何版权内容。用户应自行确保其使用符合相关版权法规及内容许可条款。
 
 This project provides playback compatibility for various audio containers, including some proprietary formats that may be used by certain music services. It **DOES NOT** remove or alter any Digital Rights Management (DRM) measures, nor does it enable extraction, redistribution, or modification of copyrighted works.
 

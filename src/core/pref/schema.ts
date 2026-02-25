@@ -9,6 +9,7 @@ export interface PreferenceSchema {
   autoSaveIntervalMinutes: number
   packAudioToProject: boolean
   ttmlAsDefault: boolean
+  askPermissionOnOpen: boolean
   // Shortcuts
   macStyleShortcuts: boolean
   hotkeyMap: HotKey.Map
@@ -17,8 +18,7 @@ export interface PreferenceSchema {
   globalLatencyMs: number
   alwaysIgnoreBackground: boolean
   hideLineTiming: boolean
-  // autoConnectLineTimes: boolean
-  // autoConnectThresholdMs: number
+  highlightSelectedLineOnProgress: boolean
   // Roman
   sylRomanEnabled: boolean
   swapTranslateRoman: boolean
@@ -35,14 +35,14 @@ export const getDefaultPref = (): PreferenceSchema => ({
   autoSaveIntervalMinutes: 3,
   packAudioToProject: true,
   ttmlAsDefault: false,
+  askPermissionOnOpen: true,
   macStyleShortcuts: isAppleDevice(),
   hotkeyMap: getDefaultHotkeyMap(),
   audioSeekingStepMs: 5000,
   globalLatencyMs: 0,
   alwaysIgnoreBackground: false,
-  hideLineTiming: false,
-  // autoConnectLineTimes: false,
-  // autoConnectThresholdMs: 100,
+  hideLineTiming: true,
+  highlightSelectedLineOnProgress: true,
   sylRomanEnabled: false,
   swapTranslateRoman: false,
   hideTranslateRoman: false,

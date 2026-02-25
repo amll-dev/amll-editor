@@ -1,7 +1,7 @@
 <template>
   <div class="audio-popover-pane">
     <span class="audio-popover-label">
-      <i class="pi pi-volume-down audio-popover-icon"></i>{{ tt.volume() }}</span
+      <i class="mdi mdi-volume-high audio-popover-icon"></i>{{ tt.volume() }}</span
     >
     <Slider class="audio-popover-slider" :max="100" :min="0" v-model="volumeInputRef" />
     <InputGroup>
@@ -18,7 +18,7 @@
       <InputGroupAddon class="audio-popover-addon">
         <Button
           class="audio-popover-reset"
-          icon="pi pi-refresh"
+          icon="mdi mdi-refresh"
           severity="secondary"
           variant="text"
           size="small"
@@ -30,7 +30,7 @@
     </InputGroup>
 
     <span class="audio-popover-label">
-      <i class="pi pi-forward audio-popover-icon"></i>{{ tt.rate() }}</span
+      <i class="mdi mdi-speedometer audio-popover-icon"></i>{{ tt.rate() }}</span
     >
     <Slider
       class="audio-popover-slider from-middle"
@@ -54,7 +54,7 @@
       <InputGroupAddon class="audio-popover-addon">
         <Button
           class="audio-popover-reset"
-          icon="pi pi-refresh"
+          icon="mdi mdi-refresh"
           severity="secondary"
           variant="text"
           size="small"

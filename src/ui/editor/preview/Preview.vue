@@ -1,5 +1,11 @@
 <template>
-  <div class="preview">
+  <div
+    class="preview"
+    @wheel.self="passToPlayer"
+    @touchstart.self="passToPlayer"
+    @touchmove.self="passToPlayer"
+    @touchend.self="passToPlayer"
+  >
     <LyricPlayer
       class="amll-lyric-player"
       :lyric-lines="amllLyricLines"
@@ -15,7 +21,7 @@
       class="preview-reload-button"
       :label="tt.reloadAmll()"
       severity="secondary"
-      icon="pi pi-refresh"
+      icon="mdi mdi-refresh"
       variant="text"
       @click="playerKey = Symbol()"
     />
@@ -83,22 +89,37 @@ onUnmounted(() => {
     return true
   })
 })
+
+function passToPlayer(event: Event) {
+  const playerEl = (playerRef.value?.lyricPlayer as DomLyricPlayer | undefined)?.getElement()
+  if (!playerEl) return
+  const newEvent = new (event.constructor as any)(event.type, event)
+  playerEl.dispatchEvent(newEvent)
+}
 </script>
 
 <style lang="scss">
 .preview {
-  font-weight: 500;
   padding: 0 1rem;
   position: relative;
   flex: 1;
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+
   .preview-reload-button {
     position: absolute;
     bottom: 0.5rem;
     right: 1rem;
     z-index: 10;
   }
+
+  & > .amll-lyric-player {
+    max-width: 1200px;
+    overflow-x: visible;
+  }
 }
+
 .amll-lyric-player.dom {
   mask-image: linear-gradient(
     to bottom,
@@ -107,20 +128,32 @@ onUnmounted(() => {
     black calc(100% - 2rem),
     transparent
   );
-  line-height: 1.5;
+  font-weight: 500;
   --bright-mask-alpha: 1;
   --dark-mask-alpha: 0.4;
+  --amll-lp-font-size: max(max(4.5vh, 2.3vw), 3rem);
   --amll-lp-color: light-dark(var(--p-neutral-800), var(--p-neutral-100));
   --amll-lp-hover-bg-color: color-mix(in srgb, var(--amll-lp-color), transparent 95%);
 
+  [class^='_lyricMainLine'] {
+    font-weight: bold;
+    line-height: 1.25;
+  }
+  [class^='_lyricSubLine'] {
+    margin-top: 0.65rem;
+    & + [class^='_lyricSubLine'] {
+      margin-top: 0;
+    }
+  }
+
   // Fix padding issue: letters like 'j' get cut off
-  span[class^='_emphasizeWrapper'] span {
+  [class^='_emphasizeWrapper'] span {
     padding: 1em;
     margin: -1em;
   }
 
   [class^='_interludeDots']:not([style]) {
-    display: none;
+    visibility: hidden;
   }
 }
 </style>

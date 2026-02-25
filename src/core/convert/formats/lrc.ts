@@ -55,12 +55,17 @@ export function parseLRC(lrc: string): Persist {
       lineStr = text!
     }
     if (timeStamps.length === 0) return
+    lineStr = lineStr.trim()
+    const backgroundMatch = lineStr.match(/^[\(（](.+)[\)）]$/)
+    const isBackground = !!backgroundMatch
+    if (backgroundMatch) lineStr = backgroundMatch[1]!
     timeStamps.forEach((ts) => {
       lyricLines.push(
         coreCreate.newLine({
           startTime: ts,
           endTime: ts,
           syllables: [coreCreate.newSyllable({ text: lineStr, startTime: ts, endTime: ts })],
+          background: isBackground,
         }),
       )
     })
@@ -90,9 +95,10 @@ export function stringifyLRC(data: Persist): string {
       const sec = Math.floor((line.startTime % 60000) / 1000)
       const ms = line.startTime % 1000
       const text = line.syllables.map((s) => s.text).join('')
+      const printText = line.background ? `(${text})` : text
       return `[${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}.${String(
         ms,
-      ).padStart(3, '0')}]${text}`
+      ).padStart(3, '0')}]${printText}`
     })
     .join('\n')
 }

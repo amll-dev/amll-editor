@@ -62,4 +62,13 @@ const props = defineProps<{
     margin-right: 0.15rem;
   }
 }
+
+.p-tieredmenu-item-icon.mdi {
+  line-height: 0;
+}
+
+.p-tieredmenu-item-content,
+.p-tieredmenu-item-label.p-tieredmenu-item-label {
+  line-height: 1.15;
+}
 </style>

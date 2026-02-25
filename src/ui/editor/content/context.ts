@@ -7,6 +7,7 @@ import type { LyricLine } from '@core/types'
 import { useCoreStore, useRuntimeStore, useStaticStore } from '@states/stores'
 
 import { alignLineEndTime, alignLineTime } from '@utils/alignLineSylTime'
+import { sortLines } from '@utils/sortLineSyls'
 
 import type { MenuItem } from 'primevue/menuitem'
 
@@ -19,6 +20,24 @@ interface ContentCtxStates {
 
 const tt = t.editor.context
 
+export function combineLines() {
+  const runtimeStore = useRuntimeStore()
+  const coreStore = useCoreStore()
+  if (runtimeStore.selectedLines.size < 2) return
+  const lines = sortLines(...runtimeStore.selectedLines)
+  const [mainLine, ...linesToMerge] = lines
+  if (!mainLine) return
+  for (const line of linesToMerge) {
+    if (line.syllables.length)
+      mainLine.syllables.push(coreStore.newSyllable({ text: ' ' }), ...line.syllables)
+    if (line.translation.trim()) mainLine.translation += ' ' + line.translation.trim()
+    if (line.romanization.trim()) mainLine.romanization += ' ' + line.romanization.trim()
+  }
+  coreStore.deleteLine(...linesToMerge)
+  alignLineEndTime(mainLine)
+  runtimeStore.selectLine(mainLine)
+}
+
 export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
   const coreStore = useCoreStore()
   const runtimeStore = useRuntimeStore()
@@ -27,7 +46,7 @@ export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
   const blankMenuItems = computed<MenuItem[]>(() => [
     {
       label: tt.blank.insertLine(),
-      icon: 'pi pi-plus',
+      icon: 'mdi mdi-plus',
       command: () => {
         const newLine = coreStore.newLine()
         coreStore.lyricLines.push(newLine)
@@ -100,35 +119,47 @@ export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
   const lineMenuItems = computed<MenuItem[]>(() => [
     {
       label: tt.line.toggleDuet(),
-      icon: 'pi pi-align-right',
+      icon: 'mdi mdi-align-horizontal-right',
       command: toggleDuet,
       tip: getHotkeyStr('duet'),
     },
     {
       label: tt.line.toggleBackground(),
-      icon: 'pi pi-expand',
+      icon: 'mdi mdi-focus-field',
       command: toggleBackground,
       tip: getHotkeyStr('background'),
     },
     { separator: true },
+    // multi-line operations
+    ...(runtimeStore.selectedLines.size < 2
+      ? []
+      : [
+          {
+            label: tt.line.combineLines(),
+            icon: 'mdi mdi-format-align-middle',
+            command: combineLines,
+            tip: getHotkeyStr('combineLines'),
+          },
+          { separator: true },
+        ]),
     {
       label: tt.line.insertLineAbove(),
-      icon: 'pi pi-arrow-up',
+      icon: 'mdi mdi-arrow-up',
       command: insertLineBefore,
     },
     {
       label: tt.line.insertLineBelow(),
-      icon: 'pi pi-arrow-down',
+      icon: 'mdi mdi-arrow-down',
       command: insertLineAfter,
     },
     {
       label: tt.line.duplicateLine(),
-      icon: 'pi pi-clone',
+      icon: 'mdi mdi-plus-box-multiple-outline',
       command: duplicateLine,
     },
     {
       label: tt.line.deleteLine(),
-      icon: 'pi pi-trash',
+      icon: 'mdi mdi-trash-can-outline',
       command: deleteLine,
       tip: getHotkeyStr('delete'),
     },
@@ -168,23 +199,23 @@ export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
   const sylMenuItems = computed<MenuItem[]>(() => [
     {
       label: tt.syllable.insertSylBefore(),
-      icon: 'pi pi-arrow-left',
+      icon: 'mdi mdi-arrow-left',
       command: insertSylBefore,
     },
     {
       label: tt.syllable.insertSylAfter(),
-      icon: 'pi pi-arrow-right',
+      icon: 'mdi mdi-arrow-right',
       command: insertSylAfter,
     },
     {
       label: tt.syllable.breakLineAtSyl(),
-      icon: 'pi pi-code',
+      icon: 'mdi mdi-subdirectory-arrow-left',
       command: breakLineAtSyl,
       tip: getHotkeyStr('breakLine'),
     },
     {
       label: tt.syllable.deleteSyl(),
-      icon: 'pi pi-trash',
+      icon: 'mdi mdi-trash-can-outline',
       command: deleteSyl,
       tip: getHotkeyStr('delete'),
     },

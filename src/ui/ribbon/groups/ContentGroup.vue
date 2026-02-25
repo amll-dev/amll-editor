@@ -1,7 +1,7 @@
 <template>
   <RibbonGroup :label="tt.groupLabel()">
     <Button
-      icon="pi pi-arrows-h"
+      icon="mdi mdi-arrow-left-right"
       :label="tt.batchSyllabify()"
       size="small"
       :severity="
@@ -11,7 +11,7 @@
       v-tooltip="tipDesc(tt.batchSyllabify(), tt.batchSyllabifyDesc(), 'batchSplitText')"
     />
     <Button
-      icon="pi pi-info-circle"
+      icon="mdi mdi-information-outline"
       :label="tt.metadata()"
       size="small"
       :severity="
@@ -21,7 +21,7 @@
       v-tooltip="tipDesc(tt.metadata(), tt.metadataDesc(), 'metadata')"
     />
     <Button
-      icon="pi pi-search"
+      icon="mdi mdi-magnify"
       :label="tt.findReplace()"
       size="small"
       :severity="runtimeStore.dialogShown.findReplace ? undefined : 'secondary'"

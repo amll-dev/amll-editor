@@ -28,7 +28,7 @@
             v-if="selectedFormat.example"
             :label="tt.showExamples()"
             size="small"
-            icon="pi pi-align-left"
+            icon="mdi mdi-file-eye-outline"
             :severity="showExample ? undefined : 'secondary'"
             @click="showExample = !showExample"
           />
@@ -37,7 +37,7 @@
             :key="item.url"
             :label="item.name"
             size="small"
-            icon="pi pi-external-link"
+            icon="mdi mdi-open-in-new"
             severity="secondary"
             @click="openUrl(item.url)"
           />
@@ -51,20 +51,20 @@
         <div class="action-buttons">
           <Button
             :label="tt.fromFile()"
-            icon="pi pi-paperclip"
+            icon="mdi mdi-file-upload-outline"
             severity="secondary"
             @click="handleOpenFromFile"
           />
           <div style="flex: 1"></div>
           <Button
             :label="tt.cancel()"
-            icon="pi pi-times"
+            icon="mdi mdi-close"
             severity="secondary"
             @click="visible = false"
           />
           <Button
             :label="tt.import()"
-            icon="pi pi-arrow-right"
+            icon="mdi mdi-arrow-right"
             :disabled="!inputText"
             @click="handleImport"
           />
@@ -173,6 +173,7 @@ function openUrl(url: string) {
       background-color: var(--p-listbox-background);
       border: 1px solid var(--p-listbox-border-color);
       border-radius: var(--p-listbox-border-radius);
+      overflow-x: auto;
       .example-label {
         font-family: var(--font-main);
         display: block;

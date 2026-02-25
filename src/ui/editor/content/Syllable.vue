@@ -23,7 +23,7 @@
     >
       &ZeroWidthSpace;
       <i v-if="props.syllable.bookmarked" class="csyl-head-bookmark pi pi-bookmark-fill"></i>
-      <i v-else class="csyl-head-bars pi pi-bars"></i>
+      <i v-else class="csyl-head-bars mdi mdi-menu"></i>
       <div v-if="props.syllable.placeholdingBeat" class="csyl-head-placeholding-beat">
         {{ props.syllable.placeholdingBeat }}
       </div>
@@ -45,6 +45,7 @@
         @compositionend="hijackCompositionBackquote"
         @blur="flushInputModel"
         data-syllable-field
+        :name="`syl/${props.syllable.id}`"
       />
     </div>
     <div class="csyl-roman-shell" v-if="prefStore.sylRomanEnabled">
@@ -61,6 +62,7 @@
         @blur="flushRomanModel"
         @compositionend="hijackCompositionBackquote"
         data-syllable-roman-field
+        :name="`syl-romanization/${props.syllable.id}`"
       />
     </div>
   </div>
@@ -371,7 +373,7 @@ onUnmounted(() => {
 }
 .csyl-head-bars {
   left: 0;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   transform: scaleX(0.8);
   opacity: 0.4;
 }

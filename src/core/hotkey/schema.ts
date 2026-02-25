@@ -31,6 +31,7 @@ export const hotkeyCommandList = [
   'selectAllLines',
   'selectAllSyls',
   'breakLine',
+  'combineLines',
   'duet',
   'background',
   'connectNextLine',
@@ -104,6 +105,7 @@ export const getDefaultHotkeyMap = () =>
     breakLine: k('Enter'),
     duet: k(Ctrl, 'u'),
     background: k(Ctrl, 'b'),
+    combineLines: k(Ctrl, 'e'),
   })
 
 //#region Helpers

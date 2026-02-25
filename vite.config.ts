@@ -8,7 +8,6 @@ import { defineConfig } from 'vite'
 import packageJSON from './package.json'
 import { coiPlugin } from './pipelines/coi/plugin'
 import { faviconPlugin } from './pipelines/favicon/plugin'
-import { iconifyPlugin } from './pipelines/iconify/plugin'
 import { viteStaticCopyPyodide } from './pipelines/pyodide/plugin'
 import { manifestPlugin } from './pipelines/webManifest/plugin'
 
@@ -49,7 +48,6 @@ export default defineConfig(({ mode }) => ({
     manifestPlugin(),
     faviconPlugin(),
     coiPlugin(),
-    iconifyPlugin(),
     viteStaticCopyPyodide(mode === 'development'),
     vue(),
     visualizer({
@@ -76,32 +74,20 @@ export default defineConfig(({ mode }) => ({
     chunkSizeWarningLimit: 1024,
     rollupOptions: {
       output: {
-        manualChunks: {
-          primeui: ['primevue', '@primeuix/themes'],
-          ui: ['wavesurfer.js', 'vue-draggable-plus', 'floating-vue', 'virtua'],
-          vue: ['vue', 'pinia'],
-          nlp: ['compromise', 'compromise-speech', 'compromise-syllables'],
-          utils: ['lodash-es', 'nanoid', 'mitt'],
-          codemirror: [
-            'codemirror',
-            '@codemirror/commands',
-            '@codemirror/search',
-            '@codemirror/state',
-            '@codemirror/view',
-          ],
-          amll: [
-            '@applemusic-like-lyrics/core',
-            '@applemusic-like-lyrics/vue',
-            '@pixi/app',
-            '@pixi/core',
-            '@pixi/display',
-            '@pixi/filter-blur',
-            '@pixi/filter-bulge-pinch',
-            '@pixi/filter-color-matrix',
-            '@pixi/sprite',
-            'jss',
-            'jss-preset-default',
-          ],
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return
+          const m = id.split('node_modules/')[1]
+          if (m.startsWith('prime') || m.startsWith('@prime') || m.startsWith('@mdi')) return 'ui'
+          if (m.startsWith('@vue') || m.startsWith('pinia') || m.startsWith('@vueuse')) return 'vue'
+          if (m.startsWith('codemirror') || m.startsWith('@codemirror')) return 'codemirror'
+          if (m.startsWith('compromise') || m.startsWith('syllabify')) return 'nlp'
+          if (
+            m.startsWith('@applemusic-like-lyrics') ||
+            m.startsWith('@pixi') ||
+            m.startsWith('jss')
+          )
+            return 'amll'
+          return 'vendor'
         },
       },
       external: [

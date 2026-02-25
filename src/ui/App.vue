@@ -29,6 +29,7 @@ import { View } from '@core/types'
 import { editHistory } from '@states/services/history'
 import { useCoreStore, usePrefStore, useRuntimeStore, useStaticStore } from '@states/stores'
 
+import { hasOverlayScrollbar } from '@utils/checkOverlayScrollbar'
 import { isInputEl } from '@utils/isInputEl'
 
 import FontLoader from './components/FontLoader.vue'
@@ -162,12 +163,12 @@ onMounted(() => {
         rejectProps: {
           label: optn.rejectLabel || t.components.confirmDialog.cancel(),
           severity: 'secondary',
-          icon: optn.rejectIcon || 'pi pi-times',
+          icon: optn.rejectIcon || 'mdi mdi-close',
         },
         acceptProps: {
           label: optn.acceptLabel || t.components.confirmDialog.continue(),
           severity: optn.severity || 'danger',
-          icon: optn.acceptIcon || 'pi pi-arrow-right',
+          icon: optn.acceptIcon || 'mdi mdi-arrow-right',
           autofocus: true,
         },
         accept: () => resolve(true),
@@ -175,6 +176,21 @@ onMounted(() => {
         onHide: () => resolve(false),
       }),
     )
+})
+
+onMounted(() => {
+  const hasOverlay = hasOverlayScrollbar()
+  document.documentElement.dataset.scrollbar = hasOverlay ? 'overlay' : 'normal'
+})
+
+window.addEventListener('load', () => {
+  const appEl = document.getElementById('app')
+  if (!appEl) return
+  appEl.style.removeProperty('opacity')
+
+  const loadingEl = document.getElementById('loading')
+  if (!loadingEl) return
+  loadingEl.remove()
 })
 </script>
 
@@ -223,14 +239,14 @@ main {
   .editor {
     flex: 1;
   }
+}
 
-  .editor-scroller {
-    &::-webkit-scrollbar {
-      width: 16px;
-    }
-    &::-webkit-scrollbar-thumb {
-      border-width: 5px;
-    }
+[data-scrollbar='normal'] .editor-scroller {
+  &::-webkit-scrollbar {
+    width: 16px;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-width: 5px;
   }
 }
 </style>

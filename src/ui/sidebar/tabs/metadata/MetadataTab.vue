@@ -17,7 +17,7 @@
       <Button
         v-if="currentTemplate.docUrl"
         :label="tt.documentBtn()"
-        icon="pi pi-external-link"
+        icon="mdi mdi-open-in-new"
         fluid
         severity="secondary"
         @click="handleOpenDocUrl"
@@ -25,7 +25,7 @@
       />
       <Button
         :label="tt.addAllPresets()"
-        icon="pi pi-plus"
+        icon="mdi mdi-format-list-group-plus"
         fluid
         severity="secondary"
         @click="handleAddAllFields"
@@ -35,7 +35,7 @@
     <Divider v-if="currentTemplate" />
     <div class="metadata-field-list">
       <div class="metadata-field" v-for="(field, index) in internalMetadataList">
-        <div class="keylabel"><i class="pi pi-info-circle"></i></div>
+        <div class="keylabel"><i class="mdi mdi-information-outline"></i></div>
         <div class="keycontent">
           <AutoComplete
             v-if="currentTemplate"
@@ -73,7 +73,7 @@
         </div>
         <div class="valuelabel">
           <Button
-            icon="pi pi-trash"
+            icon="mdi mdi-trash-can-outline"
             variant="text"
             size="small"
             severity="danger"
@@ -88,17 +88,17 @@
     <div class="add-field">
       <Button
         :label="tt.clear()"
-        icon="pi pi-ban"
+        icon="mdi mdi-notification-clear-all"
         fluid
         severity="secondary"
         @click="handleClearAllFields"
         style="flex: 1"
-        v-if="coreStore.metadata.length"
+        v-if="internalMetadataList.length > 0"
       />
       <Button
         class="add-field-btn"
         :label="tt.addField()"
-        icon="pi pi-plus"
+        icon="mdi mdi-plus"
         severity="secondary"
         fluid
         @click="handleAddField"
