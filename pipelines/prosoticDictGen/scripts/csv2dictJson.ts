@@ -13,7 +13,7 @@ const header = lines[0].split(',')
 const syllableIndex = header.indexOf('splitted')
 const wordIndex = header.indexOf('word')
 
-const results: Record<string, number[] | 0> = {}
+const results: Record<string, number[] | number> = {}
 const nlpWithPlg = nlp.extend(nlpSpeech)
 for (const row of lines.slice(1)) {
   const cols = row.split(',')
@@ -28,6 +28,7 @@ for (const row of lines.slice(1)) {
   }
   const syllableLengths = syllable.split('-').map((s) => s.length)
   syllableLengths.pop()
-  results[word] = syllableLengths
+  if (syllableLengths.length === 1) results[word] = syllableLengths[0]
+  else results[word] = syllableLengths
 }
 fs.writeFileSync(OUT, JSON.stringify(results))

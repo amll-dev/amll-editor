@@ -6,7 +6,9 @@ import { splitTextByLengths } from '../shared'
 import { basicSplit } from './basic'
 import { compromiseSplitCore } from './compromise'
 
-let dictCache: Map<string, 0 | number[]> | null = null
+type DictEntry = number | number[]
+
+let dictCache: Map<string, DictEntry> | null = null
 export async function prosoticSplit(
   strs: string[],
   rewrites: Readonly<SL.Rewrite>[],
@@ -15,28 +17,25 @@ export async function prosoticSplit(
   if (!dictCache) {
     const rawDict = (await fetch('/dicts/SUBTLEXus_prosotic.dict.json').then((res) =>
       res.json(),
-    )) as Record<string, 0 | number[]>
-    dictCache = new Map<string, 0 | number[]>(Object.entries(rawDict))
+    )) as Record<string, DictEntry>
+    dictCache = new Map<string, DictEntry>(Object.entries(rawDict))
   }
   const dict = dictCache
   const nlpWithPlg = nlp.extend(nlpSpeech)
   return basicSplit(strs, rewrites, caseSensitive, (part) => {
     if (part.length === 0) return []
     const key = part.toLowerCase()
-    if (dict.has(key)) {
-      const lengths = dict.get(key)!
-      if (!lengths) return [part]
-      return splitTextByLengths(part, lengths)
-    }
+    if (dict.has(key)) return splitByDict(part, dict.get(key)!)
     if (key.endsWith('in')) {
       // handle g dropping cases like "runnin", "singin"
       const altKey = key + 'g'
-      if (dict.has(altKey)) {
-        const lengths = dict.get(altKey)!
-        if (!lengths) return [part]
-        return splitTextByLengths(part, lengths)
-      }
+      if (dict.has(altKey)) return splitByDict(altKey, dict.get(altKey)!)
     }
     return compromiseSplitCore(nlpWithPlg, part)
   })
+  function splitByDict(word: string, entry: DictEntry) {
+    if (!entry) return [word]
+    const lengthsArr = typeof entry === 'number' ? [entry] : entry
+    return splitTextByLengths(word, lengthsArr)
+  }
 }
