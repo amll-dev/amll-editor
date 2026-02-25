@@ -3,4 +3,7 @@
 /src/vendors/**/*.d.ts
 /LICENSE
 *.dict.json
+*.min.js
 /dist
+/pnpm-lock.yaml
+src/i18n/i18n-*.ts

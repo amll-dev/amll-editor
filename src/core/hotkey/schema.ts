@@ -4,52 +4,55 @@ const Shift = Symbol('Shift')
 const Ctrl = Symbol('Ctrl')
 const Alt = Symbol('Alt')
 
-export const hotkeyCommandNames = {
-  open: '打开',
-  save: '保存',
-  saveAs: '另存为',
+export const hotkeyCommandList = [
+  'open',
+  'save',
+  'saveAs',
 
-  new: '新建空项目',
-  exportToClipboard: '导出到剪贴板',
-  importFromClipboard: '从剪贴板导入',
+  'new',
+  'exportToClipboard',
+  'importFromClipboard',
 
-  switchToContent: '切换到内容视图',
-  switchToTiming: '切换到时轴视图',
-  switchToPreview: '切换到预览视图',
+  'switchToContent',
+  'switchToTiming',
+  'switchToPreview',
 
-  preferences: '偏好设置',
-  batchSplitText: '批量断字',
-  metadata: '元数据',
+  'preferences',
+  'batchSplitText',
+  'metadata',
 
-  batchTimeShift: '批量时移',
-  undo: '撤销',
-  redo: '重做',
-  bookmark: '书签',
-  find: '查找',
-  replace: '替换',
-  delete: '删除',
-  selectAllLines: '全选所有行',
-  selectAllSyls: '全选所有音节',
+  'batchTimeShift',
+  'undo',
+  'redo',
+  'bookmark',
+  'find',
+  'replace',
+  'delete',
+  'selectAllLines',
+  'selectAllSyls',
+  'breakLine',
+  'duet',
+  'background',
+  'connectNextLine',
 
-  goPrevLine: '上一行',
-  goPrevSyl: '上一音节',
-  goPrevSylnPlay: '上一音节并播放',
-  goNextLine: '下一行',
-  goNextSyl: '下一音节',
-  goNextSylnPlay: '下一音节并播放',
-  playCurrSyl: '播放当前音节',
-  markBegin: '标记开始时间',
-  markEndBegin: '标记连缀时间',
-  markEnd: '标记结束时间',
+  'goPrevLine',
+  'goPrevSyl',
+  'goPrevSylnPlay',
+  'goNextLine',
+  'goNextSyl',
+  'goNextSylnPlay',
+  'playCurrSyl',
+  'markBegin',
+  'markEndBegin',
+  'markEnd',
 
-  chooseMedia: '选择媒体',
-  seekBackward: '快退',
-  volumeUp: '增大音量',
-  playPauseAudio: '播放/暂停音频',
-  seekForward: '快进',
-  volumeDown: '减小音量',
-} as const
-export const hotkeyCommandList = Object.keys(hotkeyCommandNames) as HK.Command[]
+  'chooseMedia',
+  'seekBackward',
+  'volumeUp',
+  'playPauseAudio',
+  'seekForward',
+  'volumeDown',
+] as const
 
 export const hotkeyInputBlockList: HK.Key[] = [
   k(Ctrl, 'z'),
@@ -85,6 +88,7 @@ export const getDefaultHotkeyMap = () =>
     replace: [k(Ctrl, 'h'), k(Ctrl, Shift, 'f')],
     delete: k('Delete'),
     bookmark: k(Ctrl, 'd'),
+    connectNextLine: k(Ctrl, 'g'),
     preferences: k(Ctrl, 'Comma'),
     chooseMedia: k(Ctrl, 'm'),
     metadata: k(Ctrl, 'i'),
@@ -97,6 +101,9 @@ export const getDefaultHotkeyMap = () =>
     importFromClipboard: k(Ctrl, Alt, 'v'),
     selectAllLines: k(Ctrl, 'a'),
     selectAllSyls: k(Alt, 'a'),
+    breakLine: k('Enter'),
+    duet: k(Ctrl, 'u'),
+    background: k(Ctrl, 'b'),
   })
 
 //#region Helpers

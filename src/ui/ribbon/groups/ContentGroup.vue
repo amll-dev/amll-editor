@@ -1,39 +1,39 @@
 <template>
-  <RibbonGroup label="内容">
+  <RibbonGroup :label="tt.groupLabel()">
     <Button
       icon="pi pi-arrows-h"
-      label="批量断字"
+      :label="tt.batchSyllabify()"
       size="small"
       :severity="
         runtimeStore.openedSidebars.includes(SidebarKey.SplitText) ? undefined : 'secondary'
       "
       @click="runtimeStore.toogleSidebar(SidebarKey.SplitText)"
-      v-tooltip="
-        tipDesc('批量断字', '打开批量断字侧边栏，将多行歌词文本拆分为音节。', 'batchSplitText')
-      "
+      v-tooltip="tipDesc(tt.batchSyllabify(), tt.batchSyllabifyDesc(), 'batchSplitText')"
     />
     <Button
       icon="pi pi-info-circle"
-      label="元数据"
+      :label="tt.metadata()"
       size="small"
       :severity="
         runtimeStore.openedSidebars.includes(SidebarKey.Metadata) ? undefined : 'secondary'
       "
       @click="runtimeStore.toogleSidebar(SidebarKey.Metadata)"
-      v-tooltip="tipDesc('元数据', '打开元数据侧边栏，编辑歌词文件元数据。', 'metadata')"
+      v-tooltip="tipDesc(tt.metadata(), tt.metadataDesc(), 'metadata')"
     />
     <Button
       icon="pi pi-search"
-      label="查找替换"
+      :label="tt.findReplace()"
       size="small"
       :severity="runtimeStore.dialogShown.findReplace ? undefined : 'secondary'"
       @click="runtimeStore.dialogShown.findReplace = !runtimeStore.dialogShown.findReplace"
-      v-tooltip="tipDesc('查找替换', '打开查找替换对话框，在歌词中查找并替换文本。', 'find')"
+      v-tooltip="tipDesc(tt.findReplace(), tt.findReplaceDesc(), 'find')"
     />
   </RibbonGroup>
 </template>
 
 <script setup lang="ts">
+import { t } from '@i18n'
+
 import { useGlobalKeyboard } from '@core/hotkey'
 
 import { useRuntimeStore } from '@states/stores'
@@ -44,6 +44,8 @@ import { SidebarKey } from '@ui/sidebar'
 
 import RibbonGroup from '../RibbonGroupShell.vue'
 import { Button } from 'primevue'
+
+const tt = t.ribbon.content
 
 const runtimeStore = useRuntimeStore()
 

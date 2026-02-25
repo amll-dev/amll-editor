@@ -1,11 +1,14 @@
 import vue from '@vitejs/plugin-vue'
+import chalk, { ChalkInstance } from 'chalk'
 import { URL, fileURLToPath } from 'node:url'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { simpleGit } from 'simple-git'
 import { defineConfig } from 'vite'
 
 import packageJSON from './package.json'
-import { iconSetPlugin } from './pipelines/iconSet/plugin'
+import { coiPlugin } from './pipelines/coi/plugin'
+import { faviconPlugin } from './pipelines/favicon/plugin'
+import { iconifyPlugin } from './pipelines/iconify/plugin'
 import { viteStaticCopyPyodide } from './pipelines/pyodide/plugin'
 import { manifestPlugin } from './pipelines/webManifest/plugin'
 
@@ -16,21 +19,37 @@ const aliasRelMap: Record<string, string> = {
   '@utils': './src/utils',
   '@states': './src/states',
   '@vendors': './src/vendors',
-}
-const aliasMap: Record<string, string> = {}
-for (const [key, relPath] of Object.entries(aliasRelMap)) {
-  aliasMap[key] = fileURLToPath(new URL(relPath, import.meta.url))
+  '@i18n': './src/i18n',
 }
 
-const git = simpleGit()
+const isBeta = process.env.VITE_BUILD_CHANNEL === 'BETA'
+const defineObjMap: Record<string, string | number | boolean | undefined> = {
+  __APP_VERSION__: packageJSON.version,
+  __APP_COMMIT_HASH__: await simpleGit().revparse(['HEAD']),
+  __REPO_URL__: packageJSON.repository,
+  __APP_DISPLAY_NAME__: packageJSON.displayName + (isBeta ? ` BETA` : ''),
+  __APP_BUILD_CHANNEL__: process.env.VITE_BUILD_CHANNEL || undefined,
+  __APP_IS_BETA__: isBeta,
+  __APP_BUILD_TIMESTAMP__: Date.now(),
+  __AMLL_CORE_VERSION__: packageJSON.dependencies['@applemusic-like-lyrics/core'],
+  __AMLL_VUE_VERSION__: packageJSON.dependencies['@applemusic-like-lyrics/vue'],
+}
 
-console.log(`Current channel: ${process.env.VITE_BUILD_CHANNEL || 'UNSPECIFIED'}\n`)
+const channelColors: Record<string, ChalkInstance> = {
+  STABLE: chalk.hex('#10B981'),
+  BETA: chalk.hex('#F97316'),
+  UNSPECIFIED: chalk.gray,
+}
+const channel = process.env.VITE_BUILD_CHANNEL || 'UNSPECIFIED'
+console.log(`Current channel: ${channelColors[channel]?.(channel) || channel}\n`)
 
 // https://vite.dev/config/
-export default defineConfig(async ({ mode }) => ({
+export default defineConfig(({ mode }) => ({
   plugins: [
     manifestPlugin(),
-    iconSetPlugin(),
+    faviconPlugin(),
+    coiPlugin(),
+    iconifyPlugin(),
     viteStaticCopyPyodide(mode === 'development'),
     vue(),
     visualizer({
@@ -40,6 +59,19 @@ export default defineConfig(async ({ mode }) => ({
       filename: 'chunk-analysis.html',
     }),
   ],
+  worker: { format: 'es' },
+  resolve: {
+    alias: Object.fromEntries(
+      [...Object.entries(aliasRelMap)].map(([key, rel]) => [
+        key,
+        fileURLToPath(new URL(rel, import.meta.url)),
+      ]),
+    ),
+  },
+  define: Object.fromEntries(
+    [...Object.entries(defineObjMap)].map(([key, value]) => [key, JSON.stringify(value)]),
+  ),
+  optimizeDeps: { exclude: ['pyodide'] },
   build: {
     chunkSizeWarningLimit: 1024,
     rollupOptions: {
@@ -83,20 +115,4 @@ export default defineConfig(async ({ mode }) => ({
       ],
     },
   },
-  resolve: { alias: aliasMap },
-  define: {
-    __APP_VERSION__: JSON.stringify(packageJSON.version),
-    __APP_COMMIT_HASH__: JSON.stringify(await git.revparse(['HEAD'])),
-    __REPO_URL__: JSON.stringify(packageJSON.repository),
-    __BETA_DEPLOY_LOG_URL__: JSON.stringify(
-      'https://github.com/Linho1219/AMLL-Editor-BetaDeploy/actions',
-    ),
-    __APP_DISPLAY_NAME__: JSON.stringify(
-      packageJSON.displayName + (process.env.VITE_BUILD_CHANNEL === 'BETA' ? ` BETA` : ''),
-    ),
-    __APP_BUILD_TIMESTAMP__: JSON.stringify(Date.now()),
-    __AMLL_CORE_VERSION__: JSON.stringify(packageJSON.dependencies['@applemusic-like-lyrics/core']),
-    __AMLL_VUE_VERSION__: JSON.stringify(packageJSON.dependencies['@applemusic-like-lyrics/vue']),
-  },
-  optimizeDeps: { exclude: ['pyodide'] },
 }))

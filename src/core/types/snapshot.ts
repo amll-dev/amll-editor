@@ -1,4 +1,4 @@
-import type { LyricLine, Metadata } from './core'
+import type { LyricLine, MetadataMap } from './core'
 import type { View } from './runtime'
 
 export interface RuntimeSnapShot {
@@ -12,7 +12,7 @@ export interface RuntimeSnapShot {
 export interface Snapshot {
   timestamp: number
   core: {
-    metadata: Metadata
+    metadata: MetadataMap
     lyricLines: LyricLine[]
   }
   firstRuntime: RuntimeSnapShot

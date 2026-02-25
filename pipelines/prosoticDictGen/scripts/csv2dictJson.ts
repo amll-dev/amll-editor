@@ -1,6 +1,6 @@
 // from SUBTLEXus_syllables-corrected.csv to SUBTLEXus_prosotic.dict.json
-import nlp from 'compromise/tokenize'
 import nlpSpeech from 'compromise-speech'
+import nlp from 'compromise/tokenize'
 import fs from 'fs'
 
 const SRC = './pipelines/prosoticDictGen/SUBTLEXus_syllables-corrected.csv'

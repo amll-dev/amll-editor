@@ -95,7 +95,7 @@ const maintainProgressRef = () => {
 }
 audioEl.onseeked = () => (progressRef.value = getProgress())
 const amendmentComputed = computed(() =>
-  !playingRef.value ? 0 : usePrefStore().globalLatency * playbackRateRef.value,
+  !playingRef.value ? 0 : usePrefStore().globalLatencyMs * playbackRateRef.value,
 )
 const amendedProgressComputed = computed(() =>
   Math.min(Math.max(0, progressRef.value - amendmentComputed.value), lengthRef.value),
@@ -188,6 +188,9 @@ export const audioEngine = {
   volumeRef,
   playbackRateRef,
   activatedRef,
+  get audioBuffer() {
+    return audioBufferRef.value
+  },
   audioBufferComputed: readonly(audioBufferRef),
   filenameComputed: readonly(filenameRef),
   rawFileComputed: readonly(rawFileRef),

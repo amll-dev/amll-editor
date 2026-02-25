@@ -4,7 +4,6 @@ import { coreCreate } from '@states/stores/core'
 
 import { ms2str, str2ms } from '@utils/formatTime'
 
-import MANIFEST from '../manifest.json'
 import type { Convert as CV } from '../types'
 
 // SPL, Salt Player Lyrics format
@@ -22,8 +21,7 @@ import type { Convert as CV } from '../types'
 // [mm:ss.xx]<mm:ss.xx>Syllable <mm:ss.xx>timestamp <mm:ss.xx>can[mm:ss.xx]
 // [mm:ss.xx]use [mm:ss.xx]both [mm:ss.xx]symbols [mm:ss.xx]
 
-export const splReg: CV.Format = {
-  ...MANIFEST.spl,
+export const splReg: CV.FormatHandler = {
   parser: parseSPL,
   stringifier: stringifySPL,
 }

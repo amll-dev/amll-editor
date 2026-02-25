@@ -1,13 +1,14 @@
+import { t } from '@i18n'
 import mitt from 'mitt'
 import { onUnmounted } from 'vue'
 
 import { usePrefStore } from '@states/stores'
 
-import { hotkeyInputBlockList } from './data'
+import { hotkeyInputBlockList } from './schema'
 import type { HotKey as HK } from './types'
 
 export type { HotKey } from './types'
-export { getDefaultHotkeyMap } from './data'
+export { getDefaultHotkeyMap, hotkeyCommandList } from './schema'
 
 const globalKeyboardEmit = mitt<{ [K in HK.Command]: undefined }>()
 export function useGlobalKeyboard(command: HK.Command, handler: () => void) {
@@ -60,7 +61,7 @@ export function matchHotkeyInMap(hotkey: HK.Key, hotkeyMap: HK.Map): HK.Command 
 }
 
 const keyRewrites: Record<string, string> = {
-  Space: '空格',
+  Space: t.hotkey.keyNames.space(),
   Escape: 'Esc',
   ArrowLeft: '←',
   ArrowRight: '→',

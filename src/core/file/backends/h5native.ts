@@ -1,20 +1,16 @@
 import saveFile from 'save-file'
 
-import { defineFileBackend, registerFileBackendAdapter } from '../types'
+import { extractDotExts, extractMIMEs } from '../shared'
+import { defineFileBackend } from '../types'
 
 interface H5NativeFileHandle {
   filename: string
 }
 
-const extractDotExts = (types: FilePickerAcceptType[]): string[] =>
-  types.flatMap(({ accept }) =>
-    !accept ? [] : [...Object.entries(accept)].map(([mime, dotExts]) => [mime, ...dotExts]).flat(),
-  )
-
 export const h5NativeBackend = defineFileBackend<H5NativeFileHandle>({
   async read(_id, types) {
-    const dotExts = extractDotExts(types)
-    const accept = dotExts.join(',')
+    const mimes = extractMIMEs(...types)
+    const accept = mimes.join(',')
     const file = await new Promise<File>((resolve, reject) => {
       const input = document.createElement('input')
       input.type = 'file'
@@ -48,9 +44,10 @@ export const h5NativeBackend = defineFileBackend<H5NativeFileHandle>({
     return filename
   },
   async writeAs(_id, types, suggestedBaseName, blobGenerator) {
-    const [dotExt] = extractDotExts(types)
+    const [dotExt] = extractDotExts(...types)
     if (!dotExt) throw new Error('Cannot determine file extension for saving.')
     const filename = `${suggestedBaseName}${dotExt}`
+    console.log('h5native writeAs', filename)
     const blob = await blobGenerator(filename)
     saveFile(blob, filename)
     return {
@@ -59,18 +56,15 @@ export const h5NativeBackend = defineFileBackend<H5NativeFileHandle>({
       blob,
     }
   },
-})
-registerFileBackendAdapter<H5NativeFileHandle>(h5NativeBackend, {
-  async dragDrop(e: DragEvent) {
-    const file = e.dataTransfer?.files[0]
-    if (!file) return null
-    return {
-      handle: { filename: file.name },
-      filename: file.name,
-      blob: file,
-    }
-  },
-  async fsHandle(_handle: FileSystemHandle) {
-    return null
+  adapters: {
+    async dragDrop(e: DragEvent) {
+      const file = e.dataTransfer?.files[0]
+      if (!file) return null
+      return {
+        handle: { filename: file.name },
+        filename: file.name,
+        blob: file,
+      }
+    },
   },
 })

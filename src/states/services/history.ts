@@ -23,6 +23,16 @@ const savedStatePointer = ref<number>(NaN)
 const isDirty = computed(() => savedStatePointer.value !== state.current)
 const markSaved = () => (savedStatePointer.value = state.current)
 
+const preventClose = (e: BeforeUnloadEvent) => {
+  e.preventDefault()
+  e.returnValue = ''
+  return ''
+}
+watch(isDirty, () => {
+  if (isDirty.value) window.addEventListener('beforeunload', preventClose)
+  else window.removeEventListener('beforeunload', preventClose)
+})
+
 let shutdownHook: (() => void) | null = null
 
 function clear() {
@@ -122,8 +132,7 @@ function wayback(snapshot: Readonly<Snapshot>, isRedo = false) {
   stopRecording = true
   const runtimeStore = useRuntimeStore()
   const coreStore = useCoreStore()
-  coreStore.metadata.length = 0
-  snapshotCore.metadata.forEach(({ key, values }) => coreStore.metadata.push({ key, values }))
+  coreStore.metadata = reactive(snapshotCore.metadata)
   coreStore.lyricLines.splice(0, coreStore.lyricLines.length, ...snapshotCore.lyricLines)
   runtimeStore.currentView = snapshotRuntime.currentView
   const selectedLines: LyricLine[] = []

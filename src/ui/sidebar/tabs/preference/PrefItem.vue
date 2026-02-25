@@ -1,16 +1,16 @@
 <template>
   <div class="pref-item">
-    <div class="text" :class="{ disabled }">
+    <label class="text" :class="{ disabled }" :for="props.for">
       <div class="label">
         {{ props.label
         }}<i
           v-if="props.experimental"
-          class="pi pi-filter exp-icon"
-          v-tooltip="'实验性选项，可能不稳定'"
+          :class="`exp-icon ${i.experiment}`"
+          v-tooltip="tt.experimentalWarning()"
         ></i>
       </div>
       <div v-if="props.desc" class="description">{{ props.desc }}</div>
-    </div>
+    </label>
     <div class="field">
       <slot></slot>
     </div>
@@ -18,22 +18,30 @@
 </template>
 
 <script setup lang="ts">
+import { t } from '@i18n'
+
+import { i } from '@ui/icon'
+
 const props = defineProps<{
   label: string
   desc?: string
   disabled?: boolean
   experimental?: boolean
+  for?: string
 }>()
+
+const tt = t.sidebar.preference
 </script>
 
 <style lang="scss">
 .pref-item {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: auto auto;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  margin-top: 1rem;
   .text {
+    padding-right: 1rem;
     transition:
       color 0.2s,
       opacity 0.2s;
@@ -47,10 +55,7 @@ const props = defineProps<{
     opacity: 0.6;
   }
   .exp-icon {
-    font-size: 0.9rem;
-    margin-left: 0.3rem;
-    transform: rotate(180deg);
-    opacity: 0.8;
+    margin-left: 0.2rem;
     color: var(--p-primary-color);
   }
 }

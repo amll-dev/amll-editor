@@ -15,6 +15,14 @@ export type Expect<T extends true> = T
 
 export type UnionKeys<T extends object> = T extends any ? keyof T : never
 
-export type SimpleType = string | number | boolean | bigint | symbol | null | undefined
+export type Primitive = string | number | boolean | bigint | symbol | null | undefined
 
 export type Maybe<T> = T | null | undefined
+
+export type NonNullable<T> = T extends null | undefined ? never : T
+
+export type PickTypeKeys<T extends object, V> = NonNullable<
+  {
+    [K in keyof T]?: T[K] extends V ? K : never
+  }[keyof T]
+>

@@ -2,8 +2,9 @@ export namespace Compatibility {
   export interface CompatibilityInfo {
     key: string
     name: string
-    description: string
-    severity: 'info' | 'warning' | 'error'
+    description?: string
+    impact: string
+    severity: 'info' | 'warn' | 'danger'
     referenceUrls?: {
       label: string
       url: string

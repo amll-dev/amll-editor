@@ -1,33 +1,36 @@
 <template>
-  <RibbonGroup label="标记" more>
+  <RibbonGroup :label="tt.groupLabel()" more>
     <Button
       icon="pi pi-bookmark"
-      :label="bookmarkAdd ? '添加书签' : '移除书签'"
+      :label="bookmarkAdd ? tt.addBookmark() : tt.removeBookmark()"
       :disabled="actionDisabled"
       size="small"
       severity="secondary"
       @click="bookmarkClick"
       v-tooltip="
-        tipDesc(
-          bookmarkAdd ? '添加书签' : '移除书签',
-          '在选定行或音节上添加或移除书签。书签可以用于标记重要的部分，且不会导出到歌词文件中。',
-          'bookmark',
-        )
+        tipDesc(bookmarkAdd ? tt.addBookmark() : tt.removeBookmark(), tt.bookmarkDesc(), 'bookmark')
       "
     />
-    <Button icon="pi pi-comment" label="添加批注" size="small" disabled severity="secondary" />
+    <Button
+      icon="pi pi-comment"
+      :label="tt.addComment()"
+      size="small"
+      disabled
+      severity="secondary"
+    />
     <Button
       icon="pi pi-eraser"
-      label="移除全部"
+      :label="tt.removeAll()"
       size="small"
       severity="secondary"
       @click="removeAllMarks"
-      v-tooltip="tipDesc('移除全部', '移除全文所有行和音节的书签与批注。您可以稍后撤销。')"
+      v-tooltip="tipDesc(tt.removeAll(), tt.removeAllDesc())"
     />
   </RibbonGroup>
 </template>
 
 <script setup lang="ts">
+import { t } from '@i18n'
 import { computed } from 'vue'
 
 import { useGlobalKeyboard } from '@core/hotkey'
@@ -38,6 +41,8 @@ import { tipDesc } from '@utils/generateTooltip'
 
 import RibbonGroup from '../RibbonGroupShell.vue'
 import { Button } from 'primevue'
+
+const tt = t.ribbon.mark
 
 const runtimeStore = useRuntimeStore()
 

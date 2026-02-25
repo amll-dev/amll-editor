@@ -2,7 +2,6 @@ import type { LyricLine, Persist } from '@core/types'
 
 import { coreCreate } from '@states/stores/core'
 
-import MANIFEST from '../manifest.json'
 import type { Convert as CV } from '../types'
 
 // YRC parser and stringifier
@@ -16,8 +15,7 @@ import type { Convert as CV } from '../types'
 // [190871,1984](190871,361,0)For (191232,172,0)the (191404,376,0)first (191780,1075,0)time
 // [193459,4198](193459,412,0)What's (193871,574,0)past (194445,506,0)is (194951,2706,0)past
 
-export const yrcReg: CV.Format = {
-  ...MANIFEST.yrc,
+export const yrcReg: CV.FormatHandler = {
   parser: parseYRC,
   stringifier: stringifyYRC,
 }

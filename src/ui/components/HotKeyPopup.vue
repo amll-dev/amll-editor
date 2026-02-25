@@ -1,29 +1,37 @@
 <template>
   <div class="hotkey-popup">
-    <div class="hotkey-popup-item" v-for="(item, index) in innerList">
+    <div class="hotkey-popup-item" v-for="(_item, index) in innerList">
       <HotKeyInput v-model="innerList[index]!" fluid />
       <Button
         icon="pi pi-times"
         size="small"
         severity="secondary"
         @click="innerList.splice(index, 1)"
+        v-tooltip="t.hotkey.btns.del()"
       ></Button>
     </div>
     <div class="hotkey-popup-item add">
       <Button
-        label="添加"
+        :label="t.hotkey.btns.add()"
         icon="pi pi-plus"
         size="small"
         fluid
         severity="secondary"
         @click="innerList.push(null)"
       />
-      <Button icon="pi pi-sync" size="small" severity="secondary" @click="handleReset"></Button>
+      <Button
+        icon="pi pi-sync"
+        size="small"
+        severity="secondary"
+        @click="handleReset"
+        v-tooltip="t.hotkey.btns.reset()"
+      ></Button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { t } from '@i18n'
 import stableStringify from 'json-stable-stringify'
 import { cloneDeep } from 'lodash-es'
 import { ref, toRaw, watch } from 'vue'
@@ -33,7 +41,7 @@ import { type HotKey as HK, getDefaultHotkeyMap } from '@core/hotkey'
 import { usePrefStore } from '@states/stores'
 
 import HotKeyInput from './HotKeyInput.vue'
-import { Button, InputText } from 'primevue'
+import { Button } from 'primevue'
 
 const props = defineProps<{
   command: HK.Command

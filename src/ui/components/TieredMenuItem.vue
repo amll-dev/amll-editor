@@ -1,6 +1,7 @@
 <template>
   <a
     class="p-tieredmenu-item-link"
+    :class="{ context: props.context }"
     tabindex="-1"
     data-pc-section="itemlink"
     v-bind="props.binding.action"
@@ -44,6 +45,7 @@ import type { MenuItem } from 'primevue/menuitem'
 const props = defineProps<{
   item: MenuItem
   binding: TieredMenuRouterBindProps
+  context?: boolean
 }>()
 </script>
 
@@ -51,5 +53,13 @@ const props = defineProps<{
 .p-tieredmenu-item-tip {
   font-size: 0.85em;
   color: var(--p-tieredmenu-item-icon-focus-color);
+  line-height: 1;
+}
+.p-tieredmenu-item-link.context {
+  --p-contextmenu-item-padding: 0.5rem 0.75rem;
+  .p-tieredmenu-item-icon {
+    margin-left: -0.15rem;
+    margin-right: 0.15rem;
+  }
 }
 </style>

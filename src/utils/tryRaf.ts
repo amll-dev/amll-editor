@@ -6,7 +6,7 @@
  * @param maxAttempts - The maximum number of attempts to execute the callback.
  * @param enableLog - If true, logs each attempt to the console.
  */
-export function tryRaf(callback: () => any, maxAttempts: number = 20, enableLog = false): void {
+export function tryRaf(callback: () => unknown, maxAttempts: number = 20, enableLog = false): void {
   let attempts = 0
   function attempt() {
     if (attempts >= maxAttempts) {

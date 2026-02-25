@@ -14,15 +14,17 @@ export interface PreferenceSchema {
   hotkeyMap: HotKey.Map
   audioSeekingStepMs: number
   // Timing
-  globalLatency: number
+  globalLatencyMs: number
   alwaysIgnoreBackground: boolean
   hideLineTiming: boolean
-  autoConnectLineTimes: boolean
-  autoConnectThresholdMs: number
+  // autoConnectLineTimes: boolean
+  // autoConnectThresholdMs: number
   // Roman
   sylRomanEnabled: boolean
   swapTranslateRoman: boolean
+  hideTranslateRoman: boolean
   // Misc
+  notifyCompatIssuesOnStartup: boolean
   sidebarWidth: number
   scrollWithPlayback: boolean
 }
@@ -36,13 +38,15 @@ export const getDefaultPref = (): PreferenceSchema => ({
   macStyleShortcuts: isAppleDevice(),
   hotkeyMap: getDefaultHotkeyMap(),
   audioSeekingStepMs: 5000,
-  globalLatency: 0,
+  globalLatencyMs: 0,
   alwaysIgnoreBackground: false,
   hideLineTiming: false,
-  autoConnectLineTimes: false,
-  autoConnectThresholdMs: 100,
+  // autoConnectLineTimes: false,
+  // autoConnectThresholdMs: 100,
   sylRomanEnabled: false,
   swapTranslateRoman: false,
+  hideTranslateRoman: false,
+  notifyCompatIssuesOnStartup: true,
   sidebarWidth: 360,
   scrollWithPlayback: false,
 })

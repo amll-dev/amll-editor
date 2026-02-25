@@ -1,0 +1,47 @@
+import { computed, ref, watch } from 'vue'
+
+import type { Equal, Expect } from '@utils/types'
+
+import type { Locales } from './i18n-types'
+import { i18nObject, isLocale } from './i18n-util'
+import { loadLocale } from './i18n-util.sync'
+
+export type { Locales } from './i18n-types'
+
+const STORE_KEY = 'amll_editor:locale'
+
+function detectEnvLocale(): Locales {
+  const lang = navigator.language.toLowerCase()
+  if (lang.startsWith('en')) return 'en'
+  return 'zh-hans'
+}
+const envLocale = detectEnvLocale()
+
+function getStoredLocale(): Locales | null {
+  const stored = localStorage.getItem(STORE_KEY)
+  if (stored && isLocale(stored)) return stored
+  return null
+}
+
+const currentLocale = getStoredLocale() ?? envLocale
+loadLocale(currentLocale)
+export const t = i18nObject(currentLocale)
+export const localeOptRef = ref<Locales>(currentLocale)
+export const localeOptNotMatch = computed(() => localeOptRef.value !== currentLocale)
+
+watch(localeOptRef, (newLocale, oldLocale) => {
+  if (newLocale === oldLocale) return
+  if (newLocale === envLocale) localStorage.removeItem(STORE_KEY)
+  else localStorage.setItem(STORE_KEY, newLocale)
+})
+
+interface LocaleItem {
+  code: Locales
+  name: string
+}
+export const localeItemList = [
+  { code: 'zh-hans', name: '简体中文' },
+  { code: 'en', name: 'English' },
+] as const satisfies LocaleItem[]
+export const currentLocaleItem = localeItemList.find((item) => item.code === currentLocale)!
+type _Check = Expect<Equal<Locales, LocaleItem['code']>>

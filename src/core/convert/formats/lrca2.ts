@@ -4,7 +4,6 @@ import { coreCreate } from '@states/stores/core'
 
 import { ms2str, str2ms } from '@utils/formatTime'
 
-import MANIFEST from '../manifest.json'
 import type { Convert as CV } from '../types'
 
 // LRC A2 Extension parser and stringifier
@@ -18,8 +17,7 @@ import type { Convert as CV } from '../types'
 // [02:38.850]<02:38.850>syls <02:39.030>are <02:39.120>made <02:39.360>of <02:39.420>plastic<02:40.080>
 // [02:40.080]<02:40.080>Come <02:40.290>back <02:40.470>like <02:40.680>elastic<02:41.370>
 
-export const lrcA2Reg: CV.Format = {
-  ...MANIFEST.lrcA2,
+export const lrcA2Reg: CV.FormatHandler = {
   parser: parseLRCa2,
   stringifier: stringifyLRCa2,
 }

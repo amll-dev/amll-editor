@@ -6,14 +6,14 @@
       :current-time="amendedProgressComputed"
       :playing="playingComputed"
       :enable-blur="false"
-      :enable-spring="false"
       :word-fade-width="0.25"
       @line-click="jumpSeek"
       :key="playerKey"
+      ref="playerRef"
     />
     <Button
       class="preview-reload-button"
-      label="重载 AMLL"
+      :label="tt.reloadAmll()"
       severity="secondary"
       icon="pi pi-refresh"
       variant="text"
@@ -22,11 +22,13 @@
   </div>
 </template>
 <script setup lang="ts">
+import type { DomLyricPlayer } from '@applemusic-like-lyrics/core'
 import { LyricPlayer } from '@applemusic-like-lyrics/vue'
-import { onMounted, onUnmounted, ref, shallowRef, watch } from 'vue'
+import { t } from '@i18n'
+import { onMounted, onUnmounted, ref, shallowRef, useTemplateRef, watch } from 'vue'
 
 import { audioEngine } from '@core/audio'
-import { type AMLLLine, convertToAMLL } from '@core/convert/amll'
+import { convertToAMLL } from '@core/convert/amll'
 
 import { collectPersist } from '@states/services/port'
 import { useCoreStore, useRuntimeStore, useStaticStore } from '@states/stores'
@@ -37,24 +39,25 @@ import { Button } from 'primevue'
 
 import '@applemusic-like-lyrics/core/style.css'
 
+const tt = t.editor.preview
+
 const coreStore = useCoreStore()
 const { progressComputed, playingComputed, amendedProgressComputed, seek } = audioEngine
 
 const playerKey = ref(Symbol())
-const amllLyricLines = shallowRef<AMLLLine[]>([])
+const playerRef = useTemplateRef('playerRef')
+const amllLyricLines = shallowRef(convertToAMLL(collectPersist()))
 watch(
   () => coreStore.lyricLines,
-  () => {
-    amllLyricLines.value = convertToAMLL(collectPersist())
-    playerKey.value = Symbol()
-  },
-  { immediate: true, deep: true },
+  () => (amllLyricLines.value = convertToAMLL(collectPersist())),
+  { deep: true },
 )
 
 const jumpSeek = (line: any) => {
-  if (!line?.line?.lyricLine?.startTime) return
-  const time = line.line.lyricLine.startTime
+  const time = line?.line?.lyricLine?.startTime
+  if (typeof time !== 'number') return
   seek(time)
+  ;(playerRef.value?.lyricPlayer as DomLyricPlayer | undefined)?.resetScroll()
 }
 
 const runtimeStore = useRuntimeStore()
@@ -95,19 +98,15 @@ onUnmounted(() => {
     right: 1rem;
     z-index: 10;
   }
-  &::after {
-    content: '';
-    pointer-events: none;
-    z-index: 2;
-    position: absolute;
-    top: 0;
-    right: -2rem;
-    bottom: 0;
-    left: -2rem;
-    box-shadow: var(--global-background) 0 0 1rem 1rem inset;
-  }
 }
 .amll-lyric-player.dom {
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 2rem,
+    black calc(100% - 2rem),
+    transparent
+  );
   line-height: 1.5;
   --bright-mask-alpha: 1;
   --dark-mask-alpha: 0.4;
@@ -118,6 +117,10 @@ onUnmounted(() => {
   span[class^='_emphasizeWrapper'] span {
     padding: 1em;
     margin: -1em;
+  }
+
+  [class^='_interludeDots']:not([style]) {
+    display: none;
   }
 }
 </style>

@@ -20,51 +20,54 @@
       <div class="cline-drag-indicator">
         <i class="cline-drag-icon pi pi-bars"></i>
       </div>
-      <div class="cline-head-info">
-        <Button
-          class="cline-tag cline-bookmark"
-          :severity="props.line.bookmarked ? 'warn' : 'secondary'"
-          variant="text"
-          :icon="'pi pi-bookmark' + (props.line.bookmarked ? '-fill' : '')"
-          :class="{ active: props.line.bookmarked }"
-          @click.stop="props.line.bookmarked = !props.line.bookmarked"
-          v-tooltip="'书签'"
-        />
-        <div
-          class="cline-index"
-          @dblclick="props.line.ignoreInTiming = !props.line.ignoreInTiming"
-          v-tooltip="tipMultiLine('行序号', '双击以切换时轴忽略状态')"
-        >
-          {{ props.index + 1 }}
+      <div class="cline-head-info" :class="{ compact: prefStore.hideTranslateRoman }">
+        <div class="cline-head-info-primary">
+          <Button
+            class="cline-tag cline-bookmark"
+            :severity="props.line.bookmarked ? 'warn' : 'secondary'"
+            variant="text"
+            :icon="'pi pi-bookmark' + (props.line.bookmarked ? '-fill' : '')"
+            :class="{ active: props.line.bookmarked }"
+            @click.stop="props.line.bookmarked = !props.line.bookmarked"
+            v-tooltip="tt.bookmark()"
+          />
+          <div
+            class="cline-index"
+            @dblclick="props.line.ignoreInTiming = !props.line.ignoreInTiming"
+            v-tooltip="tipMultiLine(tt.index(), tt.indexDbClickToToogleIgnore())"
+          >
+            {{ props.index + 1 }}
+          </div>
         </div>
-        <div style="flex: 1"></div>
-        <Button
-          class="cline-tag cline-tag-duet"
-          :severity="props.line.duet ? undefined : 'secondary'"
-          variant="text"
-          size="small"
-          icon="pi pi-align-right"
-          :class="{ active: props.line.duet }"
-          @click.stop="props.line.duet = !props.line.duet"
-          v-tooltip="'对唱'"
-        />
-        <Button
-          class="cline-tag cline-tag-background"
-          :severity="props.line.background ? undefined : 'secondary'"
-          variant="text"
-          size="small"
-          icon="pi pi-expand"
-          :class="{ active: props.line.background }"
-          @click.stop="props.line.background = !props.line.background"
-          v-tooltip="'背景'"
-        />
+        <div class="cline-head-info-secondary">
+          <Button
+            class="cline-tag cline-tag-duet"
+            :severity="props.line.duet ? undefined : 'secondary'"
+            variant="text"
+            size="small"
+            icon="pi pi-align-right"
+            :class="{ active: props.line.duet }"
+            @click.stop="props.line.duet = !props.line.duet"
+            v-tooltip="tt.duet()"
+          />
+          <Button
+            class="cline-tag cline-tag-background"
+            :severity="props.line.background ? undefined : 'secondary'"
+            variant="text"
+            size="small"
+            icon="pi pi-expand"
+            :class="{ active: props.line.background }"
+            @click.stop="props.line.background = !props.line.background"
+            v-tooltip="tt.background()"
+          />
+        </div>
       </div>
     </div>
     <div class="cline-inner">
       <div class="cline-content">
         <slot></slot>
       </div>
-      <div class="cline-secondary" ref="secondaryInputShellEl">
+      <div class="cline-secondary" ref="secondaryInputShellEl" v-if="!prefStore.hideTranslateRoman">
         <template v-for="f in orderedFields" :key="f.key">
           <FloatLabel variant="on">
             <InputGroup>
@@ -80,18 +83,18 @@
               <template v-if="f.key === 'roman' && prefStore.sylRomanEnabled">
                 <InputGroupAddon>
                   <Button
-                    icon="pi pi-sort-amount-up"
+                    :icon="i.upline"
                     severity="secondary"
                     @click="handleRomanApply"
-                    v-tooltip="'应用至逐字音译'"
+                    v-tooltip="tt.applyRomanToSyl()"
                   />
                 </InputGroupAddon>
                 <InputGroupAddon>
                   <Button
-                    icon="pi pi-sort-amount-down"
+                    :icon="i.downline"
                     severity="secondary"
                     @click="handleRomanGenerate"
-                    v-tooltip="'从逐字音译生成'"
+                    v-tooltip="tt.generateRomanFromSyl()"
                   />
                 </InputGroupAddon>
               </template>
@@ -105,6 +108,7 @@
 </template>
 
 <script setup lang="ts">
+import { t } from '@i18n'
 import { computed, onMounted, onUnmounted, useTemplateRef } from 'vue'
 
 import type { LyricLine } from '@core/types'
@@ -117,8 +121,12 @@ import { tipMultiLine } from '@utils/generateTooltip'
 import { sortIndex } from '@utils/sortLineSyls'
 import type { TimeoutHandle } from '@utils/types'
 
+import { i } from '@ui/icon'
+
 import InputText from '@ui/components/InputText.vue'
 import { Button, FloatLabel, InputGroup, InputGroupAddon } from 'primevue'
+
+const tt = t.editor.line
 
 const props = defineProps<{
   line: LyricLine
@@ -208,12 +216,12 @@ function handleContext(e: MouseEvent) {
 const secondaryFields = [
   {
     key: 'translation',
-    label: '行翻译',
+    label: tt.fields.trans(),
     model: 'translation',
   },
   {
     key: 'roman',
-    label: '行音译',
+    label: tt.fields.roman(),
     model: 'romanization',
   },
 ] as const
@@ -344,10 +352,20 @@ function handleRomanGenerate() {
   }
 }
 .cline-head-info {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  &,
+  &-primary,
+  &-secondary {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  justify-content: space-between;
   padding: 0 0.3rem 0.1rem;
+  &.compact {
+    flex-direction: row;
+    align-items: center;
+    gap: 0rem;
+  }
 }
 .cline-index {
   padding: 0.3rem 0 0.5rem;

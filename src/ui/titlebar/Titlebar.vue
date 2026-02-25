@@ -2,12 +2,12 @@
   <header class="titlebar">
     <div class="leftbar">
       <SplitButton
-        label="打开"
+        :label="tt.open()"
         :icon="`pi ${openWorking ? 'pi-sync' : 'pi-folder-open'}`"
         severity="secondary"
         :model="openMenuItems"
         @click="handleOpenClick"
-        v-tooltip="tipHotkey('打开文件', 'open')"
+        v-tooltip="tipHotkey(tt.openTip(), 'open')"
         :disabled="openWorking"
       >
         <template #item="{ item, props }">
@@ -18,27 +18,27 @@
       <Button
         icon="pi pi-cog"
         variant="text"
-        v-tooltip="tipHotkey('偏好设置', 'preferences')"
+        v-tooltip="tipHotkey(tt.preferences(), 'preferences')"
         :severity="
           runtimeStore.openedSidebars.includes(SidebarKey.Preference) ? undefined : 'secondary'
         "
         @click="runtimeStore.toogleSidebar(SidebarKey.Preference)"
       />
       <Button
-        icon="pi pi-undo"
+        :icon="i.undo"
         variant="text"
         severity="secondary"
         @click="editHistory.undo()"
         :disabled="!editHistory.undoable.value"
-        v-tooltip="tipHotkey('撤销', 'undo')"
+        v-tooltip="tipHotkey(tt.undo(), 'undo')"
       />
       <Button
-        icon="pi pi-refresh"
+        :icon="i.redo"
         variant="text"
         severity="secondary"
         @click="editHistory.redo()"
         :disabled="!editHistory.redoable.value"
-        v-tooltip="tipHotkey('重做', 'redo')"
+        v-tooltip="tipHotkey(tt.redo(), 'redo')"
       />
       <div class="filename-section">
         <div class="filename-text">
@@ -52,16 +52,22 @@
     </div>
     <div class="rightbar">
       <div class="save-state-section">
-        <span class="readonly" v-if="!compatibilityMap.fileSystem">兼容读写模式</span>
-        <span class="readonly" v-else-if="readonlyComputed">未授予写入权限</span>
-        <span class="saved-at" v-if="savedAtComputed">保存于 {{ savedAtComputed }}</span>
+        <span class="readonly" v-if="!compatibilityMap.fileSystem">{{
+          tt.saveStatus.compatMode()
+        }}</span>
+        <span class="readonly" v-else-if="readonlyComputed">{{
+          tt.saveStatus.permissionNotGranted()
+        }}</span>
+        <span class="saved-at" v-if="savedAtDateComputed">{{
+          tt.saveStatus.savedAt(savedAtDateComputed)
+        }}</span>
       </div>
       <SplitButton
-        label="保存"
+        :label="tt.save()"
         :icon="`pi ${saveWorking ? 'pi-sync' : 'pi-save'}`"
         :model="saveMenuItems"
         @click="handleSaveClick"
-        v-tooltip="tipHotkey('保存文件', 'save')"
+        v-tooltip="tipHotkey(tt.saveTip(), 'save')"
         :disabled="saveWorking"
       >
         <template #item="{ item, props }">
@@ -73,7 +79,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { t } from '@i18n'
+import { ref } from 'vue'
 
 import { compatibilityMap } from '@core/compat'
 import { fileState as FS } from '@core/file'
@@ -84,6 +91,7 @@ import { useRuntimeStore } from '@states/stores'
 
 import { tipHotkey } from '@utils/generateTooltip'
 
+import { i } from '@ui/icon'
 import { SidebarKey } from '@ui/sidebar'
 
 import ViewSwitcher from './ViewSwitcher.vue'
@@ -91,6 +99,8 @@ import TieredMenuItem from '@ui/components/TieredMenuItem.vue'
 import { Button, SplitButton } from 'primevue'
 
 import { useTitlebarFileLogics } from './fileLogics'
+
+const tt = t.titlebar
 
 const {
   displayFilenameComputed: filename,
@@ -100,12 +110,6 @@ const {
 const { isDirty } = editHistory
 
 const runtimeStore = useRuntimeStore()
-
-const savedAtComputed = computed(() => {
-  const date = savedAtDateComputed.value
-  if (!date) return ''
-  return date.toTimeString().split(' ')[0]
-})
 
 const openWorking = ref(false)
 const saveWorking = ref(false)
@@ -161,6 +165,7 @@ useGlobalKeyboard('importFromClipboard', handleImportFromClipboard)
     white-space: pre;
     overflow-x: hidden;
     position: relative;
+    mask-image: linear-gradient(to left, transparent, black 1.5rem);
     .filename-text {
       line-height: 1;
       .name {
@@ -173,17 +178,6 @@ useGlobalKeyboard('importFromClipboard', handleImportFromClipboard)
         margin-left: 0.1rem;
         user-select: none;
       }
-    }
-    &::after {
-      content: '';
-      z-index: 2;
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 2rem;
-      height: 100%;
-      pointer-events: none;
-      background: linear-gradient(to right, transparent, var(--global-background));
     }
     @media (display-mode: standalone) {
       display: none;

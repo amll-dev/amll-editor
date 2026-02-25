@@ -16,9 +16,12 @@
   </div>
 </template>
 <script setup lang="ts">
+import { t } from '@i18n'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 
 import { useRuntimeStore } from '@states/stores'
+
+const tt = t.editor.dragGhost
 
 const pointerX = ref(0)
 const pointerY = ref(0)
@@ -28,10 +31,17 @@ const dragCount = computed(() =>
     ? runtimeStore.selectedLines.size
     : runtimeStore.selectedSyllables.size,
 )
-const dragText = computed(
-  () =>
-    (runtimeStore.isDraggingCopy ? '复制' : '移动') + (runtimeStore.isDraggingLine ? '行' : '音节'),
-)
+const dragText = computed(() => {
+  if (runtimeStore.isDraggingLine) {
+    const count = runtimeStore.selectedLines.size
+    if (runtimeStore.isDraggingCopy) return tt.copyLine(count)
+    return tt.moveLine(count)
+  } else {
+    const count = runtimeStore.selectedSyllables.size
+    if (runtimeStore.isDraggingCopy) return tt.copySyllable(count)
+    return tt.moveSyllable(count)
+  }
+})
 const dragIcon = computed(() => {
   if (!runtimeStore.canDrop) return 'pi-ban'
   return runtimeStore.isDraggingCopy ? 'pi-clone' : 'pi-arrow-right'

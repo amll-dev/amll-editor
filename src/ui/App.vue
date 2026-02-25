@@ -19,6 +19,7 @@
 </template>
 
 <script setup lang="ts">
+import { t } from '@i18n'
 import { useMediaQuery } from '@vueuse/core'
 import { onMounted, onUnmounted, watch } from 'vue'
 
@@ -75,7 +76,7 @@ watch(
   { immediate: true },
 )
 
-const modalDialogActivated = () => !!document.querySelector('.p-dialog-mask.p-overlay-mask')
+const modalDialogActivated = () => document.querySelector('.p-dialog-mask.p-overlay-mask') !== null
 const handleRootKeydown = (e: KeyboardEvent) => {
   const hotkey = parseKeyEvent(e)
   if (!hotkey) return
@@ -157,14 +158,14 @@ onMounted(() => {
       confirm.require({
         header: optn.header,
         message: optn.message,
-        icon: `${optn.icon || 'pi pi-exclamation-triangle'} pi-color-${optn.severity || 'danger'}`,
+        icon: `${optn.icon || 'pi pi-exclamation-triangle'} p-color-${optn.severity || 'danger'}`,
         rejectProps: {
-          label: optn.rejectLabel || '取消',
+          label: optn.rejectLabel || t.components.confirmDialog.cancel(),
           severity: 'secondary',
           icon: optn.rejectIcon || 'pi pi-times',
         },
         acceptProps: {
-          label: optn.acceptLabel || '继续',
+          label: optn.acceptLabel || t.components.confirmDialog.continue(),
           severity: optn.severity || 'danger',
           icon: optn.acceptIcon || 'pi pi-arrow-right',
           autofocus: true,

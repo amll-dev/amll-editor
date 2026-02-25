@@ -4,19 +4,19 @@
       <Select
         v-model="currentTemplate"
         :options="metadataTemplates"
-        placeholder="不使用模板"
+        :placeholder="tt.templatePlaceholder()"
         optionLabel="name"
         fluid
         checkmark
         showClear
         id="metadataTemplate"
       />
-      <label for="metadataTemplate">元数据字段模板</label>
+      <label for="metadataTemplate">{{ tt.templateLabel() }}</label>
     </IftaLabel>
     <div class="top-buttons" v-if="currentTemplate">
       <Button
         v-if="currentTemplate.docUrl"
-        label="文档"
+        :label="tt.documentBtn()"
         icon="pi pi-external-link"
         fluid
         severity="secondary"
@@ -24,7 +24,7 @@
         style="flex: 1"
       />
       <Button
-        label="添加全部预设"
+        :label="tt.addAllPresets()"
         icon="pi pi-plus"
         fluid
         severity="secondary"
@@ -34,18 +34,19 @@
     </div>
     <Divider v-if="currentTemplate" />
     <div class="metadata-field-list">
-      <div class="metadata-field" v-for="(field, index) in coreStore.metadata" :key="field.key">
+      <div class="metadata-field" v-for="(field, index) in internalMetadataList">
         <div class="keylabel"><i class="pi pi-info-circle"></i></div>
         <div class="keycontent">
           <AutoComplete
             v-if="currentTemplate"
             class="meta-key-autocomplete"
-            placeholder="键名"
+            :placeholder="tt.keyPlaceholder()"
             v-model="field.key"
             :suggestions="currentSuggestions"
             fluid
             :invalid="isKeyInvalid(field.key)"
             @complete="search"
+            @blur="flushToStore"
             dropdown
           >
             <template #option="{ option }">
@@ -60,10 +61,11 @@
           <InputText
             v-else
             class="meta-key-autocomplete"
-            placeholder="键名"
+            :placeholder="tt.keyPlaceholder()"
             v-model="field.key"
             fluid
             :invalid="isKeyInvalid(field.key)"
+            @blur="flushToStore"
           />
           <div class="key-hint" v-if="currentTemplate && currentLabelMap.has(field.key)">
             {{ currentLabelMap.get(field.key) }}
@@ -75,17 +77,17 @@
             variant="text"
             size="small"
             severity="danger"
-            @click="coreStore.metadata.splice(index, 1)"
+            @click="internalMetadataList.splice(index, 1)"
           />
         </div>
         <div class="valuecontent">
-          <MultiInputText v-model="field.values" />
+          <MultiInputText v-model="field.values" @update:modelValue="flushToStore" />
         </div>
       </div>
     </div>
     <div class="add-field">
       <Button
-        label="清除"
+        :label="tt.clear()"
         icon="pi pi-ban"
         fluid
         severity="secondary"
@@ -95,7 +97,7 @@
       />
       <Button
         class="add-field-btn"
-        label="添加字段"
+        :label="tt.addField()"
         icon="pi pi-plus"
         severity="secondary"
         fluid
@@ -107,7 +109,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, shallowRef, useTemplateRef } from 'vue'
+import { t } from '@i18n'
+import stableStringify from 'json-stable-stringify'
+import { computed, onMounted, ref, shallowRef, useTemplateRef, watch } from 'vue'
 
 import { useCoreStore } from '@states/stores'
 
@@ -115,6 +119,8 @@ import MultiInputText from '@ui/components/MultiInputText.vue'
 import { AutoComplete, Button, Divider, IftaLabel, InputText, Select } from 'primevue'
 
 import { type MetadataTemplate, amllMetaTemplate, lrcMetaTemplate } from './templates'
+
+const tt = t.sidebar.metadata
 
 const metadataTemplates: Readonly<MetadataTemplate>[] = [amllMetaTemplate, lrcMetaTemplate]
 const currentTemplate = shallowRef<Readonly<MetadataTemplate> | undefined>(metadataTemplates[0])
@@ -130,6 +136,33 @@ const currentTemplateKeys = computed(() => {
 })
 const coreStore = useCoreStore()
 
+type MetadataList = { key: string; values: string[] }[]
+
+const getMetadataList = () => [
+  ...Object.entries(coreStore.metadata).map(([key, values]) => ({ key, values })),
+]
+const generateMetadataMap = (list: MetadataList) =>
+  Object.fromEntries(list.map(({ key, values }) => [key, values]))
+const isInnerOuterEqual = () =>
+  stableStringify(generateMetadataMap(internalMetadataList.value)) ===
+  stableStringify(coreStore.metadata)
+
+const internalMetadataList = ref<MetadataList>(getMetadataList())
+watch(
+  () => coreStore.metadata,
+  () => {
+    if (isInnerOuterEqual()) return
+    internalMetadataList.value = getMetadataList()
+  },
+  { deep: true },
+)
+function flushToStore() {
+  if (isInnerOuterEqual()) return
+  console.log('Flushing metadata changes to store')
+  const newMetadataMap = generateMetadataMap(internalMetadataList.value)
+  coreStore.metadata = newMetadataMap
+}
+
 function handleOpenDocUrl() {
   if (!currentTemplate.value?.docUrl) return
   window.open(currentTemplate.value.docUrl, '_blank')
@@ -137,40 +170,43 @@ function handleOpenDocUrl() {
 function handleAddAllFields() {
   if (!currentTemplate.value) return
   currentTemplate.value.fields.forEach((field) => {
-    if (!coreStore.metadata.find(({ key }) => key === field.key))
-      coreStore.metadata.push({ key: field.key, values: [] })
+    if (!internalMetadataList.value.find(({ key }) => key === field.key))
+      internalMetadataList.value.push({ key: field.key, values: [] })
   })
+  flushToStore()
 }
 function handleClearAllFields() {
-  coreStore.metadata.length = 0
+  internalMetadataList.value = []
+  flushToStore()
 }
 const panelEl = useTemplateRef('panelEl')
 function handleAddField() {
   const defaultName = 'unnamed_field'
   let suffix = 1
-  while (coreStore.metadata.find(({ key }) => key === `${defaultName}_${suffix}`)) suffix++
-  coreStore.metadata.push({ key: `${defaultName}_${suffix}`, values: [] })
+  while (internalMetadataList.value.find(({ key }) => key === `${defaultName}_${suffix}`)) suffix++
+  internalMetadataList.value.push({ key: `${defaultName}_${suffix}`, values: [] })
+  flushToStore()
   requestAnimationFrame(() => {
     if (panelEl.value) panelEl.value.scrollTop = panelEl.value.scrollHeight
   })
 }
 function isKeyInvalid(key: string) {
   if (!key || key.trim().length === 0) return true
-  const occurrences = coreStore.metadata.filter((field) => field.key === key).length
+  const occurrences = internalMetadataList.value.filter((field) => field.key === key).length
   return occurrences > 1
 }
 
 onMounted(() => {
-  if (coreStore.metadata.length === 0) return
+  if (internalMetadataList.value.length === 0) return
   let maxHitTemplate: Readonly<MetadataTemplate> | undefined = undefined
-  let maxHitCount = 0
+  let maxHitCount = -1
   for (const template of metadataTemplates) {
-    for (const field of template.fields) {
-      const hitCount = coreStore.metadata.filter(({ key }) => key === field.key).length
-      if (hitCount > maxHitCount) {
-        maxHitCount = hitCount
-        maxHitTemplate = template
-      }
+    const hitCount = internalMetadataList.value
+      .map(({ key }): number => (template.fields.find((field) => field.key === key) ? 1 : 0))
+      .reduce((a, b) => a + b, 0)
+    if (hitCount > maxHitCount) {
+      maxHitCount = hitCount
+      maxHitTemplate = template
     }
   }
   if (maxHitTemplate) currentTemplate.value = maxHitTemplate
@@ -179,12 +215,13 @@ onMounted(() => {
 const currentSuggestions = shallowRef<string[]>([])
 function search({ query }: { query: string }) {
   query = query.trim().toLowerCase()
-  if (!query) currentSuggestions.value = currentTemplateKeys.value
-  else {
-    currentSuggestions.value = currentTemplateKeys.value.filter((key) =>
-      key.toLowerCase().startsWith(query),
-    )
+  if (!query) {
+    currentSuggestions.value = [...currentTemplateKeys.value]
+    return
   }
+  const suggestions = currentTemplateKeys.value.filter((key) => key.toLowerCase().startsWith(query))
+  if (suggestions.length) currentSuggestions.value = suggestions
+  else currentSuggestions.value = [...currentTemplateKeys.value]
 }
 </script>
 

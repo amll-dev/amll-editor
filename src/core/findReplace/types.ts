@@ -6,7 +6,7 @@ export namespace FindReplace {
     findInSylRoman: boolean
     findInTranslations: boolean
     findInRoman: boolean
-    crossWordMatch: boolean
+    crossSylMatch: boolean
     wrapSearch: boolean
   }
   export interface Notification {

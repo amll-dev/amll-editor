@@ -1,20 +1,23 @@
 <template>
-  <RibbonGroup label="性能">
+  <RibbonGroup :label="tt.groupLabel()">
     <div class="perfgrid" v-if="isSupported && memory">
-      <span>已使用</span>
+      <span>{{ tt.usedHeapSize() }}</span>
       <span class="perfvalue monospace">{{ size(memory.usedJSHeapSize) }}</span>
-      <span>已分配</span>
+      <span>{{ tt.totalHeapSize() }}</span>
       <span class="perfvalue monospace">{{ size(memory.totalJSHeapSize) }}</span>
-      <span>帧速率</span>
+      <span>{{ tt.frameRate() }}</span>
       <span class="perfvalue monospace">{{ fps }} FPS</span>
     </div>
   </RibbonGroup>
 </template>
 
 <script setup lang="ts">
+import { t } from '@i18n'
 import { useFps, useMemory } from '@vueuse/core'
 
 import RibbonGroup from '../RibbonGroupShell.vue'
+
+const tt = t.ribbon.performance
 
 const fps = useFps()
 

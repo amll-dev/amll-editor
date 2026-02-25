@@ -1,3 +1,4 @@
+import { t } from '@i18n'
 import { type Reactive, computed, nextTick, shallowRef, watch } from 'vue'
 
 import { View } from '@core/types'
@@ -12,6 +13,8 @@ import type { FindReplace as FR } from './types'
 export type { FindReplace } from './types'
 
 const MAX_SEARCH_STEPS = 100000
+
+const tt = t.find
 
 const PF = {
   Whole: 'WHOLE',
@@ -100,7 +103,7 @@ export function useFindReplaceEngine(
       if (lineIndex >= coreStore.lyricLines.length) return null
       const line = coreStore.lyricLines[lineIndex]!
       if (!line.syllables.length) return { lineIndex, field: firstSecField }
-      if (state.crossWordMatch)
+      if (state.crossSylMatch)
         return {
           lineIndex,
           field: PF.MultiSyllable,
@@ -118,7 +121,7 @@ export function useFindReplaceEngine(
       case PF.Whole:
         return getFirstPosOfLine(pos.lineIndex)
       case PF.Syllable: {
-        if (state.crossWordMatch) {
+        if (state.crossSylMatch) {
           const currLine = coreStore.lyricLines[pos.lineIndex]!
           return {
             lineIndex: pos.lineIndex,
@@ -134,7 +137,7 @@ export function useFindReplaceEngine(
         }
       }
       case PF.MultiSyllable: {
-        if (state.crossWordMatch)
+        if (state.crossSylMatch)
           return {
             lineIndex: pos.lineIndex,
             field: PF.MultiSylRoman,
@@ -155,7 +158,7 @@ export function useFindReplaceEngine(
             field: firstSecField,
           }
         }
-        if (state.crossWordMatch)
+        if (state.crossSylMatch)
           return {
             lineIndex: pos.lineIndex,
             field: PF.MultiSyllable,
@@ -175,7 +178,7 @@ export function useFindReplaceEngine(
             lineIndex: pos.lineIndex,
             field: firstSecField,
           }
-        if (state.crossWordMatch)
+        if (state.crossSylMatch)
           return {
             lineIndex: pos.lineIndex,
             field: PF.MultiSyllable,
@@ -229,7 +232,7 @@ export function useFindReplaceEngine(
         const currentWordIndex = pos.field === PF.Syllable ? pos.sylIndex : pos.startSylIndex
         const prevWordIndex = currentWordIndex - 1
         if (prevWordIndex < 0) return getLastPosOfLine(pos.lineIndex - 1)
-        if (state.crossWordMatch)
+        if (state.crossSylMatch)
           return {
             lineIndex: pos.lineIndex,
             field: PF.MultiSylRoman,
@@ -244,7 +247,7 @@ export function useFindReplaceEngine(
           }
       }
       case PF.SylRoman: {
-        if (state.crossWordMatch && pos.sylIndex !== 0)
+        if (state.crossSylMatch && pos.sylIndex !== 0)
           return {
             field: PF.MultiSylRoman,
             lineIndex: pos.lineIndex,
@@ -258,7 +261,7 @@ export function useFindReplaceEngine(
         }
       }
       case PF.MultiSylRoman: {
-        if (state.crossWordMatch)
+        if (state.crossSylMatch)
           return {
             field: PF.MultiSyllable,
             lineIndex: pos.lineIndex,
@@ -279,7 +282,7 @@ export function useFindReplaceEngine(
       case firstSecField: {
         const currLine = coreStore.lyricLines[pos.lineIndex]!
         if (!currLine.syllables.length) return getLastPosOfLine(pos.lineIndex - 1)
-        if (state.crossWordMatch)
+        if (state.crossSylMatch)
           return {
             lineIndex: pos.lineIndex,
             field: PF.MultiSylRoman,
@@ -299,9 +302,9 @@ export function useFindReplaceEngine(
 
   function checkPosInRange(pos: FR.Pos): boolean {
     if (pos.field === PF.Syllable && !state.findInSyls) return false
-    if (pos.field === PF.MultiSyllable && (!state.findInSyls || !state.crossWordMatch)) return false
+    if (pos.field === PF.MultiSyllable && (!state.findInSyls || !state.crossSylMatch)) return false
     if (pos.field === PF.SylRoman && !state.findInSylRoman) return false
-    if (pos.field === PF.MultiSylRoman && (!state.findInSylRoman || !state.crossWordMatch))
+    if (pos.field === PF.MultiSylRoman && (!state.findInSylRoman || !state.crossSylMatch))
       return false
     if (pos.field === PF.Translation && !state.findInTranslations) return false
     if (pos.field === PF.Roman && !state.findInRoman) return false
@@ -316,8 +319,8 @@ export function useFindReplaceEngine(
         if (stepCount++ > MAX_SEARCH_STEPS) {
           notifier({
             severity: 'error',
-            summary: '搜索失败',
-            detail: '发生死循环。请前往反馈此问题。',
+            summary: tt.infLoopErr.summary(),
+            detail: tt.infLoopErr.detail(),
           })
           throw new Error('Exceeded maximum search steps in getRangedJumpPos, aborting.')
         }
@@ -527,8 +530,8 @@ export function useFindReplaceEngine(
       if (!noAlert)
         notifier({
           severity: 'warn',
-          summary: '找不到结果',
-          detail: '在所选范围内文档为空。',
+          summary: tt.noResultWarn.summary(),
+          detail: tt.noResultWarn.detailEmpty(),
         })
       return
     }
@@ -551,10 +554,10 @@ export function useFindReplaceEngine(
     if (!noAlert)
       notifier({
         severity: 'warn',
-        summary: '找不到结果',
+        summary: tt.noResultWarn.summary(),
         detail: state.wrapSearch
-          ? '全文搜索完毕，未找到匹配项。'
-          : '已到达文档末端，无匹配项。\n启用循环搜索可从头开始继续搜索。',
+          ? tt.noResultWarn.detailNoMatch()
+          : tt.noResultWarn.detailNoMatchEnd(),
       })
   }
   function handleFindNext() {
@@ -592,14 +595,14 @@ export function useFindReplaceEngine(
     if (counter)
       notifier({
         severity: 'success',
-        summary: '全部替换完成',
-        detail: `共替换了 ${counter} 个匹配项。`,
+        summary: tt.replaceSuccess.summary(),
+        detail: tt.replaceSuccess.detail(counter),
       })
     else
       notifier({
         severity: 'warn',
-        summary: '找不到结果',
-        detail: '全文搜索完毕，未找到匹配项。',
+        summary: tt.noResultWarn.summary(),
+        detail: tt.noResultWarn.detailNoMatch(),
       })
   }
 

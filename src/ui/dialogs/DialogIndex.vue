@@ -1,5 +1,5 @@
 <template>
-  <template v-for="{ key, component } in dialogRegs">
+  <template v-for="{ key, component } in dialogRegs" :key="key">
     <component :is="component" v-model="runtimeStore.dialogShown[key]" />
   </template>
 </template>

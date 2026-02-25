@@ -29,6 +29,7 @@ body {
   --e-bg-active-background: color-mix(in srgb, var(--p-blue-400), transparent 80%);
 
   user-select: none;
+  font-size: 14px;
   color: var(--p-text-color);
   background-color: var(--global-background);
 }
@@ -218,17 +219,17 @@ hr {
   }
 }
 
-.pi.pi-color {
+.p-color {
   &-danger {
-    color: var(--p-button-danger-background);
+    color: var(--p-button-danger-background) !important;
   }
   &-success {
-    color: var(--p-button-success-background);
+    color: var(--p-button-success-background) !important;
   }
   &-warn {
-    color: var(--p-button-warn-background);
+    color: var(--p-button-warn-background) !important;
   }
   &-info {
-    color: var(--p-button-info-background);
+    color: var(--p-button-info-background) !important;
   }
 }

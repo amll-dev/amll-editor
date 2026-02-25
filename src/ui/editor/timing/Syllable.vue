@@ -8,7 +8,7 @@
       class="tsyl-timestamp"
       begin
       v-model="props.syllable.startTime"
-      v-tooltip="'音节起始时间'"
+      v-tooltip="tt.startTime()"
     />
     <div class="tsyl-content">
       <i
@@ -24,22 +24,26 @@
       class="tsyl-timestamp"
       end
       v-model="props.syllable.endTime"
-      v-tooltip="'音节结束时间'"
+      v-tooltip="tt.endTime()"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, watch } from 'vue'
+import { t } from '@i18n'
+import { computed, watch } from 'vue'
 
 import { audioEngine } from '@core/audio'
 import { type LyricLine, type LyricSyllable, View } from '@core/types'
 
 import { usePrefStore, useRuntimeStore, useStaticStore } from '@states/stores'
 
+import { forceOutsideBlur } from '@utils/forceOutsideBlur'
 import { tryRaf } from '@utils/tryRaf'
 
 import Timestamp from './Timestamp.vue'
+
+const tt = t.editor.syllable
 
 const props = defineProps<{
   syllable: LyricSyllable
@@ -49,6 +53,7 @@ const props = defineProps<{
 const runtimeStore = useRuntimeStore()
 const prefStore = usePrefStore()
 function handleMouseDown() {
+  forceOutsideBlur()
   runtimeStore.selectLineSyl(props.parent, props.syllable)
 }
 const isSelected = computed(() => {
