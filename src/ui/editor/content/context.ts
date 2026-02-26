@@ -7,6 +7,7 @@ import type { LyricLine } from '@core/types'
 import { useCoreStore, useRuntimeStore, useStaticStore } from '@states/stores'
 
 import { alignLineEndTime, alignLineTime } from '@utils/alignLineSylTime'
+import { sortLines } from '@utils/sortLineSyls'
 
 import type { MenuItem } from 'primevue/menuitem'
 
@@ -18,6 +19,24 @@ interface ContentCtxStates {
 }
 
 const tt = t.editor.context
+
+export function combineLines() {
+  const runtimeStore = useRuntimeStore()
+  const coreStore = useCoreStore()
+  if (runtimeStore.selectedLines.size < 2) return
+  const lines = sortLines(...runtimeStore.selectedLines)
+  const [mainLine, ...linesToMerge] = lines
+  if (!mainLine) return
+  for (const line of linesToMerge) {
+    if (line.syllables.length)
+      mainLine.syllables.push(coreStore.newSyllable({ text: ' ' }), ...line.syllables)
+    if (line.translation.trim()) mainLine.translation += ' ' + line.translation.trim()
+    if (line.romanization.trim()) mainLine.romanization += ' ' + line.romanization.trim()
+  }
+  coreStore.deleteLine(...linesToMerge)
+  alignLineEndTime(mainLine)
+  runtimeStore.selectLine(mainLine)
+}
 
 export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
   const coreStore = useCoreStore()
@@ -111,6 +130,18 @@ export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
       tip: getHotkeyStr('background'),
     },
     { separator: true },
+    // multi-line operations
+    ...(runtimeStore.selectedLines.size < 2
+      ? []
+      : [
+          {
+            label: tt.line.combineLines(),
+            icon: 'pi pi-arrow-down-left-and-arrow-up-right-to-center',
+            command: combineLines,
+            tip: getHotkeyStr('combineLines'),
+          },
+          { separator: true },
+        ]),
     {
       label: tt.line.insertLineAbove(),
       icon: 'pi pi-arrow-up',

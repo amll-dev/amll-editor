@@ -32,6 +32,7 @@ const en = {
       line: {
         toggleDuet: 'Duet',
         toggleBackground: 'Background',
+        combineLines: 'Combine lines',
         insertLineAbove: 'Insert line above',
         insertLineBelow: 'Insert line below',
         duplicateLine: 'Duplicate line',
@@ -568,6 +569,7 @@ const en = {
       duet: 'Toggle Duet Line',
       background: 'Toggle Background Line',
       connectNextLine: 'Toggle Sibling Line Connection',
+      combineLines: 'Combine Lines',
 
       goPrevLine: 'Previous Line',
       goPrevSyl: 'Previous Syllable',

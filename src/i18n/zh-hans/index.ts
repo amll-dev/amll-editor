@@ -32,6 +32,7 @@ const zhHans = {
       line: {
         toggleDuet: '设置对唱',
         toggleBackground: '设置背景',
+        combineLines: '合并行',
         insertLineAbove: '在前插入行',
         insertLineBelow: '在后插入行',
         duplicateLine: '克隆行',
@@ -550,6 +551,7 @@ const zhHans = {
       duet: '设为对唱行',
       background: '设为背景行',
       connectNextLine: '续至下行',
+      combineLines: '合并行',
 
       goPrevLine: '上一行',
       goPrevSyl: '上一音节',

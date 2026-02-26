@@ -64,12 +64,12 @@ import { t } from '@i18n'
 import type { ScrollToIndexOpts } from 'virtua/unstable_core'
 import { VList } from 'virtua/vue'
 import {
-  computed,
   nextTick,
   onBeforeUnmount,
   onMounted,
   onUnmounted,
   ref,
+  shallowRef,
   useTemplateRef,
 } from 'vue'
 
@@ -93,9 +93,10 @@ import WordInsertIndicator from './SyllableInsertIndicator.vue'
 import EmptyTip from '@ui/components/EmptyTip.vue'
 import TieredMenuItem from '@ui/components/TieredMenuItem.vue'
 import { Button, ContextMenu } from 'primevue'
+import type { MenuItem } from 'primevue/menuitem'
 
 import { toogleAttr } from '../shared'
-import { useContentCtxItems } from './context'
+import { combineLines, useContentCtxItems } from './context'
 
 const tt = t.editor
 
@@ -139,15 +140,17 @@ const menuItemsMap = useContentCtxItems({
   lineIndex: contextLineIndex,
   sylIndex: contextSylIndex,
 })
-const currentContextType = ref<keyof typeof menuItemsMap>('blank')
-const menuItems = computed(() => menuItemsMap[currentContextType.value].value)
+const menuItems = shallowRef([] as MenuItem[])
 
 const handleContext =
   (src: keyof typeof menuItemsMap) => (e: MouseEvent, lineIndex?: number, sylIndex?: number) => {
-    if (isInputEl(e.target as HTMLElement)) return
+    if (isInputEl(e.target as HTMLElement)) {
+      menu.value?.hide()
+      return
+    }
     contextLineIndex.value = lineIndex
     contextSylIndex.value = sylIndex
-    currentContextType.value = src
+    menuItems.value = menuItemsMap[src].value
     menu.value?.show(e)
   }
 const handleBlankContext = handleContext('blank')
@@ -181,6 +184,7 @@ useGlobalKeyboard('breakLine', () => {
 useGlobalKeyboard('duet', () => toogleAttr('duet'))
 useGlobalKeyboard('background', () => toogleAttr('background'))
 useGlobalKeyboard('connectNextLine', () => toogleAttr('connectNext'))
+useGlobalKeyboard('combineLines', combineLines)
 
 // onBeforeUnmounted instead of onUnmounted: vscroll quits at unmounted phase
 onBeforeUnmount(() => {

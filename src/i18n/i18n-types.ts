@@ -38,6 +38,10 @@ type RootTranslation = {
 				 */
 				toggleBackground: string
 				/**
+				 * 合​并​行
+				 */
+				combineLines: string
+				/**
 				 * 在​前​插​入​行
 				 */
 				insertLineAbove: string
@@ -1621,6 +1625,10 @@ type RootTranslation = {
 			 */
 			connectNextLine: string
 			/**
+			 * 合​并​行
+			 */
+			combineLines: string
+			/**
 			 * 上​一​行
 			 */
 			goPrevLine: string
@@ -2036,6 +2044,10 @@ export type TranslationFunctions = {
 				 * 设置背景
 				 */
 				toggleBackground: () => LocalizedString
+				/**
+				 * 合并行
+				 */
+				combineLines: () => LocalizedString
 				/**
 				 * 在前插入行
 				 */
@@ -3614,6 +3626,10 @@ export type TranslationFunctions = {
 			 * 续至下行
 			 */
 			connectNextLine: () => LocalizedString
+			/**
+			 * 合并行
+			 */
+			combineLines: () => LocalizedString
 			/**
 			 * 上一行
 			 */
