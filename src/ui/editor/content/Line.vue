@@ -79,6 +79,7 @@
                 @click.stop
                 @dragstart.stop
                 :data-line-field-key="f.key"
+                :name="`line-${f.model}/${props.line.id}`"
               />
               <template v-if="f.key === 'roman' && prefStore.sylRomanEnabled">
                 <InputGroupAddon>

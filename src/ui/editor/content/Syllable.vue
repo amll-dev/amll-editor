@@ -45,6 +45,7 @@
         @compositionend="hijackCompositionBackquote"
         @blur="flushInputModel"
         data-syllable-field
+        :name="`syl/${props.syllable.id}`"
       />
     </div>
     <div class="csyl-roman-shell" v-if="prefStore.sylRomanEnabled">
@@ -61,6 +62,7 @@
         @blur="flushRomanModel"
         @compositionend="hijackCompositionBackquote"
         data-syllable-roman-field
+        :name="`syl-romanization/${props.syllable.id}`"
       />
     </div>
   </div>
