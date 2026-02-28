@@ -165,14 +165,14 @@
         <Transition name="fade">
           <div class="replace-actions" v-if="showReplace">
             <Button
-              icon="pi pi-reply"
+              icon="mdi mdi-check"
               :label="tt.actions.replace()"
               severity="secondary"
               :disabled="actionDisabled"
               @click="handleReplace"
             />
             <Button
-              icon="pi pi-angle-double-right"
+              icon="mdi mdi-check-all"
               v-tooltip="tt.actions.replaceAll()"
               severity="secondary"
               :disabled="actionDisabled"
@@ -181,7 +181,7 @@
           </div>
         </Transition>
         <Button
-          icon="pi pi-arrow-up"
+          icon="mdi mdi-arrow-up"
           v-tooltip="tt.actions.findPrev()"
           severity="secondary"
           :disabled="actionDisabled"
@@ -189,7 +189,7 @@
         />
         <Button
           :label="tt.actions.findNext()"
-          icon="pi pi-arrow-down"
+          icon="mdi mdi-arrow-down"
           severity="secondary"
           :disabled="actionDisabled"
           @click="handleFindNext"

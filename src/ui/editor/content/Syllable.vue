@@ -23,7 +23,7 @@
     >
       &ZeroWidthSpace;
       <i v-if="props.syllable.bookmarked" class="csyl-head-bookmark pi pi-bookmark-fill"></i>
-      <i v-else class="csyl-head-bars pi pi-bars"></i>
+      <i v-else class="csyl-head-bars mdi mdi-menu"></i>
       <div v-if="props.syllable.placeholdingBeat" class="csyl-head-placeholding-beat">
         {{ props.syllable.placeholdingBeat }}
       </div>

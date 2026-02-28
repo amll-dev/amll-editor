@@ -22,7 +22,7 @@
       />
     </div>
     <Button
-      icon="mdi mdi-swap-horizontal"
+      icon="mdi mdi-wrench-clock"
       :label="tt.batchTimeShift()"
       size="small"
       :severity="runtimeStore.dialogShown.batchTimeShift ? undefined : 'secondary'"

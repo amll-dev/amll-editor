@@ -34,7 +34,7 @@
           </template>
           <Button
             class="add-syl-button"
-            icon="pi pi-plus"
+            icon="mdi mdi-plus"
             severity="secondary"
             @click="appendWord(line)"
             v-tooltip="tt.line.addSyllable()"
