@@ -1,7 +1,7 @@
 <template>
   <RibbonGroup :label="tt.groupLabel()" more>
     <Button
-      icon="pi pi-bookmark"
+      :icon="`mdi mdi-bookmark-${bookmarkAdd ? 'plus' : 'minus'}-outline`"
       :label="bookmarkAdd ? tt.addBookmark() : tt.removeBookmark()"
       :disabled="actionDisabled"
       size="small"
@@ -12,14 +12,14 @@
       "
     />
     <Button
-      icon="pi pi-comment"
+      icon="mdi mdi-comment-outline"
       :label="tt.addComment()"
       size="small"
       disabled
       severity="secondary"
     />
     <Button
-      icon="pi pi-eraser"
+      icon="mdi mdi-eraser"
       :label="tt.removeAll()"
       size="small"
       severity="secondary"
