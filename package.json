@@ -28,6 +28,7 @@
     "@codemirror/search": "^6.6.0",
     "@codemirror/state": "^6.5.4",
     "@codemirror/view": "^6.39.15",
+    "@mdi/font": "^7.4.47",
     "@pixi/app": "^7.4.3",
     "@pixi/core": "^7.4.3",
     "@pixi/display": "^7.4.3",
@@ -92,6 +93,12 @@
   "pnpm": {
     "patchedDependencies": {
       "@types/wicg-file-system-access": "patches/@types__wicg-file-system-access.patch"
-    }
+    },
+    "ignoredBuiltDependencies": [
+      "@applemusic-like-lyrics/core",
+      "@applemusic-like-lyrics/vue",
+      "@parcel/watcher",
+      "esbuild"
+    ]
   }
 }
