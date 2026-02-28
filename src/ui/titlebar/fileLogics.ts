@@ -140,36 +140,36 @@ export function useTitlebarFileLogics({ openWorking, saveWorking }: TitlebarFile
   const openMenuItems = computed<MenuItem[]>(() => [
     {
       label: to.project(),
-      icon: 'pi pi-file',
+      icon: 'mdi mdi-movie-open-outline',
       command: handleOpenProjClick,
     },
     {
       label: to.ttml(),
-      icon: 'pi pi-file',
+      icon: 'mdi mdi-file-document-outline',
       command: handleOpenTTMLClick,
     },
     { separator: true },
     {
       label: to.pasteTTML(),
-      icon: 'pi pi-clipboard',
+      icon: 'mdi mdi-clipboard-outline',
       command: handleImportFromClipboard,
       disabled: !compatibilityMap.clipboard,
       tip: getHotkeyStr('importFromClipboard'),
     },
     {
       label: to.importFromText(),
-      icon: 'pi pi-align-left',
+      icon: 'mdi mdi-text',
       command: () => (runtimeStore.dialogShown.fromText = true),
     },
     {
       label: to.importFromOtherFormats(),
-      icon: 'pi pi-paperclip',
+      icon: 'mdi mdi-import',
       command: () => (runtimeStore.dialogShown.fromOtherFormat = true),
     },
     { separator: true },
     {
       label: to.blank(),
-      icon: 'pi pi-ban',
+      icon: 'mdi mdi-cancel',
       command: handleCreateBlankProject,
       tip: getHotkeyStr('new'),
     },
@@ -178,7 +178,7 @@ export function useTitlebarFileLogics({ openWorking, saveWorking }: TitlebarFile
   const saveMenuNormalSaveAs = computed<MenuItem[]>(() => [
     {
       label: ts.saveAs(),
-      icon: 'pi pi-file-edit',
+      icon: 'mdi mdi-content-save-edit-outline',
       command: handleSaveAsClick,
       tip: getHotkeyStr('saveAs'),
     },
@@ -186,26 +186,26 @@ export function useTitlebarFileLogics({ openWorking, saveWorking }: TitlebarFile
   const saveMenuFallbackSaveAs = computed<MenuItem[]>(() => [
     {
       label: ts.exportToProject(),
-      icon: 'pi pi-file-edit',
+      icon: 'mdi mdi-content-save-edit-outline',
       command: handleSaveAsProjectClick,
     },
     {
       label: ts.exportToTTML(),
-      icon: 'pi pi-file-edit',
+      icon: 'mdi mdi-content-save-edit-outline',
       command: handleSaveAsTTMLClick,
     },
   ])
   const saveMenuItemsWithoutSaveAs = computed<MenuItem[]>(() => [
     {
       label: ts.copyTTML(),
-      icon: 'pi pi-clipboard',
+      icon: 'mdi mdi-clipboard-outline',
       command: handleExportToClipboard,
       disabled: !compatibilityMap.clipboard,
       tip: getHotkeyStr('exportToClipboard'),
     },
     {
       label: ts.exportToOtherFormats(),
-      icon: 'pi pi-file-export',
+      icon: 'mdi mdi-file-move-outline',
       items: portFormatRegister.map((format) => ({
         label: format.name,
         command: () => {

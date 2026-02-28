@@ -3,7 +3,7 @@
     <div class="leftbar">
       <SplitButton
         :label="tt.open()"
-        :icon="`pi ${openWorking ? 'pi-sync' : 'pi-folder-open'}`"
+        :icon="`mdi ${openWorking ? 'mdi-refresh' : 'mdi-open-in-app'}`"
         severity="secondary"
         :model="openMenuItems"
         @click="handleOpenClick"
@@ -16,7 +16,7 @@
       </SplitButton>
 
       <Button
-        icon="pi pi-cog"
+        icon="mdi mdi-cog"
         variant="text"
         v-tooltip="tipHotkey(tt.preferences(), 'preferences')"
         :severity="
@@ -25,7 +25,7 @@
         @click="runtimeStore.toogleSidebar(SidebarKey.Preference)"
       />
       <Button
-        :icon="i.undo"
+        icon="mdi mdi-undo"
         variant="text"
         severity="secondary"
         @click="editHistory.undo()"
@@ -33,7 +33,7 @@
         v-tooltip="tipHotkey(tt.undo(), 'undo')"
       />
       <Button
-        :icon="i.redo"
+        icon="mdi mdi-redo"
         variant="text"
         severity="secondary"
         @click="editHistory.redo()"
@@ -64,7 +64,7 @@
       </div>
       <SplitButton
         :label="tt.save()"
-        :icon="`pi ${saveWorking ? 'pi-sync' : 'pi-save'}`"
+        :icon="`mdi ${saveWorking ? 'mdi-refresh' : 'mdi-content-save-outline'}`"
         :model="saveMenuItems"
         @click="handleSaveClick"
         v-tooltip="tipHotkey(tt.saveTip(), 'save')"
@@ -91,7 +91,6 @@ import { useRuntimeStore } from '@states/stores'
 
 import { tipHotkey } from '@utils/generateTooltip'
 
-import { i } from '@ui/icon'
 import { SidebarKey } from '@ui/sidebar'
 
 import ViewSwitcher from './ViewSwitcher.vue'
