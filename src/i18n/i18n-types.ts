@@ -867,6 +867,14 @@ type RootTranslation = {
 				 */
 				scrollWithPlaybackDesc: string
 				/**
+				 * 进​度​条​高​亮​选​中​行
+				 */
+				highlightSelectedLineOnProgress: string
+				/**
+				 * 在​进​度​波​形​条​上​高​亮​显​示​当​前​选​中​行​的​时​间​段
+				 */
+				highlightSelectedLineOnProgressDesc: string
+				/**
 				 * 兼​容​性​报​告
 				 */
 				compatibilityReport: string
@@ -2872,6 +2880,14 @@ export type TranslationFunctions = {
 				 * 时轴视图中随播放进度自动滚动
 				 */
 				scrollWithPlaybackDesc: () => LocalizedString
+				/**
+				 * 进度条高亮选中行
+				 */
+				highlightSelectedLineOnProgress: () => LocalizedString
+				/**
+				 * 在进度波形条上高亮显示当前选中行的时间段
+				 */
+				highlightSelectedLineOnProgressDesc: () => LocalizedString
 				/**
 				 * 兼容性报告
 				 */
