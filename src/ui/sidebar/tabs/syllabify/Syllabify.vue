@@ -59,10 +59,10 @@
               v-model.lazy.trim="item.target"
               fluid
             />
-            <i class="pi pi-arrow-right"></i>
+            <i class="mdi mdi-arrow-right"></i>
             <SplitTextRewriteEditor :original="item.target" v-model="item.indices" />
             <Button
-              icon="pi pi-times"
+              icon="mdi mdi-close"
               variant="text"
               severity="secondary"
               size="small"
@@ -71,7 +71,7 @@
           </div>
           <Button
             :label="tt.addRule()"
-            icon="pi pi-plus"
+            icon="mdi mdi-plus"
             @click="customRewrites.push({ target: '', indices: [] })"
             variant="text"
             severity="secondary"
@@ -84,7 +84,7 @@
       <div class="warn">{{ tt.sylDataLossWarn() }}</div>
       <Button
         :label="tt.applyToSelectedLines()"
-        icon="pi pi-angle-right"
+        icon="mdi mdi-chevron-right"
         fluid
         severity="secondary"
         :disabled="working || !selectedEngine || runtimeStore.selectedLines.size === 0"
@@ -93,7 +93,7 @@
       />
       <Button
         :label="tt.applyToLinesAndAfter()"
-        icon="pi pi-angle-double-right"
+        icon="mdi mdi-chevron-double-right"
         fluid
         severity="secondary"
         :disabled="working || !selectedEngine || runtimeStore.selectedLines.size === 0"
@@ -102,7 +102,7 @@
       />
       <Button
         :label="tt.applyToAll()"
-        icon="pi pi-angle-double-right"
+        icon="mdi mdi-chevron-double-right"
         fluid
         severity="secondary"
         :disabled="working || !selectedEngine"

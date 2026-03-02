@@ -87,38 +87,38 @@
       <div class="quick-tools">
         <Button
           :label="tt.toolBtns.removeTimestamps()"
-          icon="pi pi-minus-circle"
+          icon="mdi mdi-timer-off-outline"
           severity="secondary"
           @click="handleRemoveTimestamps"
         />
         <Button
           :label="tt.toolBtns.normalizeSpaces()"
-          icon="pi pi-hammer"
+          icon="mdi mdi-tray-minus"
           severity="secondary"
           @click="handleNormalizeSpaces"
         />
         <Button
           :label="tt.toolBtns.capitalizeFirstLetter()"
-          icon="pi pi-arrow-up"
+          icon="mdi mdi-format-letter-case-upper"
           severity="secondary"
           @click="handleCapitalizeFirstLetter"
         />
         <Button
           :label="tt.toolBtns.removeTrailingPunc()"
-          icon="pi pi-delete-left"
+          icon="mdi mdi-backspace-outline"
           severity="secondary"
           @click="handleRemoveTrailingPunctuation"
         />
       </div>
       <Button
         :label="tt.cancel()"
-        icon="pi pi-times"
+        icon="mdi mdi-close"
         severity="secondary"
         @click="visible = false"
       />
       <Button
         :label="tt.action()"
-        icon="pi pi-arrow-right"
+        icon="mdi mdi-arrow-right"
         @click="handleImportAction"
         :disabled="noItemChecked"
       />

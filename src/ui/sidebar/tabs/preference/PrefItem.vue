@@ -5,7 +5,7 @@
         {{ props.label
         }}<i
           v-if="props.experimental"
-          :class="`exp-icon ${i.experiment}`"
+          class="exp-icon mdi mdi-flask-outline"
           v-tooltip="tt.experimentalWarning()"
         ></i>
       </div>
@@ -19,8 +19,6 @@
 
 <script setup lang="ts">
 import { t } from '@i18n'
-
-import { i } from '@ui/icon'
 
 const props = defineProps<{
   label: string

@@ -140,7 +140,7 @@ export function useTitlebarFileLogics({ openWorking, saveWorking }: TitlebarFile
   const openMenuItems = computed<MenuItem[]>(() => [
     {
       label: to.project(),
-      icon: 'mdi mdi-movie-open-outline',
+      icon: 'mdi mdi-movie-outline',
       command: handleOpenProjClick,
     },
     {

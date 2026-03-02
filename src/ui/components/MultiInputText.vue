@@ -37,7 +37,7 @@
         />
       </div>
       <i
-        class="pi pi-times delbtn"
+        class="mdi mdi-close delbtn"
         @click="
           () => {
             internalList.splice(index, 1)
@@ -212,7 +212,7 @@ function focusItemInput(index: number) {
   gap: 0.3rem;
   max-width: 100%;
   .delbtn {
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     opacity: 0.6;
     cursor: pointer;
     &:hover {

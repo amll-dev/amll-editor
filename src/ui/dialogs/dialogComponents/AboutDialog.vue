@@ -23,7 +23,7 @@
       />
       <Button
         :severity="keyValueFolded ? 'secondary' : 'primary'"
-        icon="pi pi-info-circle"
+        icon="mdi mdi-information-outline"
         :label="tt.detailBtn()"
         @click="keyValueFolded = !keyValueFolded"
       />

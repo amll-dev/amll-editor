@@ -27,7 +27,11 @@
     <EmptyTip
       v-if="coreStore.lyricLines.length === 0"
       :title="tt.emptyTip.title.noLines()"
-      :tip="tt.emptyTip.detail.goLoadOrCreate()"
+      :tip="
+        runtimeStore.isContentView
+          ? tt.emptyTip.detail.goLoadOrCreate()
+          : tt.emptyTip.detail.goLoadOrEdit()
+      "
     />
     <EmptyTip
       v-else-if="coreStore.lyricLines.every((line) => !line.syllables.some((s) => s.text.trim()))"

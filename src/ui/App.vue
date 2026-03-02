@@ -162,12 +162,12 @@ onMounted(() => {
         rejectProps: {
           label: optn.rejectLabel || t.components.confirmDialog.cancel(),
           severity: 'secondary',
-          icon: optn.rejectIcon || 'pi pi-times',
+          icon: optn.rejectIcon || 'mdi mdi-close',
         },
         acceptProps: {
           label: optn.acceptLabel || t.components.confirmDialog.continue(),
           severity: optn.severity || 'danger',
-          icon: optn.acceptIcon || 'pi pi-arrow-right',
+          icon: optn.acceptIcon || 'mdi mdi-arrow-right',
           autofocus: true,
         },
         accept: () => resolve(true),

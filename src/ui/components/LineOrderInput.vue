@@ -12,7 +12,7 @@
         :key="item.key"
         :class="item.classname"
       >
-        <i class="pi pi-bars line-order-item-icon"></i>{{ item.caption }}
+        <i class="mdi mdi-menu line-order-item-icon"></i>{{ item.caption }}
       </div>
     </VueDraggable>
     <hr class="line-order-hr" />

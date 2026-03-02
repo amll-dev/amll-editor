@@ -24,7 +24,7 @@
               size="small"
               variant="link"
               :label="link.label"
-              icon="pi pi-external-link"
+              icon="mdi mdi-open-in-new"
               as="a"
               :href="link.url"
               target="_blank"
@@ -49,7 +49,7 @@
           tt.dontCheckOnStartup()
         }}</label>
       </div>
-      <Button :label="tt.proceed()" severity="secondary" icon="pi pi-check" @click="handleClose" />
+      <Button :label="tt.proceed()" severity="secondary" icon="mdi mdi-check" @click="handleClose" />
     </template>
   </Dialog>
 </template>

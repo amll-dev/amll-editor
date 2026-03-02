@@ -3,7 +3,7 @@
     <div class="hotkey-popup-item" v-for="(_item, index) in innerList">
       <HotKeyInput v-model="innerList[index]!" fluid />
       <Button
-        icon="pi pi-times"
+        icon="mdi mdi-close"
         size="small"
         severity="secondary"
         @click="innerList.splice(index, 1)"
@@ -13,14 +13,14 @@
     <div class="hotkey-popup-item add">
       <Button
         :label="t.hotkey.btns.add()"
-        icon="pi pi-plus"
+        icon="mdi mdi-plus"
         size="small"
         fluid
         severity="secondary"
         @click="innerList.push(null)"
       />
       <Button
-        icon="pi pi-sync"
+        icon="mdi mdi-restore"
         size="small"
         severity="secondary"
         @click="handleReset"

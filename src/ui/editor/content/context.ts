@@ -46,7 +46,7 @@ export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
   const blankMenuItems = computed<MenuItem[]>(() => [
     {
       label: tt.blank.insertLine(),
-      icon: 'pi pi-plus',
+      icon: 'mdi mdi-plus',
       command: () => {
         const newLine = coreStore.newLine()
         coreStore.lyricLines.push(newLine)
@@ -209,7 +209,7 @@ export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
     },
     {
       label: tt.syllable.breakLineAtSyl(),
-      icon: 'mdi mdi-arrow-left-bottom',
+      icon: 'mdi mdi-subdirectory-arrow-left',
       command: breakLineAtSyl,
       tip: getHotkeyStr('breakLine'),
     },
