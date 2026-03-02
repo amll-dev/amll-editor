@@ -69,7 +69,7 @@
           :severity="props.line.connectNext ? 'danger' : 'secondary'"
           variant="text"
           size="small"
-          icon="pi pi-link"
+          icon="mdi mdi-link-variant"
           :class="{ active: props.line.connectNext }"
           @click.stop="props.line.connectNext = !props.line.connectNext"
           v-tooltip="tt.connectNext()"

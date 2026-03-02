@@ -7,8 +7,8 @@
   >
     <Timestamp v-model="upstream" end ref="timeComp" class="timestamp-comp" passive-active />
     <div class="connect-icon">
-      <i class="pi pi-link"></i>
-      <i class="pi pi-angle-down"></i>
+      <i class="mdi mdi-link-variant"></i>
+      <i class="mdi mdi-arrow-down"></i>
     </div>
   </div>
 </template>
@@ -49,6 +49,7 @@ function handleDbClick() {
     display: flex;
     gap: 0.3rem;
     color: transparent;
+    font-size: 0.9rem;
     pointer-events: none;
   }
 }
