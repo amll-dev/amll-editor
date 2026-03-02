@@ -119,13 +119,13 @@ export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
   const lineMenuItems = computed<MenuItem[]>(() => [
     {
       label: tt.line.toggleDuet(),
-      icon: 'pi pi-align-right',
+      icon: 'mdi mdi-align-horizontal-right',
       command: toggleDuet,
       tip: getHotkeyStr('duet'),
     },
     {
       label: tt.line.toggleBackground(),
-      icon: 'pi pi-expand',
+      icon: 'mdi mdi-focus-field',
       command: toggleBackground,
       tip: getHotkeyStr('background'),
     },
@@ -136,7 +136,7 @@ export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
       : [
           {
             label: tt.line.combineLines(),
-            icon: 'pi pi-arrow-down-left-and-arrow-up-right-to-center',
+            icon: 'mdi mdi-arrow-collapse-vertical',
             command: combineLines,
             tip: getHotkeyStr('combineLines'),
           },
@@ -144,22 +144,22 @@ export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
         ]),
     {
       label: tt.line.insertLineAbove(),
-      icon: 'pi pi-arrow-up',
+      icon: 'mdi mdi-arrow-up',
       command: insertLineBefore,
     },
     {
       label: tt.line.insertLineBelow(),
-      icon: 'pi pi-arrow-down',
+      icon: 'mdi mdi-arrow-down',
       command: insertLineAfter,
     },
     {
       label: tt.line.duplicateLine(),
-      icon: 'pi pi-clone',
+      icon: 'mdi mdi-plus-box-multiple-outline',
       command: duplicateLine,
     },
     {
       label: tt.line.deleteLine(),
-      icon: 'pi pi-trash',
+      icon: 'mdi mdi-trash-can-outline',
       command: deleteLine,
       tip: getHotkeyStr('delete'),
     },
@@ -199,23 +199,23 @@ export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
   const sylMenuItems = computed<MenuItem[]>(() => [
     {
       label: tt.syllable.insertSylBefore(),
-      icon: 'pi pi-arrow-left',
+      icon: 'mdi mdi-arrow-left',
       command: insertSylBefore,
     },
     {
       label: tt.syllable.insertSylAfter(),
-      icon: 'pi pi-arrow-right',
+      icon: 'mdi mdi-arrow-right',
       command: insertSylAfter,
     },
     {
       label: tt.syllable.breakLineAtSyl(),
-      icon: 'pi pi-code',
+      icon: 'mdi mdi-arrow-left-bottom',
       command: breakLineAtSyl,
       tip: getHotkeyStr('breakLine'),
     },
     {
       label: tt.syllable.deleteSyl(),
-      icon: 'pi pi-trash',
+      icon: 'mdi mdi-trash-can-outline',
       command: deleteSyl,
       tip: getHotkeyStr('delete'),
     },

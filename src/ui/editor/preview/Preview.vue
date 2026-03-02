@@ -21,7 +21,7 @@
       class="preview-reload-button"
       :label="tt.reloadAmll()"
       severity="secondary"
-      icon="pi pi-refresh"
+      icon="mdi mdi-refresh"
       variant="text"
       @click="playerKey = Symbol()"
     />

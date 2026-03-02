@@ -7,7 +7,7 @@
     }"
     :class="{ nodrop: !runtimeStore.canDrop }"
   >
-    <i class="drag-ghost-icon pi" :class="dragIcon"></i>
+    <i class="drag-ghost-icon mdi" :class="dragIcon"></i>
     &ZeroWidthSpace;
     <template v-if="runtimeStore.canDrop">
       <span class="drag-ghost-text">{{ dragText }}</span>
@@ -43,8 +43,8 @@ const dragText = computed(() => {
   }
 })
 const dragIcon = computed(() => {
-  if (!runtimeStore.canDrop) return 'pi-ban'
-  return runtimeStore.isDraggingCopy ? 'pi-clone' : 'pi-arrow-right'
+  if (!runtimeStore.canDrop) return 'mdi-close'
+  return runtimeStore.isDraggingCopy ? 'mdi-plus' : 'mdi-arrow-right'
 })
 
 const handleMouseMove = (e: MouseEvent) => {
@@ -65,7 +65,7 @@ onUnmounted(() => {
   top: 0.5rem;
   left: 0.8rem;
   will-change: transform;
-  padding: 0.2rem 0.5rem;
+  padding: 0.3rem 0.5rem;
   border-radius: 0.3rem;
   display: flex;
   align-items: center;

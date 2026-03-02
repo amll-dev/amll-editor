@@ -3,7 +3,7 @@
     <div class="leftbar">
       <SplitButton
         :label="tt.open()"
-        :icon="`mdi ${openWorking ? 'mdi-refresh' : 'mdi-open-in-app'}`"
+        :icon="`mdi ${openWorking ? 'mdi-refresh' : 'mdi-folder-outline'}`"
         severity="secondary"
         :model="openMenuItems"
         @click="handleOpenClick"

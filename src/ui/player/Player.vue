@@ -6,7 +6,7 @@
       </KeepAlive>
       <div class="player-toolbar">
         <Button
-          :icon="`mdi ${loading ? 'mdi-refresh' : 'mdi-music'}`"
+          :icon="`mdi ${loading ? 'mdi-refresh' : 'mdi-upload'}`"
           :disabled="loading"
           severity="secondary"
           @click="() => handleSelectFile()"
