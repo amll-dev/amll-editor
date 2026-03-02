@@ -1,7 +1,7 @@
 <template>
   <RibbonGroup :label="tt.groupLabel()">
     <Button
-      icon="mdi mdi-timer-outline"
+      icon="mdi mdi-timer-music-outline"
       :label="tt.delayTest()"
       size="small"
       severity="secondary"
@@ -22,7 +22,7 @@
       />
     </div>
     <Button
-      icon="mdi mdi-wrench-clock"
+      icon="mdi mdi-timer-edit-outline"
       :label="tt.batchTimeShift()"
       size="small"
       :severity="runtimeStore.dialogShown.batchTimeShift ? undefined : 'secondary'"
