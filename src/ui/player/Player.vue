@@ -6,14 +6,14 @@
       </KeepAlive>
       <div class="player-toolbar">
         <Button
-          :icon="`pi ${loading ? 'pi-sync' : 'pi-upload'}`"
+          :icon="`mdi ${loading ? 'mdi-refresh' : 'mdi-music'}`"
           :disabled="loading"
           severity="secondary"
           @click="() => handleSelectFile()"
           v-tooltip="tipHotkey(tt.chooseAudioFile(), 'chooseMedia')"
         />
         <Button
-          icon="pi pi-sliders-v"
+          icon="mdi mdi-tune-vertical"
           severity="secondary"
           @click="tooglePopover"
           v-tooltip="tipMultiLine(tt.playOptions(), tt.playOptionsWheel())"
@@ -21,7 +21,7 @@
         />
         <Popover ref="popover"> <PopoverPane /> </Popover>
         <Button
-          :icon="playingComputed ? 'pi pi-pause' : 'pi pi-play'"
+          :icon="`mdi ${playingComputed ? 'mdi-pause' : 'mdi-play'}`"
           @click="audioEngine.togglePlay()"
           :disabled="!activatedRef"
           v-tooltip="tipHotkey(playingComputed ? tt.pause() : tt.play(), 'playPauseAudio')"
@@ -51,7 +51,7 @@
         </div>
         <Waveform />
         <Button
-          icon="pi pi-chart-bar"
+          icon="mdi mdi-chart-box-outline"
           :severity="showSpectrogram ? 'primary' : 'secondary'"
           @click="showSpectrogram = !showSpectrogram"
           v-tooltip="

@@ -235,6 +235,5 @@ main {
 }
 
 .mdi {
-  transform: scale(1.25);
-}
+  transform: scale(1.25);}
 </style>
