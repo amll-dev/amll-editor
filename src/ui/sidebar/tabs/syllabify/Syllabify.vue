@@ -343,7 +343,6 @@ function handleDrop() {
     }
   }
   .description-text {
-    user-select: text;
     margin-inline-end: 0.5rem;
   }
   .description-button {

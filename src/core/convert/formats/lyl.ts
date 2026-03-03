@@ -6,6 +6,7 @@ import type { Convert as CV } from '../types'
 
 // Lyricify Lines (LYL) parser and stringifier
 // Lyricify Lines is a proprietary format used by Lyricify
+// See: https://github.com/WXRIW/Lyricify-App/blob/main/docs/Lyricify%204/Lyrics.md#lyricify-lines-%E6%A0%BC%E5%BC%8F%E8%A7%84%E8%8C%83
 
 // Format:
 // [type:LyricifyLines]

@@ -3,6 +3,7 @@ import { t } from '@i18n'
 import { lrcReg } from './formats/lrc'
 import { lrcA2Reg } from './formats/lrca2'
 import { lylReg } from './formats/lyl'
+import { lysReg } from './formats/lys'
 import { qrcReg } from './formats/qrc'
 import { splReg } from './formats/spl'
 import { yrcReg } from './formats/yrc'
@@ -13,7 +14,7 @@ export type { Convert } from './types'
 
 export { detectFormat } from './detect'
 
-export const portFormats = ['lrc', 'lrcA2', 'yrc', 'qrc', 'lyl', 'spl'] as const
+export const portFormats = ['lrc', 'lrcA2', 'yrc', 'qrc', 'lyl', 'lys', 'spl'] as const
 
 const portFormatHandlers: Record<CV.PortFormatKey, CV.FormatHandler> = {
   lrc: lrcReg,
@@ -21,6 +22,7 @@ const portFormatHandlers: Record<CV.PortFormatKey, CV.FormatHandler> = {
   yrc: yrcReg,
   qrc: qrcReg,
   lyl: lylReg,
+  lys: lysReg,
   spl: splReg,
 } as const
 
@@ -33,6 +35,12 @@ const formatReferences: Partial<Record<CV.PortFormatKey, CV.FormatCaption['refer
     {
       name: tt.officialDoc(),
       url: 'https://github.com/WXRIW/Lyricify-App/blob/main/docs/Lyricify%204/Lyrics.md#lyricify-lines-%E6%A0%BC%E5%BC%8F%E8%A7%84%E8%8C%83',
+    },
+  ],
+  lys: [
+    {
+      name: tt.officialDoc(),
+      url: 'https://github.com/WXRIW/Lyricify-App/blob/main/docs/Lyricify%204/Lyrics.md#lyricify-syllable-%E6%A0%BC%E5%BC%8F%E8%A7%84%E8%8C%83',
     },
   ],
 }

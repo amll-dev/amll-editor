@@ -414,7 +414,7 @@ const zhHans = {
       description: 'Lyricify 的私有行时间戳歌词格式，不支持逐字时间戳。',
     },
     lys: {
-      name: 'Lyricify Syllables',
+      name: 'Lyricify Syllable',
       description: 'Lyricify 的私有逐字时间戳歌词格式，支持逐字、背景与对唱。',
     },
     spl: {

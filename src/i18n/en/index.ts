@@ -432,7 +432,7 @@ const en = {
         'Lyricify proprietary line timestamp format, does not support syllable-level timestamps.',
     },
     lys: {
-      name: 'Lyricify Syllables',
+      name: 'Lyricify Syllable',
       description:
         'Lyricify proprietary syllable timestamp format, supports syllable-level, background and duet lyrics.',
     },

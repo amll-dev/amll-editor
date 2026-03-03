@@ -1224,7 +1224,7 @@ type RootTranslation = {
 		}
 		lys: {
 			/**
-			 * L​y​r​i​c​i​f​y​ ​S​y​l​l​a​b​l​e​s
+			 * L​y​r​i​c​i​f​y​ ​S​y​l​l​a​b​l​e
 			 */
 			name: string
 			/**
@@ -3260,7 +3260,7 @@ export type TranslationFunctions = {
 		}
 		lys: {
 			/**
-			 * Lyricify Syllables
+			 * Lyricify Syllable
 			 */
 			name: () => LocalizedString
 			/**
