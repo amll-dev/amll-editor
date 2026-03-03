@@ -178,9 +178,13 @@ onMounted(() => {
 })
 
 window.addEventListener('load', () => {
+  const appEl = document.getElementById('app')
+  if (!appEl) return
+  appEl.style.removeProperty('opacity')
+
   const loadingEl = document.getElementById('loading')
   if (!loadingEl) return
-  loadingEl.style.opacity = '0'
+  loadingEl.style.setProperty('opacity', '0')
   setTimeout(() => {
     loadingEl.remove()
   }, 500)

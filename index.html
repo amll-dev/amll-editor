@@ -11,6 +11,9 @@
       html {
         background-color: light-dark(white, #121212);
       }
+      #app {
+        transition: opacity 0.15s;
+      }
       #loading {
         position: fixed;
         top: 0;
@@ -23,7 +26,8 @@
         background-color: light-dark(#dedede, #333);
         border-radius: 2px;
         overflow: hidden;
-        transition: opacity 0.2s;
+        transition: opacity 0.15s;
+        animation: l-enter 1s linear;
       }
       #loading::before {
         content: '';
@@ -35,6 +39,7 @@
         will-change: inset-inline-start, inset-inline-end;
         animation: l-progressbar-indeterminate-anim 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395)
           infinite;
+        animation-delay: 1.3s;
       }
       #loading::after {
         content: '';
@@ -46,7 +51,13 @@
         will-change: inset-inline-start, inset-inline-end;
         animation: l-progressbar-indeterminate-anim-short 2.1s cubic-bezier(0.165, 0.84, 0.44, 1)
           infinite;
-        animation-delay: 1.15s;
+        animation-delay: 2.45s;
+      }
+      @keyframes l-enter {
+        0%,
+        85% {
+          opacity: 0;
+        }
       }
       @keyframes l-progressbar-indeterminate-anim {
         0% {
@@ -91,7 +102,7 @@
     />
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app" style="opacity: 0"></div>
     <div id="loading"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
