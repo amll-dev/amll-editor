@@ -139,7 +139,7 @@ useGlobalKeyboard('volumeUp', () => {
 
 const prefStore = usePrefStore()
 const optimizedStep = computed(
-  () => (prefStore.audioSeekingStepMs || 5000) / audioEngine.playbackRateRef.value,
+  () => (prefStore.audioSeekingStepMs || 5000) * audioEngine.playbackRateRef.value,
 )
 useGlobalKeyboard('seekBackward', () => {
   audioEngine.seekBy(-optimizedStep.value)
