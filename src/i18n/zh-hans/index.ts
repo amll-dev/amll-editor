@@ -633,6 +633,7 @@ const zhHans = {
     },
     toolBtns: {
       removeTimestamps: '移除时间戳',
+      removeEmptyLines: '移除空白行',
       normalizeSpaces: '规范化空格',
       capitalizeFirstLetter: '首字母大写',
       removeTrailingPunc: '去除尾标点',

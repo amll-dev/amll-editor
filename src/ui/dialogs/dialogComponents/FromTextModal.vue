@@ -92,6 +92,12 @@
           @click="handleRemoveTimestamps"
         />
         <Button
+          :label="tt.toolBtns.removeEmptyLines()"
+          icon="mdi mdi-card-off-outline"
+          severity="secondary"
+          @click="handleRemoveEmptyLines"
+        />
+        <Button
           :label="tt.toolBtns.normalizeSpaces()"
           icon="mdi mdi-tray-minus"
           severity="secondary"
@@ -274,6 +280,14 @@ function handleNormalizeSpaces() {
       .map((line) => line.replace(/([,.:])(?=\S)/g, '$1 '))
       .join('\n')
       .trim(),
+  )
+}
+function handleRemoveEmptyLines() {
+  applyProcessToInputs((text: string) =>
+    text
+      .split(/\r?\n/)
+      .filter((line) => line.trim() !== '')
+      .join('\n'),
   )
 }
 function handleCapitalizeFirstLetter() {

@@ -653,6 +653,7 @@ const en = {
     },
     toolBtns: {
       removeTimestamps: 'Remove Timestamps',
+      removeEmptyLines: 'Remove Empty Lines',
       normalizeSpaces: 'Normalize Spaces',
       capitalizeFirstLetter: 'Capitalize First Letter',
       removeTrailingPunc: 'Remove Trailing Punctuation',

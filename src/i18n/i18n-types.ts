@@ -1849,6 +1849,10 @@ type RootTranslation = {
 			 */
 			removeTimestamps: string
 			/**
+			 * 移​除​空​白​行
+			 */
+			removeEmptyLines: string
+			/**
 			 * 规​范​化​空​格
 			 */
 			normalizeSpaces: string
@@ -3858,6 +3862,10 @@ export type TranslationFunctions = {
 			 * 移除时间戳
 			 */
 			removeTimestamps: () => LocalizedString
+			/**
+			 * 移除空白行
+			 */
+			removeEmptyLines: () => LocalizedString
 			/**
 			 * 规范化空格
 			 */
