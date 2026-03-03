@@ -251,6 +251,6 @@ main {
 }
 
 .mdi {
-  transform: scale(1.25);
+  transform: scale(1.25) translateY(0.06em);
 }
 </style>
