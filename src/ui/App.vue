@@ -184,10 +184,7 @@ window.addEventListener('load', () => {
 
   const loadingEl = document.getElementById('loading')
   if (!loadingEl) return
-  loadingEl.style.setProperty('opacity', '0')
-  setTimeout(() => {
-    loadingEl.remove()
-  }, 500)
+  loadingEl.remove()
 })
 </script>
 
