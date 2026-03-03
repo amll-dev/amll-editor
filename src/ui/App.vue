@@ -176,6 +176,15 @@ onMounted(() => {
       }),
     )
 })
+
+window.addEventListener('load', () => {
+  const loadingEl = document.getElementById('loading')
+  if (!loadingEl) return
+  loadingEl.style.opacity = '0'
+  setTimeout(() => {
+    loadingEl.remove()
+  }, 500)
+})
 </script>
 
 <style lang="scss">
@@ -235,5 +244,6 @@ main {
 }
 
 .mdi {
-  transform: scale(1.25);}
+  transform: scale(1.25);
+}
 </style>

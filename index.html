@@ -8,14 +8,72 @@
     <meta name="darkreader-lock" />
     <meta name="color-scheme" content="dark light" />
     <style>
-      @media (prefers-color-scheme: light) {
-        html {
-          background-color: white;
+      html {
+        background-color: light-dark(white, #121212);
+      }
+      #loading {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        margin: auto;
+        height: 4px;
+        width: 200px;
+        background-color: light-dark(#dedede, #333);
+        border-radius: 2px;
+        overflow: hidden;
+        transition: opacity 0.2s;
+      }
+      #loading::before {
+        content: '';
+        position: absolute;
+        background: var(--thumb-color);
+        inset-block-start: 0;
+        inset-inline-start: 0;
+        inset-block-end: 0;
+        will-change: inset-inline-start, inset-inline-end;
+        animation: l-progressbar-indeterminate-anim 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395)
+          infinite;
+      }
+      #loading::after {
+        content: '';
+        position: absolute;
+        background: var(--thumb-color);
+        inset-block-start: 0;
+        inset-inline-start: 0;
+        inset-block-end: 0;
+        will-change: inset-inline-start, inset-inline-end;
+        animation: l-progressbar-indeterminate-anim-short 2.1s cubic-bezier(0.165, 0.84, 0.44, 1)
+          infinite;
+        animation-delay: 1.15s;
+      }
+      @keyframes l-progressbar-indeterminate-anim {
+        0% {
+          inset-inline-start: -35%;
+          inset-inline-end: 100%;
+        }
+        60% {
+          inset-inline-start: 100%;
+          inset-inline-end: -90%;
+        }
+        100% {
+          inset-inline-start: 100%;
+          inset-inline-end: -90%;
         }
       }
-      @media (prefers-color-scheme: dark) {
-        html {
-          background-color: #121212;
+      @keyframes l-progressbar-indeterminate-anim-short {
+        0% {
+          inset-inline-start: -200%;
+          inset-inline-end: 100%;
+        }
+        60% {
+          inset-inline-start: 107%;
+          inset-inline-end: -8%;
+        }
+        100% {
+          inset-inline-start: 107%;
+          inset-inline-end: -8%;
         }
       }
     </style>
@@ -34,6 +92,7 @@
   </head>
   <body>
     <div id="app"></div>
+    <div id="loading"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
