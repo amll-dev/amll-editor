@@ -29,7 +29,7 @@ export async function prosoticSplit(
     if (key.endsWith('in')) {
       // handle g dropping cases like "runnin", "singin"
       const altKey = key + 'g'
-      if (dict.has(altKey)) return splitByDict(altKey, dict.get(altKey)!)
+      if (dict.has(altKey)) return splitByDict(key, dict.get(altKey)!)
     }
     return compromiseSplitCore(nlpWithPlg, part)
   })
