@@ -373,7 +373,7 @@ onUnmounted(() => {
 }
 .csyl-head-bars {
   left: 0;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   transform: scaleX(0.8);
   opacity: 0.4;
 }

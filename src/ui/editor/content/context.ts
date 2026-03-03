@@ -136,7 +136,7 @@ export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
       : [
           {
             label: tt.line.combineLines(),
-            icon: 'mdi mdi-arrow-collapse-vertical',
+            icon: 'mdi mdi-format-align-middle',
             command: combineLines,
             tip: getHotkeyStr('combineLines'),
           },

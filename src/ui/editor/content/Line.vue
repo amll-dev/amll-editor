@@ -345,7 +345,7 @@ function handleRomanGenerate() {
 }
 .cline-drag-icon {
   opacity: 0.5;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   .cline.selected & {
     opacity: 0.8;
   }
