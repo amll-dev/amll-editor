@@ -77,7 +77,7 @@ export default defineConfig(({ mode }) => ({
         manualChunks(id) {
           if (!id.includes('node_modules')) return
           const m = id.split('node_modules/')[1]
-          if (m.startsWith('prime') || m.startsWith('@prime')) return 'primeui'
+          if (m.startsWith('prime') || m.startsWith('@prime') || m.startsWith('@mdi')) return 'ui'
           if (m.startsWith('@vue') || m.startsWith('pinia') || m.startsWith('@vueuse')) return 'vue'
           if (m.startsWith('codemirror') || m.startsWith('@codemirror')) return 'codemirror'
           if (m.startsWith('compromise') || m.startsWith('syllabify')) return 'nlp'
