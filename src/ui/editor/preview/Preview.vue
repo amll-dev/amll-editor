@@ -153,7 +153,7 @@ function passToPlayer(event: Event) {
   }
 
   [class^='_interludeDots']:not([style]) {
-    display: none;
+    visibility: hidden;
   }
 }
 </style>
