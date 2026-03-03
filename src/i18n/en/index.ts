@@ -426,6 +426,16 @@ const en = {
       description:
         'QQ Music proprietary per-syllable lyric format. Supports line and syllable timestamps.',
     },
+    lyl: {
+      name: 'Lyricify Lines',
+      description:
+        'Lyricify proprietary line timestamp format, does not support syllable-level timestamps.',
+    },
+    lys: {
+      name: 'Lyricify Syllables',
+      description:
+        'Lyricify proprietary syllable timestamp format, supports syllable-level, background and duet lyrics.',
+    },
     spl: {
       name: 'SaltPlayer Lyrics',
       description:

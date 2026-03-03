@@ -385,7 +385,7 @@ const zhHans = {
       officialDoc: '官方文档',
     },
     alp: {
-      name: 'AMLL Editor 工程文件',
+      name: 'AMLL Editor 工程',
       description: 'AMLL Editor 的项目文件格式，内嵌音频文件和歌词数据，适合项目保存和传输。',
     },
     ttml: {
@@ -395,7 +395,7 @@ const zhHans = {
     lrc: {
       name: '基本 LRC',
       description:
-        '最常见的歌词格式。支持以行时间戳，不支持逐字时间戳。此处指基本 LRC 格式，若导入基于 LRC 的扩展格式，请选择对应扩展格式选项。',
+        '最常见的歌词格式。支持行时间戳，不支持逐字时间戳。此处指基本 LRC 格式，若要导入基于 LRC 的扩展格式，请选择对应扩展格式选项。',
     },
     lrcA2: {
       name: 'LRC A2 扩展',
@@ -408,6 +408,14 @@ const zhHans = {
     qrc: {
       name: 'QQ 音乐逐字',
       description: 'QQ 音乐的私有逐字歌词格式。支持行时间戳和逐字时间戳。',
+    },
+    lyl: {
+      name: 'Lyricify Lines',
+      description: 'Lyricify 的私有行时间戳歌词格式，不支持逐字时间戳。',
+    },
+    lys: {
+      name: 'Lyricify Syllables',
+      description: 'Lyricify 的私有逐字时间戳歌词格式，支持逐字、背景与对唱。',
     },
     spl: {
       name: '椒盐音乐逐字',

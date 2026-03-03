@@ -1154,7 +1154,7 @@ type RootTranslation = {
 		}
 		alp: {
 			/**
-			 * A​M​L​L​ ​E​d​i​t​o​r​ ​工​程​文​件
+			 * A​M​L​L​ ​E​d​i​t​o​r​ ​工​程
 			 */
 			name: string
 			/**
@@ -1178,7 +1178,7 @@ type RootTranslation = {
 			 */
 			name: string
 			/**
-			 * 最​常​见​的​歌​词​格​式​。​支​持​以​行​时​间​戳​，​不​支​持​逐​字​时​间​戳​。​此​处​指​基​本​ ​L​R​C​ ​格​式​，​若​导​入​基​于​ ​L​R​C​ ​的​扩​展​格​式​，​请​选​择​对​应​扩​展​格​式​选​项​。
+			 * 最​常​见​的​歌​词​格​式​。​支​持​行​时​间​戳​，​不​支​持​逐​字​时​间​戳​。​此​处​指​基​本​ ​L​R​C​ ​格​式​，​若​要​导​入​基​于​ ​L​R​C​ ​的​扩​展​格​式​，​请​选​择​对​应​扩​展​格​式​选​项​。
 			 */
 			description: string
 		}
@@ -1209,6 +1209,26 @@ type RootTranslation = {
 			name: string
 			/**
 			 * Q​Q​ ​音​乐​的​私​有​逐​字​歌​词​格​式​。​支​持​行​时​间​戳​和​逐​字​时​间​戳​。
+			 */
+			description: string
+		}
+		lyl: {
+			/**
+			 * L​y​r​i​c​i​f​y​ ​L​i​n​e​s
+			 */
+			name: string
+			/**
+			 * L​y​r​i​c​i​f​y​ ​的​私​有​行​时​间​戳​歌​词​格​式​，​不​支​持​逐​字​时​间​戳​。
+			 */
+			description: string
+		}
+		lys: {
+			/**
+			 * L​y​r​i​c​i​f​y​ ​S​y​l​l​a​b​l​e​s
+			 */
+			name: string
+			/**
+			 * L​y​r​i​c​i​f​y​ ​的​私​有​逐​字​时​间​戳​歌​词​格​式​，​支​持​逐​字​、​背​景​与​对​唱​。
 			 */
 			description: string
 		}
@@ -3170,7 +3190,7 @@ export type TranslationFunctions = {
 		}
 		alp: {
 			/**
-			 * AMLL Editor 工程文件
+			 * AMLL Editor 工程
 			 */
 			name: () => LocalizedString
 			/**
@@ -3194,7 +3214,7 @@ export type TranslationFunctions = {
 			 */
 			name: () => LocalizedString
 			/**
-			 * 最常见的歌词格式。支持以行时间戳，不支持逐字时间戳。此处指基本 LRC 格式，若导入基于 LRC 的扩展格式，请选择对应扩展格式选项。
+			 * 最常见的歌词格式。支持行时间戳，不支持逐字时间戳。此处指基本 LRC 格式，若要导入基于 LRC 的扩展格式，请选择对应扩展格式选项。
 			 */
 			description: () => LocalizedString
 		}
@@ -3225,6 +3245,26 @@ export type TranslationFunctions = {
 			name: () => LocalizedString
 			/**
 			 * QQ 音乐的私有逐字歌词格式。支持行时间戳和逐字时间戳。
+			 */
+			description: () => LocalizedString
+		}
+		lyl: {
+			/**
+			 * Lyricify Lines
+			 */
+			name: () => LocalizedString
+			/**
+			 * Lyricify 的私有行时间戳歌词格式，不支持逐字时间戳。
+			 */
+			description: () => LocalizedString
+		}
+		lys: {
+			/**
+			 * Lyricify Syllables
+			 */
+			name: () => LocalizedString
+			/**
+			 * Lyricify 的私有逐字时间戳歌词格式，支持逐字、背景与对唱。
 			 */
 			description: () => LocalizedString
 		}
