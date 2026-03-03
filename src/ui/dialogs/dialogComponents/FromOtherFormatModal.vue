@@ -173,6 +173,7 @@ function openUrl(url: string) {
       background-color: var(--p-listbox-background);
       border: 1px solid var(--p-listbox-border-color);
       border-radius: var(--p-listbox-border-radius);
+      overflow-x: auto;
       .example-label {
         font-family: var(--font-main);
         display: block;

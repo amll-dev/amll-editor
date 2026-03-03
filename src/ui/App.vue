@@ -29,6 +29,7 @@ import { View } from '@core/types'
 import { editHistory } from '@states/services/history'
 import { useCoreStore, usePrefStore, useRuntimeStore, useStaticStore } from '@states/stores'
 
+import { hasOverlayScrollbar } from '@utils/checkOverlayScrollbar'
 import { isInputEl } from '@utils/isInputEl'
 
 import FontLoader from './components/FontLoader.vue'
@@ -177,6 +178,11 @@ onMounted(() => {
     )
 })
 
+onMounted(() => {
+  const hasOverlay = hasOverlayScrollbar()
+  document.documentElement.dataset.scrollbar = hasOverlay ? 'overlay' : 'normal'
+})
+
 window.addEventListener('load', () => {
   const appEl = document.getElementById('app')
   if (!appEl) return
@@ -233,14 +239,14 @@ main {
   .editor {
     flex: 1;
   }
+}
 
-  .editor-scroller {
-    &::-webkit-scrollbar {
-      width: 16px;
-    }
-    &::-webkit-scrollbar-thumb {
-      border-width: 5px;
-    }
+[data-scrollbar='normal'] .editor-scroller {
+  &::-webkit-scrollbar {
+    width: 16px;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-width: 5px;
   }
 }
 
