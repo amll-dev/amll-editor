@@ -84,7 +84,7 @@ watch(selectedLanguageItem, (val) => {
       <div class="pref-group-title">{{ tt.groups.timing() }}</div>
       <PrefNumberItem pref-key="globalLatencyMs" placeholder="0" :min="-5000" :max="5000" />
       <PrefSwitchItem pref-key="alwaysIgnoreBackground" />
-      <PrefSwitchItem pref-key="hideLineTiming" experimental />
+      <PrefSwitchItem pref-key="hideLineTiming" />
       <PrefSwitchItem pref-key="highlightSelectedLineOnProgress" experimental />
     </div>
     <!-- <div class="pref-group">

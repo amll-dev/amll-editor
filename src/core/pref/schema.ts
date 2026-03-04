@@ -39,7 +39,7 @@ export const getDefaultPref = (): PreferenceSchema => ({
   audioSeekingStepMs: 5000,
   globalLatencyMs: 0,
   alwaysIgnoreBackground: false,
-  hideLineTiming: false,
+  hideLineTiming: true,
   highlightSelectedLineOnProgress: true,
   sylRomanEnabled: false,
   swapTranslateRoman: false,
