@@ -25,8 +25,8 @@ The project itself does **NOT** distribute or include any copyrighted media, nor
 
 This project operates under the principles of the **Safe Harbor provisions (Section 512)** of the U.S. Digital Millennium Copyright Act (DMCA).
 
-If you believe that any component of this repository infringes your copyright, please contact the maintainers via GitHub Issues or by [email](lhp@linho.cc). We will review and remove the affected materials promptly if necessary.
+If you believe that any component of this repository infringes your copyright, please contact the maintainers via GitHub Issues or by [email](mailto:lhp@linho.cc). We will review and remove the affected materials promptly if necessary.
 
 ---
 
-_Last updated: 2025-12_
+_Last updated: 2026-3_
