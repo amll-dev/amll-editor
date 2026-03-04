@@ -249,8 +249,4 @@ main {
     border-width: 5px;
   }
 }
-
-.mdi {
-  transform: scale(1.25) translateY(0.06em);
-}
 </style>

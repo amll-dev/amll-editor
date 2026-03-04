@@ -40,7 +40,7 @@ export const getDefaultPref = (): PreferenceSchema => ({
   globalLatencyMs: 0,
   alwaysIgnoreBackground: false,
   hideLineTiming: false,
-  highlightSelectedLineOnProgress: false,
+  highlightSelectedLineOnProgress: true,
   sylRomanEnabled: false,
   swapTranslateRoman: false,
   hideTranslateRoman: false,
