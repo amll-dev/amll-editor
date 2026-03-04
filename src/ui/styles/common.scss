@@ -234,6 +234,7 @@ hr {
   }
 }
 
-.mdi {
+.mdi::before {
   transform: scale(1.25);
+  transform-origin: 50% 40%;
 }
