@@ -783,6 +783,14 @@ type RootTranslation = {
 				 */
 				ttmlAsDefaultDesc: string
 				/**
+				 * 打​开​文​件​时​请​求​写​权​限
+				 */
+				askPermissionOnOpen: string
+				/**
+				 * 打​开​文​件​时​立​即​请​求​写​入​权​限​，​以​启​用​自​动​保​存
+				 */
+				askPermissionOnOpenDesc: string
+				/**
 				 * 按​键​绑​定
 				 */
 				keyBinding: string
@@ -2820,6 +2828,14 @@ export type TranslationFunctions = {
 				 * 新建和保存文档时默认使用 TTML 而非 ALP 格式
 				 */
 				ttmlAsDefaultDesc: () => LocalizedString
+				/**
+				 * 打开文件时请求写权限
+				 */
+				askPermissionOnOpen: () => LocalizedString
+				/**
+				 * 打开文件时立即请求写入权限，以启用自动保存
+				 */
+				askPermissionOnOpenDesc: () => LocalizedString
 				/**
 				 * 按键绑定
 				 */

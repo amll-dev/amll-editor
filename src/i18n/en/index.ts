@@ -272,6 +272,9 @@ const en = {
         packAudioToProjectDesc: 'For archiving or sharing',
         ttmlAsDefault: 'Use TTML as default format',
         ttmlAsDefaultDesc: 'For new documents and saves',
+        askPermissionOnOpen: 'Request write permission on open',
+        askPermissionOnOpenDesc:
+          'Request write permission immediately on file open to enable auto-saving',
         keyBinding: 'Key bindings',
         keyBindingDesc: 'Open keyboard shortcut settings',
         keyBindingAction: 'Configure',

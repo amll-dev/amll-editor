@@ -60,6 +60,7 @@ watch(selectedLanguageItem, (val) => {
       <PrefNumberItem pref-key="maxUndoSteps" :min="1" :max="5000" placeholder="100" />
       <PrefSwitchItem pref-key="packAudioToProject" />
       <PrefSwitchItem pref-key="ttmlAsDefault" experimental />
+      <PrefSwitchItem pref-key="askPermissionOnOpen" />
     </div>
     <div class="pref-group">
       <div class="pref-group-title">{{ tt.groups.key() }}</div>

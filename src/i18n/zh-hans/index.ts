@@ -264,6 +264,8 @@ const zhHans = {
         packAudioToProjectDesc: '将音频文件打包在项目文件中，以便归档或分享',
         ttmlAsDefault: '以 TTML 为默认格式',
         ttmlAsDefaultDesc: '新建和保存文档时默认使用 TTML 而非 ALP 格式',
+        askPermissionOnOpen: '打开文件时请求写权限',
+        askPermissionOnOpenDesc: '打开文件时立即请求写入权限，以启用自动保存',
         keyBinding: '按键绑定',
         keyBindingDesc: '打开快捷键设置窗口',
         keyBindingAction: '设置',
