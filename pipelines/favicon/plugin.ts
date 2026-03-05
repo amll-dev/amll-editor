@@ -13,7 +13,7 @@ export function faviconPlugin() {
     targets: [
       {
         src: [normalizePath(join(faviconDir, '*'))],
-        dest: '.',
+        dest: 'favicons',
       },
     ],
   })

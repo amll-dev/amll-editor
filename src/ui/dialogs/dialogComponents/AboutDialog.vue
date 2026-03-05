@@ -1,7 +1,7 @@
 <template>
   <Dialog v-model:visible="visible" :header="tt.header()" class="about-dialog">
     <div class="heading">
-      <img .src="'/brand.svg'" class="logo" draggable="false" />
+      <img .src="'/favicons/brand.svg'" class="logo" draggable="false" />
       <div class="logo-text">
         <div class="title">{{ appName }}</div>
         <div class="title-version">
