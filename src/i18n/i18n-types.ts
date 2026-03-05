@@ -955,6 +955,14 @@ type RootTranslation = {
 				 * 侧​边​栏​的​默​认​宽​度​ ​(​像​素​)
 				 */
 				sidebarWidthDesc: string
+				/**
+				 * 频​谱​图​高​度
+				 */
+				spectrogramHeight: string
+				/**
+				 * 频​谱​图​的​高​度​ ​(​像​素​)
+				 */
+				spectrogramHeightDesc: string
 			}
 		}
 	}
@@ -3000,6 +3008,14 @@ export type TranslationFunctions = {
 				 * 侧边栏的默认宽度 (像素)
 				 */
 				sidebarWidthDesc: () => LocalizedString
+				/**
+				 * 频谱图高度
+				 */
+				spectrogramHeight: () => LocalizedString
+				/**
+				 * 频谱图的高度 (像素)
+				 */
+				spectrogramHeightDesc: () => LocalizedString
 			}
 		}
 	}

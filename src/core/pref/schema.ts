@@ -26,6 +26,7 @@ export interface PreferenceSchema {
   // Misc
   notifyCompatIssuesOnStartup: boolean
   sidebarWidth: number
+  spectrogramHeight: number
   scrollWithPlayback: boolean
 }
 
@@ -48,5 +49,6 @@ export const getDefaultPref = (): PreferenceSchema => ({
   hideTranslateRoman: false,
   notifyCompatIssuesOnStartup: true,
   sidebarWidth: 360,
+  spectrogramHeight: 240,
   scrollWithPlayback: false,
 })

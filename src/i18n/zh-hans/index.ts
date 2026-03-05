@@ -307,6 +307,8 @@ const zhHans = {
         githubRepoAction: '前往',
         sidebarWidth: '侧边栏宽度',
         sidebarWidthDesc: '侧边栏的默认宽度 (像素)',
+        spectrogramHeight: '频谱图高度',
+        spectrogramHeightDesc: '频谱图的高度 (像素)',
       },
     },
   },

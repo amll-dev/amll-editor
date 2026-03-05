@@ -57,12 +57,16 @@ import { useSpectrogramInteraction } from '@core/spectrogram/useSpectrogramInter
 import { useSpectrogramResize } from '@core/spectrogram/useSpectrogramResize'
 import { useSpectrogramTiles } from '@core/spectrogram/useSpectrogramTiles'
 
+import { usePrefStore } from '@states/stores'
+
 import Ruler from './Ruler.vue'
 import Tile from './Tile.vue'
 import EmptyTip from '@ui/components/EmptyTip.vue'
 import { Button, Slider } from 'primevue'
 
 const tt = t.spectrogram
+
+const prefStore = usePrefStore()
 
 const containerEl = ref<HTMLElement | null>(null)
 const { width: containerWidth } = useElementSize(containerEl)
@@ -97,24 +101,24 @@ const {
   isResizing,
   resizeHandleProps,
 } = useSpectrogramResize({
-  initialHeight: 240,
+  initialHeight: prefStore.spectrogramHeight,
   minHeight: 120,
   maxHeight: 600,
 })
 
 // 拖拽调整高度时只修改 CSS 高度，停止拖拽时再更新渲染分辨率以避免每帧重渲染的性能问题
 watch(
-  resizedHeight,
-  (h) => {
+  [resizedHeight, isResizing],
+  () => {
+    const h = resizedHeight.value
     ctx.displayHeight.value = h
-    if (!isResizing.value) ctx.renderHeight.value = h
+    if (!isResizing.value) {
+      ctx.renderHeight.value = h
+      prefStore.spectrogramHeight = h
+    }
   },
   { immediate: true },
 )
-
-watch(isResizing, (resizing) => {
-  if (!resizing) ctx.renderHeight.value = ctx.displayHeight.value
-})
 
 // 获取瓦片
 const { visibleTiles } = useSpectrogramTiles({

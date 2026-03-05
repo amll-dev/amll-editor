@@ -316,6 +316,8 @@ const en = {
         githubRepoAction: 'Visit',
         sidebarWidth: 'Sidebar width',
         sidebarWidthDesc: 'Default width of the sidebar (pixels)',
+        spectrogramHeight: 'Spectrogram height',
+        spectrogramHeightDesc: 'Height of the spectrogram (pixels)',
       },
     },
   },
