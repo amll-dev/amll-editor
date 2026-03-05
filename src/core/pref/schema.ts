@@ -1,4 +1,5 @@
 import { type HotKey, getDefaultHotkeyMap } from '@core/hotkey'
+import type { SpectrogramColor } from '@core/spectrogram/colors'
 
 import { isAppleDevice } from '@utils/detectAppleDevice'
 
@@ -23,6 +24,8 @@ export interface PreferenceSchema {
   sylRomanEnabled: boolean
   swapTranslateRoman: boolean
   hideTranslateRoman: boolean
+  // Spectrogram
+  spectrogramColor: SpectrogramColor
   // Misc
   notifyCompatIssuesOnStartup: boolean
   sidebarWidth: number
@@ -47,6 +50,7 @@ export const getDefaultPref = (): PreferenceSchema => ({
   sylRomanEnabled: false,
   swapTranslateRoman: false,
   hideTranslateRoman: false,
+  spectrogramColor: 'icyBlue',
   notifyCompatIssuesOnStartup: true,
   sidebarWidth: 360,
   spectrogramHeight: 240,

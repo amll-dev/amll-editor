@@ -48,11 +48,12 @@
 <script setup lang="ts">
 import { t } from '@i18n'
 import { useElementSize } from '@vueuse/core'
-import { ref, watch } from 'vue'
+import { nanoid } from 'nanoid'
+import { computed, ref, watch } from 'vue'
 
 import { audioEngine } from '@core/audio/index.ts'
 import { useSpectrogramProvider } from '@core/spectrogram/SpectrogramContext'
-import { generatePalette, getIcyBlueColor } from '@core/spectrogram/colors'
+import { parseSpectrogramColor } from '@core/spectrogram/colors'
 import { useSpectrogramInteraction } from '@core/spectrogram/useSpectrogramInteraction'
 import { useSpectrogramResize } from '@core/spectrogram/useSpectrogramResize'
 import { useSpectrogramTiles } from '@core/spectrogram/useSpectrogramTiles'
@@ -72,12 +73,14 @@ const containerEl = ref<HTMLElement | null>(null)
 const { width: containerWidth } = useElementSize(containerEl)
 const { audioBufferComputed } = audioEngine
 
-const [gainModel] = defineModel<number>('gain', { default: 3.0 })
-const [zoomModel] = defineModel<number>('zoom', { default: 100 })
-const [scrollLeftModel] = defineModel<number>('scrollLeft', { default: 0 })
-const [paletteModel] = defineModel<Uint8Array>('palette', {
-  default: generatePalette(getIcyBlueColor),
+const gainModel = ref(3)
+const zoomModel = ref(100)
+const scrollLeftModel = ref(0)
+const paletteIdModel = computed(() => {
+  if (typeof prefStore.spectrogramColor === 'string') return prefStore.spectrogramColor
+  return nanoid()
 })
+const paletteModel = computed(() => parseSpectrogramColor(prefStore.spectrogramColor))
 
 // 初始化 Context 状态源
 const ctx = useSpectrogramProvider({
@@ -85,6 +88,7 @@ const ctx = useSpectrogramProvider({
   gainModel,
   zoomModel,
   scrollLeftModel,
+  paletteIdModel,
   paletteModel,
 })
 

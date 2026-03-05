@@ -4,6 +4,7 @@ import { shallowRef, watch } from 'vue'
 
 import { compatibilityMap } from '@core/compat'
 import { type PreferenceSchema, getDefaultPref } from '@core/pref'
+import type { SpectrogramColor } from '@core/spectrogram/colors'
 
 import { usePrefStore, useRuntimeStore, useStaticStore } from '@states/stores'
 
@@ -43,6 +44,26 @@ const selectedLanguageItem = shallowRef(currentLocaleItem)
 watch(selectedLanguageItem, (val) => {
   if (!val) return
   localeOptRef.value = val.code
+})
+
+const specColorOptns = [
+  { label: 'Icy Blue', value: 'icyBlue' },
+  { label: 'Inferno', value: 'inferno' },
+  { label: 'Cubehelix', value: 'cubehelix' },
+  { label: 'Viridis', value: 'viridis' },
+  { label: 'Gray', value: 'gray' },
+]
+const selectedSpecColorOptn = shallowRef(
+  (() => {
+    if (typeof prefStore.spectrogramColor === 'string')
+      return (
+        specColorOptns.find((opt) => opt.value === prefStore.spectrogramColor) ?? specColorOptns[0]
+      )
+  })(),
+)
+watch(selectedSpecColorOptn, (val) => {
+  if (!val) return
+  prefStore.spectrogramColor = val.value as SpectrogramColor
 })
 </script>
 
@@ -88,10 +109,12 @@ watch(selectedLanguageItem, (val) => {
       <PrefSwitchItem pref-key="hideLineTiming" />
       <PrefSwitchItem pref-key="highlightSelectedLineOnProgress" experimental />
     </div>
-    <!-- <div class="pref-group">
+    <div class="pref-group">
       <div class="pref-group-title">{{ tt.groups.spectrogram() }}</div>
-      Not implemented yet
-    </div> -->
+      <PrefItem :label="tt.items.spectrogramColor()" :desc="tt.items.spectrogramColorDesc()">
+        <Select v-model="selectedSpecColorOptn" :options="specColorOptns" optionLabel="label" />
+      </PrefItem>
+    </div>
     <div class="pref-group">
       <div class="pref-group-title">{{ tt.groups.compatibility() }}</div>
       <PrefSwitchItem pref-key="notifyCompatIssuesOnStartup" />

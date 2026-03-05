@@ -318,6 +318,8 @@ const en = {
         sidebarWidthDesc: 'Default width of the sidebar (pixels)',
         spectrogramHeight: 'Spectrogram height',
         spectrogramHeightDesc: 'Height of the spectrogram (pixels)',
+        spectrogramColor: 'Color scheme',
+        spectrogramColorDesc: 'Choose a preset or custom gradient',
       },
     },
   },
