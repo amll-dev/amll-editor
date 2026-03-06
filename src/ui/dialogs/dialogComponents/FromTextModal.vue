@@ -205,10 +205,15 @@ const romanChecked = ref(false)
 
 const coreStore = useCoreStore()
 watch([originalChecked, visible], () => {
-  if (!originalChecked.value && visible.value)
+  if (!originalChecked.value && visible.value) {
     originalInput.value = coreStore.lyricLines
       .map((l) => l.syllables.map((s) => s.text).join(''))
       .join('\n')
+    const translations = coreStore.lyricLines.map((l) => l.translation).join('\n')
+    if (translations.trim()) translationInput.value = translations
+    const romanizations = coreStore.lyricLines.map((l) => l.romanization).join('\n')
+    if (romanizations.trim()) romanInput.value = romanizations
+  }
 })
 const noItemChecked = computed(
   () => !originalChecked.value && !translationChecked.value && !romanChecked.value,
