@@ -67,7 +67,6 @@ export function execCut() {
   if (runtimeStore.selectedSyllables.size)
     coreStore.deleteSyllable(...runtimeStore.selectedSyllables)
   else coreStore.deleteLine(...runtimeStore.selectedLines)
-  runtimeStore.clearSelection()
 }
 
 export async function execPaste(): Promise<void>
@@ -185,7 +184,7 @@ export function breakLine() {
 
 //#endregion
 
-export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
+export function useContentCtxItems({ lineIndex }: ContentCtxStates) {
   const coreStore = useCoreStore()
   const runtimeStore = useRuntimeStore()
   const staticStore = useStaticStore()
@@ -277,7 +276,6 @@ export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
 
   function deleteLine() {
     coreStore.deleteLine(...runtimeStore.selectedLines)
-    runtimeStore.clearSelection()
   }
 
   const lineMenuItems = computed<MenuItem[]>(() => [
@@ -348,20 +346,26 @@ export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
 
   //#region Syllable
   function insertSyl(delta: 0 | 1) {
-    if (lineIndex.value === undefined || sylIndex.value === undefined) return
-    const parent = coreStore.lyricLines[lineIndex.value]!
-    const newSyllable = coreStore.newSyllable()
-    parent.syllables.splice(sylIndex.value + delta, 0, newSyllable)
-    runtimeStore.selectLineSyl(parent, newSyllable)
-    nextTick(() => staticStore.syllableHooks.get(newSyllable.id)?.focusInput())
+    const shouldSelectSyls: LyricSyllable[] = []
+    for (const line of runtimeStore.selectedLines) {
+      for (let i = line.syllables.length - 1; i >= 0; i--) {
+        const syl = line.syllables[i]!
+        if (!runtimeStore.selectedSyllables.has(syl)) continue
+        const newSyl = coreStore.newSyllable()
+        line.syllables.splice(i + delta, 0, newSyl)
+        shouldSelectSyls.push(newSyl)
+        console.log(i)
+      }
+    }
+    if (shouldSelectSyls.length > 0) {
+      runtimeStore.selectSyllable(...shouldSelectSyls)
+    }
   }
   const insertSylBefore = () => insertSyl(0)
   const insertSylAfter = () => insertSyl(1)
 
   function deleteSyl() {
-    if (lineIndex.value === undefined || sylIndex.value === undefined) return
-    const parent = coreStore.lyricLines[lineIndex.value]!
-    parent.syllables.splice(sylIndex.value, 1)
+    coreStore.deleteSyllable(...runtimeStore.selectedSyllables)
   }
 
   const sylMenuItems = computed<MenuItem[]>(() => [

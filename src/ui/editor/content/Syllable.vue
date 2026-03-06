@@ -198,7 +198,7 @@ const emit = defineEmits<{
   (name: 'contextmenu', e: MouseEvent, lineIndex: number, sylIndex: number): void
 }>()
 function handleContext(e: MouseEvent) {
-  handleFocus()
+  touch()
   emit('contextmenu', e, props.lineIndex, props.index)
 }
 

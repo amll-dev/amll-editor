@@ -79,10 +79,8 @@ import { type LyricLine, View } from '@core/types'
 import { useCoreStore, usePrefStore, useRuntimeStore, useStaticStore } from '@states/stores'
 import type { EditorComponentActions } from '@states/stores/static'
 
-import { alignLineEndTime, alignLineTime } from '@utils/alignLineSylTime'
 import { forceOutsideBlur } from '@utils/forceOutsideBlur'
 import { isInputEl } from '@utils/isInputEl'
-import { sortSyllables } from '@utils/sortLineSyls'
 import { tryRaf } from '@utils/tryRaf'
 
 import DragGhost from './DragGhost.vue'
