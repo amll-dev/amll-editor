@@ -359,7 +359,7 @@ const zhHans = {
     clipboard: {
       name: '剪贴板 API',
       description: '剪贴板 API (Clipboard API) 允许网页在用户授权后读写系统剪贴板的内容。',
-      impact: '复制和粘贴 TTML 功能不可用。',
+      impact: '剪切复制粘贴歌词行与音节、复制和粘贴 TTML 功能不可用。',
       apiNotSupported:
         '浏览器不支持剪贴板相关的 API。此 API 在 Chromium 66、Firefox 125、Safari 13.1 或以上版本中支持。',
     },

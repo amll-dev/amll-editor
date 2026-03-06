@@ -369,7 +369,7 @@ const en = {
       name: 'Clipboard API',
       description:
         'The Clipboard API allows the web page to read from and write to the system clipboard with user permission.',
-      impact: 'Copying and pasting TTML content will not be available.',
+      impact: 'Copying and pasting content/TTML will not be available.',
       apiNotSupported:
         'Clipboard-related APIs are not supported by this browser. Supported in Chromium 66+, Firefox 125+, Safari 13.1+.',
     },

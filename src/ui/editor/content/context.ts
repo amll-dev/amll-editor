@@ -191,13 +191,17 @@ export function useContentCtxItems({ lineIndex }: ContentCtxStates) {
 
   //#region Blank
   const blankMenuItems = computed<MenuItem[]>(() => [
-    {
-      label: tt.shared.paste(),
-      icon: 'mdi mdi-content-paste',
-      command: execPaste,
-      tip: getHotkeyStr('paste'),
-    },
-    { separator: true },
+    ...(compatibilityMap.clipboard
+      ? [
+          {
+            label: tt.shared.paste(),
+            icon: 'mdi mdi-content-paste',
+            command: execPaste,
+            tip: getHotkeyStr('paste'),
+          },
+          { separator: true },
+        ]
+      : []),
     {
       label: tt.blank.insertLine(),
       icon: 'mdi mdi-plus',
@@ -212,13 +216,17 @@ export function useContentCtxItems({ lineIndex }: ContentCtxStates) {
 
   //#region Line insert
   const lineInsertMenuItems = computed<MenuItem[]>(() => [
-    {
-      label: tt.shared.paste(),
-      icon: 'mdi mdi-content-paste',
-      command: () => execPaste(lineIndex.value),
-      tip: getHotkeyStr('paste'),
-    },
-    { separator: true },
+    ...(compatibilityMap.clipboard
+      ? [
+          {
+            label: tt.shared.paste(),
+            icon: 'mdi mdi-content-paste',
+            command: () => execPaste(lineIndex.value),
+            tip: getHotkeyStr('paste'),
+          },
+          { separator: true },
+        ]
+      : []),
     {
       label: tt.betweenLines.insertLine(),
       icon: 'pi pi-plus',
@@ -281,25 +289,29 @@ export function useContentCtxItems({ lineIndex }: ContentCtxStates) {
   }
 
   const lineMenuItems = computed<MenuItem[]>(() => [
-    {
-      label: tt.shared.cut(),
-      icon: 'mdi mdi-content-cut',
-      command: execCut,
-      tip: getHotkeyStr('cut'),
-    },
-    {
-      label: tt.shared.copy(),
-      icon: 'mdi mdi-content-copy',
-      command: execCopy,
-      tip: getHotkeyStr('copy'),
-    },
-    {
-      label: tt.shared.paste(),
-      icon: 'mdi mdi-content-paste',
-      command: execPaste,
-      tip: getHotkeyStr('paste'),
-    },
-    { separator: true },
+    ...(compatibilityMap.clipboard
+      ? [
+          {
+            label: tt.shared.cut(),
+            icon: 'mdi mdi-content-cut',
+            command: execCut,
+            tip: getHotkeyStr('cut'),
+          },
+          {
+            label: tt.shared.copy(),
+            icon: 'mdi mdi-content-copy',
+            command: execCopy,
+            tip: getHotkeyStr('copy'),
+          },
+          {
+            label: tt.shared.paste(),
+            icon: 'mdi mdi-content-paste',
+            command: execPaste,
+            tip: getHotkeyStr('paste'),
+          },
+          { separator: true },
+        ]
+      : []),
     {
       label: tt.line.toggleDuet(),
       icon: 'mdi mdi-align-horizontal-right',
@@ -374,25 +386,29 @@ export function useContentCtxItems({ lineIndex }: ContentCtxStates) {
   }
 
   const sylMenuItems = computed<MenuItem[]>(() => [
-    {
-      label: tt.shared.cut(),
-      icon: 'mdi mdi-content-cut',
-      command: execCut,
-      tip: getHotkeyStr('cut'),
-    },
-    {
-      label: tt.shared.copy(),
-      icon: 'mdi mdi-content-copy',
-      command: execCopy,
-      tip: getHotkeyStr('copy'),
-    },
-    {
-      label: tt.shared.paste(),
-      icon: 'mdi mdi-content-paste',
-      command: execPaste,
-      tip: getHotkeyStr('paste'),
-    },
-    { separator: true },
+    ...(compatibilityMap.clipboard
+      ? [
+          {
+            label: tt.shared.cut(),
+            icon: 'mdi mdi-content-cut',
+            command: execCut,
+            tip: getHotkeyStr('cut'),
+          },
+          {
+            label: tt.shared.copy(),
+            icon: 'mdi mdi-content-copy',
+            command: execCopy,
+            tip: getHotkeyStr('copy'),
+          },
+          {
+            label: tt.shared.paste(),
+            icon: 'mdi mdi-content-paste',
+            command: execPaste,
+            tip: getHotkeyStr('paste'),
+          },
+          { separator: true },
+        ]
+      : []),
     {
       label: tt.syllable.insertSylBefore(),
       icon: 'mdi mdi-arrow-left',

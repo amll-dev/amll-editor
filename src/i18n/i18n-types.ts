@@ -1108,7 +1108,7 @@ type RootTranslation = {
 			 */
 			description: string
 			/**
-			 * 复​制​和​粘​贴​ ​T​T​M​L​ ​功​能​不​可​用​。
+			 * 剪​切​复​制​粘​贴​歌​词​行​与​音​节​、​复​制​和​粘​贴​ ​T​T​M​L​ ​功​能​不​可​用​。
 			 */
 			impact: string
 			/**
@@ -3182,7 +3182,7 @@ export type TranslationFunctions = {
 			 */
 			description: () => LocalizedString
 			/**
-			 * 复制和粘贴 TTML 功能不可用。
+			 * 剪切复制粘贴歌词行与音节、复制和粘贴 TTML 功能不可用。
 			 */
 			impact: () => LocalizedString
 			/**
