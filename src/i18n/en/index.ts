@@ -23,6 +23,11 @@ Please note: DevTools, plugins, and user scripts may have a significant negative
 const en = {
   editor: {
     context: {
+      shared: {
+        copy: 'Copy',
+        cut: 'Cut',
+        paste: 'Paste',
+      },
       blank: {
         insertLine: 'Insert line',
       },

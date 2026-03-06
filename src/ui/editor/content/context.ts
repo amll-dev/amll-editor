@@ -1,17 +1,26 @@
 import { t } from '@i18n'
 import { type Ref, computed, nextTick } from 'vue'
 
+import { compatibilityMap } from '@core/compat'
 import { getHotkeyStr } from '@core/hotkey'
-import type { LyricLine } from '@core/types'
+import type { LyricLine, LyricSyllable } from '@core/types'
 
 import { useCoreStore, useRuntimeStore, useStaticStore } from '@states/stores'
 
 import { alignLineEndTime, alignLineTime } from '@utils/alignLineSylTime'
-import { sortLines } from '@utils/sortLineSyls'
+import { sortLines, sortSyllables } from '@utils/sortLineSyls'
 
 import type { MenuItem } from 'primevue/menuitem'
 
 import { toogleAttr } from '../shared'
+import {
+  deserializeClipboardData,
+  getClipboardData,
+  packLines,
+  packSyllables,
+  serializeClipboardData,
+  setClipboardData,
+} from './clipboard'
 
 interface ContentCtxStates {
   lineIndex: Ref<number | undefined>
@@ -19,6 +28,8 @@ interface ContentCtxStates {
 }
 
 const tt = t.editor.context
+
+//#region Shared
 
 export function combineLines() {
   const runtimeStore = useRuntimeStore()
@@ -38,12 +49,134 @@ export function combineLines() {
   runtimeStore.selectLine(mainLine)
 }
 
+export function execCopy() {
+  if (!compatibilityMap.clipboard) return
+  const runtimeStore = useRuntimeStore()
+  if (runtimeStore.selectedLines.size === 0 && runtimeStore.selectedSyllables.size === 0) return
+  const pendingData = runtimeStore.selectedSyllables.size
+    ? packSyllables(sortSyllables(...runtimeStore.selectedSyllables))
+    : packLines(sortLines(...runtimeStore.selectedLines))
+  const serializedData = serializeClipboardData(pendingData)
+  setClipboardData(serializedData)
+}
+export function execCut() {
+  if (!compatibilityMap.clipboard) return
+  execCopy()
+  const runtimeStore = useRuntimeStore()
+  const coreStore = useCoreStore()
+  if (runtimeStore.selectedSyllables.size)
+    coreStore.deleteSyllable(...runtimeStore.selectedSyllables)
+  else coreStore.deleteLine(...runtimeStore.selectedLines)
+  runtimeStore.clearSelection()
+}
+
+export async function execPaste(): Promise<void>
+export async function execPaste(lineIndex?: number): Promise<void>
+export async function execPaste(lineIndex?: number) {
+  if (!compatibilityMap.clipboard) return
+  const runtimeStore = useRuntimeStore()
+  const coreStore = useCoreStore()
+  const staticStore = useStaticStore()
+  const serialized = await getClipboardData()
+  const data = deserializeClipboardData(serialized)
+  if (!data) return
+  if (data.type === 'lines') {
+    const getDuplicatedLines = () =>
+      data.lines.map((ol) =>
+        coreStore.newLine({
+          ...ol,
+          syllables: ol.syllables.map((os) => coreStore.newSyllable({ ...os })),
+        }),
+      )
+    if (typeof lineIndex === 'number') {
+      const duplicatedLines = getDuplicatedLines()
+      coreStore.lyricLines.splice(lineIndex, 0, ...duplicatedLines)
+      runtimeStore.selectLine(...duplicatedLines)
+      nextTick(() => staticStore.scrollToHook?.(lineIndex, { align: 'nearest' }))
+      return
+    }
+    if (runtimeStore.selectedLines.size === 0) {
+      const duplicatedLines = getDuplicatedLines()
+      coreStore.lyricLines.push(...duplicatedLines)
+      runtimeStore.selectLine(...duplicatedLines)
+      nextTick(() =>
+        staticStore.scrollToHook?.(coreStore.lyricLines.length - duplicatedLines.length, {
+          align: 'nearest',
+        }),
+      )
+      return
+    }
+    const shouldSelectLines: LyricLine[] = []
+    for (let i = coreStore.lyricLines.length - 1; i >= 0; i--) {
+      const line = coreStore.lyricLines[i]!
+      if (!runtimeStore.selectedLines.has(line)) continue
+      const duplicatedLines = getDuplicatedLines()
+      coreStore.lyricLines.splice(i + 1, 0, ...duplicatedLines)
+      shouldSelectLines.push(...duplicatedLines)
+    }
+    if (shouldSelectLines.length) runtimeStore.selectLine(...shouldSelectLines)
+    if (staticStore.lastTouchedLine) {
+      const index = coreStore.lyricLines.indexOf(staticStore.lastTouchedLine)
+      if (index !== -1) nextTick(() => staticStore.scrollToHook?.(index + 1, { align: 'nearest' }))
+    }
+  } else if (data.type === 'syllables') {
+    const getDuplicatedSyls = () => data.syllables.map((os) => coreStore.newSyllable({ ...os }))
+    if (typeof lineIndex === 'number') {
+      const newLine = coreStore.newLine({ syllables: getDuplicatedSyls() })
+      coreStore.lyricLines.splice(lineIndex, 0, newLine)
+      runtimeStore.selectLineSyl(newLine, ...newLine.syllables)
+      nextTick(() => staticStore.scrollToHook?.(lineIndex, { align: 'nearest' }))
+      return
+    }
+    if (runtimeStore.selectedLines.size === 0) {
+      const newLine = coreStore.newLine({ syllables: getDuplicatedSyls() })
+      coreStore.lyricLines.push(newLine)
+      runtimeStore.selectLineSyl(newLine, ...newLine.syllables)
+      nextTick(() =>
+        staticStore.scrollToHook?.(coreStore.lyricLines.length - 1, { align: 'nearest' }),
+      )
+      return
+    }
+    const shouldSelectSyls: LyricSyllable[] = []
+    for (const line of runtimeStore.selectedLines) {
+      if (runtimeStore.selectedSyllables.size === 0) {
+        const duplicatedSyls = getDuplicatedSyls()
+        line.syllables.push(...duplicatedSyls)
+        shouldSelectSyls.push(...duplicatedSyls)
+        alignLineEndTime(line)
+        continue
+      }
+      for (let i = line.syllables.length - 1; i >= 0; i--) {
+        const syl = line.syllables[i]!
+        if (!runtimeStore.selectedSyllables.has(syl)) continue
+        const duplicatedSyls = getDuplicatedSyls()
+        line.syllables.splice(i + 1, 0, ...duplicatedSyls)
+        shouldSelectSyls.push(...duplicatedSyls)
+      }
+    }
+    if (shouldSelectSyls.length) runtimeStore.selectSyllable(...shouldSelectSyls)
+    if (staticStore.lastTouchedLine) {
+      const index = coreStore.lyricLines.indexOf(staticStore.lastTouchedLine)
+      if (index !== -1) nextTick(() => staticStore.scrollToHook?.(index, { align: 'nearest' }))
+    }
+  }
+}
+
+//#endregion
+
 export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
   const coreStore = useCoreStore()
   const runtimeStore = useRuntimeStore()
   const staticStore = useStaticStore()
 
+  //#region Blank
   const blankMenuItems = computed<MenuItem[]>(() => [
+    {
+      label: tt.shared.paste(),
+      icon: 'mdi mdi-content-paste',
+      command: execPaste,
+    },
+    { separator: true },
     {
       label: tt.blank.insertLine(),
       icon: 'mdi mdi-plus',
@@ -54,7 +187,16 @@ export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
       },
     },
   ])
+  //#endregion
+
+  //#region Line insert
   const lineInsertMenuItems = computed<MenuItem[]>(() => [
+    {
+      label: tt.shared.paste(),
+      icon: 'mdi mdi-content-paste',
+      command: () => execPaste(lineIndex.value),
+    },
+    { separator: true },
     {
       label: tt.betweenLines.insertLine(),
       icon: 'pi pi-plus',
@@ -66,6 +208,7 @@ export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
       },
     },
   ])
+  //#endregion
 
   //#region Line
   const toggleDuet = () => toogleAttr('duet')
@@ -117,6 +260,22 @@ export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
   }
 
   const lineMenuItems = computed<MenuItem[]>(() => [
+    {
+      label: tt.shared.cut(),
+      icon: 'mdi mdi-content-cut',
+      command: execCut,
+    },
+    {
+      label: tt.shared.copy(),
+      icon: 'mdi mdi-content-copy',
+      command: execCopy,
+    },
+    {
+      label: tt.shared.paste(),
+      icon: 'mdi mdi-content-paste',
+      command: execPaste,
+    },
+    { separator: true },
     {
       label: tt.line.toggleDuet(),
       icon: 'mdi mdi-align-horizontal-right',
@@ -197,6 +356,22 @@ export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
   }
 
   const sylMenuItems = computed<MenuItem[]>(() => [
+    {
+      label: tt.shared.cut(),
+      icon: 'mdi mdi-content-cut',
+      command: execCut,
+    },
+    {
+      label: tt.shared.copy(),
+      icon: 'mdi mdi-content-copy',
+      command: execCopy,
+    },
+    {
+      label: tt.shared.paste(),
+      icon: 'mdi mdi-content-paste',
+      command: execPaste,
+    },
+    { separator: true },
     {
       label: tt.syllable.insertSylBefore(),
       icon: 'mdi mdi-arrow-left',

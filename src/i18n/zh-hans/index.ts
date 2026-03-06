@@ -23,6 +23,11 @@ const consoleArt = `
 const zhHans = {
   editor: {
     context: {
+      shared: {
+        copy: '复制',
+        cut: '剪切',
+        paste: '粘贴',
+      },
       blank: {
         insertLine: '插入行',
       },

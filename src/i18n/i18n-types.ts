@@ -16,6 +16,20 @@ export type Translations = RootTranslation
 type RootTranslation = {
 	editor: {
 		context: {
+			shared: {
+				/**
+				 * 复​制
+				 */
+				copy: string
+				/**
+				 * 剪​切
+				 */
+				cut: string
+				/**
+				 * 粘​贴
+				 */
+				paste: string
+			}
 			blank: {
 				/**
 				 * 插​入​行
@@ -2063,6 +2077,20 @@ type RootTranslation = {
 export type TranslationFunctions = {
 	editor: {
 		context: {
+			shared: {
+				/**
+				 * 复制
+				 */
+				copy: () => LocalizedString
+				/**
+				 * 剪切
+				 */
+				cut: () => LocalizedString
+				/**
+				 * 粘贴
+				 */
+				paste: () => LocalizedString
+			}
 			blank: {
 				/**
 				 * 插入行
