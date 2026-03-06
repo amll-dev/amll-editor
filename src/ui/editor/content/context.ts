@@ -195,6 +195,7 @@ export function useContentCtxItems({ lineIndex }: ContentCtxStates) {
       label: tt.shared.paste(),
       icon: 'mdi mdi-content-paste',
       command: execPaste,
+      tip: getHotkeyStr('paste'),
     },
     { separator: true },
     {
@@ -215,6 +216,7 @@ export function useContentCtxItems({ lineIndex }: ContentCtxStates) {
       label: tt.shared.paste(),
       icon: 'mdi mdi-content-paste',
       command: () => execPaste(lineIndex.value),
+      tip: getHotkeyStr('paste'),
     },
     { separator: true },
     {
@@ -283,16 +285,19 @@ export function useContentCtxItems({ lineIndex }: ContentCtxStates) {
       label: tt.shared.cut(),
       icon: 'mdi mdi-content-cut',
       command: execCut,
+      tip: getHotkeyStr('cut'),
     },
     {
       label: tt.shared.copy(),
       icon: 'mdi mdi-content-copy',
       command: execCopy,
+      tip: getHotkeyStr('copy'),
     },
     {
       label: tt.shared.paste(),
       icon: 'mdi mdi-content-paste',
       command: execPaste,
+      tip: getHotkeyStr('paste'),
     },
     { separator: true },
     {
@@ -373,16 +378,19 @@ export function useContentCtxItems({ lineIndex }: ContentCtxStates) {
       label: tt.shared.cut(),
       icon: 'mdi mdi-content-cut',
       command: execCut,
+      tip: getHotkeyStr('cut'),
     },
     {
       label: tt.shared.copy(),
       icon: 'mdi mdi-content-copy',
       command: execCopy,
+      tip: getHotkeyStr('copy'),
     },
     {
       label: tt.shared.paste(),
       icon: 'mdi mdi-content-paste',
       command: execPaste,
+      tip: getHotkeyStr('paste'),
     },
     { separator: true },
     {

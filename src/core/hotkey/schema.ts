@@ -53,6 +53,10 @@ export const hotkeyCommandList = [
   'playPauseAudio',
   'seekForward',
   'volumeDown',
+
+  'copy',
+  'cut',
+  'paste',
 ] as const
 
 export const hotkeyInputBlockList: HK.Key[] = [
@@ -60,6 +64,9 @@ export const hotkeyInputBlockList: HK.Key[] = [
   k(Ctrl, Shift, 'z'),
   k(Ctrl, 'y'),
   k(Ctrl, 'a'),
+  k(Ctrl, 'c'),
+  k(Ctrl, 'x'),
+  k(Ctrl, 'v'),
 ]
 
 export const getDefaultHotkeyMap = () =>
@@ -106,6 +113,9 @@ export const getDefaultHotkeyMap = () =>
     duet: k(Ctrl, 'u'),
     background: k(Ctrl, 'b'),
     combineLines: k(Ctrl, 'e'),
+    copy: k(Ctrl, 'c'),
+    cut: k(Ctrl, 'x'),
+    paste: k(Ctrl, 'v'),
   })
 
 //#region Helpers

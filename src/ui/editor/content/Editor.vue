@@ -94,7 +94,14 @@ import { Button, ContextMenu } from 'primevue'
 import type { MenuItem } from 'primevue/menuitem'
 
 import { toogleAttr } from '../shared'
-import { breakLine, combineLines, useContentCtxItems } from './context'
+import {
+  breakLine,
+  combineLines,
+  execCopy,
+  execCut,
+  execPaste,
+  useContentCtxItems,
+} from './context'
 
 const tt = t.editor
 
@@ -166,6 +173,9 @@ useGlobalKeyboard('duet', () => toogleAttr('duet'))
 useGlobalKeyboard('background', () => toogleAttr('background'))
 useGlobalKeyboard('connectNextLine', () => toogleAttr('connectNext'))
 useGlobalKeyboard('combineLines', combineLines)
+useGlobalKeyboard('copy', execCopy)
+useGlobalKeyboard('cut', execCut)
+useGlobalKeyboard('paste', execPaste)
 
 // onBeforeUnmounted instead of onUnmounted: vscroll quits at unmounted phase
 onBeforeUnmount(() => {

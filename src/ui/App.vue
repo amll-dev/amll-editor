@@ -87,7 +87,7 @@ const handleRootKeydown = (e: KeyboardEvent) => {
       if (isInputEl(e.target)) return
       // Special handling for checkbox: Enter to toggle,
       // since space is taken by audio play/pause
-      if (e.target.closest('input[type="checkbox"]') && e.code === 'Enter') {
+      if (e.code === 'Enter' && e.target.closest('input[type="checkbox"]')) {
         const checkbox = e.target as HTMLInputElement
         checkbox.click()
         e.preventDefault()
