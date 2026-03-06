@@ -162,6 +162,27 @@ export async function execPaste(lineIndex?: number) {
   }
 }
 
+export function breakLine() {
+  const runtimeStore = useRuntimeStore()
+  const coreStore = useCoreStore()
+  if (runtimeStore.selectedSyllables.size === 0) return
+  const syls = sortSyllables(...runtimeStore.selectedSyllables)
+  let currentLineIndex = 0
+  for (const syl of syls) {
+    while (!coreStore.lyricLines[currentLineIndex]?.syllables.includes(syl)) currentLineIndex++
+    const line = coreStore.lyricLines[currentLineIndex]
+    if (!line) return
+    const sylIndex = line.syllables.indexOf(syl)
+    const remainingSyls = line.syllables.splice(sylIndex)
+    const newLine = coreStore.newLine({ ...line, syllables: remainingSyls })
+    alignLineEndTime(line)
+    alignLineTime(newLine)
+    coreStore.lyricLines.splice(currentLineIndex + 1, 0, newLine)
+    currentLineIndex++
+  }
+  runtimeStore.selectSyllable(...syls)
+}
+
 //#endregion
 
 export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
@@ -337,18 +358,6 @@ export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
   const insertSylBefore = () => insertSyl(0)
   const insertSylAfter = () => insertSyl(1)
 
-  function breakLineAtSyl() {
-    if (lineIndex.value === undefined || sylIndex.value === undefined) return
-    const parent = coreStore.lyricLines[lineIndex.value]!
-    const sylsToMove = parent.syllables.splice(sylIndex.value)
-    if (sylsToMove.length === 0) return
-    const newLine = coreStore.newLine({ ...parent, syllables: sylsToMove })
-    alignLineEndTime(parent)
-    alignLineTime(newLine)
-    coreStore.lyricLines.splice(lineIndex.value + 1, 0, newLine)
-    runtimeStore.selectLineSyl(newLine, sylsToMove[0]!)
-  }
-
   function deleteSyl() {
     if (lineIndex.value === undefined || sylIndex.value === undefined) return
     const parent = coreStore.lyricLines[lineIndex.value]!
@@ -385,7 +394,7 @@ export function useContentCtxItems({ lineIndex, sylIndex }: ContentCtxStates) {
     {
       label: tt.syllable.breakLineAtSyl(),
       icon: 'mdi mdi-subdirectory-arrow-left',
-      command: breakLineAtSyl,
+      command: breakLine,
       tip: getHotkeyStr('breakLine'),
     },
     {

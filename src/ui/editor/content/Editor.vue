@@ -96,7 +96,7 @@ import { Button, ContextMenu } from 'primevue'
 import type { MenuItem } from 'primevue/menuitem'
 
 import { toogleAttr } from '../shared'
-import { combineLines, useContentCtxItems } from './context'
+import { breakLine, combineLines, useContentCtxItems } from './context'
 
 const tt = t.editor
 
@@ -163,24 +163,7 @@ useGlobalKeyboard('delete', () => {
     coreStore.deleteSyllable(...runtimeStore.selectedSyllables)
   } else coreStore.deleteLine(...runtimeStore.selectedLines)
 })
-useGlobalKeyboard('breakLine', () => {
-  if (runtimeStore.selectedSyllables.size === 0) return
-  const syls = sortSyllables(...runtimeStore.selectedSyllables)
-  let currentLineIndex = 0
-  for (const syl of syls) {
-    while (!coreStore.lyricLines[currentLineIndex]?.syllables.includes(syl)) currentLineIndex++
-    const line = coreStore.lyricLines[currentLineIndex]
-    if (!line) return
-    const sylIndex = line.syllables.indexOf(syl)
-    const remainingSyls = line.syllables.splice(sylIndex)
-    const newLine = coreStore.newLine({ ...line, syllables: remainingSyls })
-    alignLineEndTime(line)
-    alignLineTime(newLine)
-    coreStore.lyricLines.splice(currentLineIndex + 1, 0, newLine)
-    currentLineIndex++
-  }
-  runtimeStore.selectSyllable(...syls)
-})
+useGlobalKeyboard('breakLine', breakLine)
 useGlobalKeyboard('duet', () => toogleAttr('duet'))
 useGlobalKeyboard('background', () => toogleAttr('background'))
 useGlobalKeyboard('connectNextLine', () => toogleAttr('connectNext'))
