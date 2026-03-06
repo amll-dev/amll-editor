@@ -16,7 +16,7 @@
 基于 Vue 的开源逐音节歌词编辑器。  
 目标成为 [AMLL TTML Tool](https://github.com/amll-dev/amll-ttml-tool) 的继任者，可与 [AMLL](https://github.com/amll-dev/applemusic-like-lyrics) 生态协作。
 
-**暂处于早期开发阶段。**
+**暂处于早期开发阶段。** 在 [GitHub Project](https://github.com/orgs/amll-dev/projects/1/) 上追踪开发动态！
 
 访问稳定版：<https://editor.amll.dev/>  
 开发分支部署：<https://beta-editor.amll.dev/>

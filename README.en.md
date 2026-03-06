@@ -17,7 +17,7 @@ An open-source lyrics editor with per-syllable timing support, built with Vue.
 
 Aiming to become the successor to [AMLL TTML Tool](https://github.com/amll-dev/amll-ttml-tool) and work seamlessly with the [AMLL](https://github.com/amll-dev/applemusic-like-lyrics) ecosystem.
 
-**Currently in early development stage.**
+**Currently in early development stage.** Track development progress on our [GitHub Project](https://github.com/orgs/amll-dev/projects/1/)!
 
 - **Stable version**: https://editor.amll.dev/
 - **Development branch**: https://beta-editor.amll.dev/
