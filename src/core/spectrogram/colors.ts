@@ -1,6 +1,52 @@
+import {
+  interpolateCubehelixDefault,
+  interpolateGreys,
+  interpolateInferno,
+  interpolateViridis,
+} from 'd3-scale-chromatic'
+
 /**
  * @description 频谱图调色板的生成器
  */
+
+export type SpectrogramColor =
+  | 'icyBlue'
+  | 'inferno'
+  | 'cubehelix'
+  | 'viridis'
+  | 'gray'
+  | ColorStop[]
+
+function colorStrToArr(rgbStr: string): [r: number, g: number, b: number] {
+  if (rgbStr.startsWith('#')) return parseHexColor(rgbStr)
+  const match = rgbStr.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/)
+  if (!match) return [0, 0, 0]
+  return [Number(match[1]!), Number(match[2]!), Number(match[3]!)]
+}
+function strFnToArrFn(fn: (t: number) => string) {
+  return (t: number): [r: number, g: number, b: number] => colorStrToArr(fn(t))
+}
+function invertColorFn(fn: (t: number) => [r: number, g: number, b: number]) {
+  return (t: number): [r: number, g: number, b: number] => fn(1 - t)
+}
+
+export function parseSpectrogramColor(input: SpectrogramColor): Uint8Array {
+  switch (input) {
+    case 'icyBlue':
+      return generatePalette(getIcyBlueColor)
+    case 'inferno':
+      return generatePalette(strFnToArrFn(interpolateInferno))
+    case 'cubehelix':
+      return generatePalette(strFnToArrFn(interpolateCubehelixDefault))
+    case 'viridis':
+      return generatePalette(strFnToArrFn(interpolateViridis))
+    case 'gray':
+      return generatePalette(invertColorFn(strFnToArrFn(interpolateGreys)))
+    default:
+      if (!Array.isArray(input)) throw new Error('Invalid spectrogram color input')
+      return generateLutFromStops(input)
+  }
+}
 
 /**
  * @description 渐变色标
@@ -14,7 +60,7 @@ export type ColorStop = {
   color: string
 }
 
-function hslToRgb(h: number, s: number, l: number): [number, number, number] {
+function hslToRgb(h: number, s: number, l: number): [r: number, g: number, b: number] {
   if (s === 0.0) {
     const gray = (l * 255) | 0
     return [gray, gray, gray]
@@ -50,7 +96,7 @@ function hslToRgb(h: number, s: number, l: number): [number, number, number] {
   return [r, g, b]
 }
 
-export function getIcyBlueColor(value: number): [number, number, number] {
+export function getIcyBlueColor(value: number) {
   const v = Math.max(0.0, Math.min(value, 1.0))
   const h = ((((-128.0 * v + 191.0) % 256) + 256) % 256) * (360.0 / 255.0)
   const s = Math.max(0.0, Math.min(128.0 * v + 127.0, 255.0)) / 255.0
@@ -58,20 +104,9 @@ export function getIcyBlueColor(value: number): [number, number, number] {
   return hslToRgb(h, s, l)
 }
 
-export function getGrayscaleColor(value: number): [number, number, number] {
-  const v = value * 255
-  return [v, v, v]
-}
-
-export function getGreenColor(value: number): [number, number, number] {
-  const v = Math.max(0.0, Math.min(value, 1.0))
-  const h = 85.0 * (360.0 / 255.0)
-  const s = 1.0
-  const l = Math.max(0.0, Math.min(200.0 * v, 255.0)) / 255.0
-  return hslToRgb(h, s, l)
-}
-
-export function generatePalette(colorFn: (value: number) => [number, number, number]): Uint8Array {
+export function generatePalette(
+  colorFn: (value: number) => [r: number, g: number, b: number],
+): Uint8Array {
   const lut = new Uint8Array(256 * 4)
   for (let i = 0; i < 256; i++) {
     const [r, g, b] = colorFn(i / 255.0)
@@ -87,7 +122,7 @@ export function generatePalette(colorFn: (value: number) => [number, number, num
 /**
  * @description 解析 HEX 颜色字符串为 RGB
  */
-function parseHexColor(hex: string): [number, number, number] {
+function parseHexColor(hex: string): [r: number, g: number, b: number] {
   const r = parseInt(hex.slice(1, 3), 16)
   const g = parseInt(hex.slice(3, 5), 16)
   const b = parseInt(hex.slice(5, 7), 16)

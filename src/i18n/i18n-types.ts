@@ -735,7 +735,7 @@ type RootTranslation = {
 				 */
 				timing: string
 				/**
-				 * 频​谱​图
+				 * 频​谱
 				 */
 				spectrogram: string
 				/**
@@ -969,6 +969,22 @@ type RootTranslation = {
 				 * 侧​边​栏​的​默​认​宽​度​ ​(​像​素​)
 				 */
 				sidebarWidthDesc: string
+				/**
+				 * 频​谱​图​高​度
+				 */
+				spectrogramHeight: string
+				/**
+				 * 频​谱​图​的​高​度​ ​(​像​素​)
+				 */
+				spectrogramHeightDesc: string
+				/**
+				 * 配​色​方​案
+				 */
+				spectrogramColor: string
+				/**
+				 * 选​择​预​设​色​彩​方​案​或​自​定​义​渐​变
+				 */
+				spectrogramColorDesc: string
 			}
 		}
 	}
@@ -2795,7 +2811,7 @@ export type TranslationFunctions = {
 				 */
 				timing: () => LocalizedString
 				/**
-				 * 频谱图
+				 * 频谱
 				 */
 				spectrogram: () => LocalizedString
 				/**
@@ -3028,6 +3044,22 @@ export type TranslationFunctions = {
 				 * 侧边栏的默认宽度 (像素)
 				 */
 				sidebarWidthDesc: () => LocalizedString
+				/**
+				 * 频谱图高度
+				 */
+				spectrogramHeight: () => LocalizedString
+				/**
+				 * 频谱图的高度 (像素)
+				 */
+				spectrogramHeightDesc: () => LocalizedString
+				/**
+				 * 配色方案
+				 */
+				spectrogramColor: () => LocalizedString
+				/**
+				 * 选择预设色彩方案或自定义渐变
+				 */
+				spectrogramColorDesc: () => LocalizedString
 			}
 		}
 	}

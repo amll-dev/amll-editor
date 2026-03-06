@@ -86,14 +86,6 @@ export interface SpectrogramContext {
    * @see {@link zoom}
    */
   pixelsPerSecond: Ref<number>
-
-  /**
-   * 设置调色板数据的 Action
-   * @param name: 频谱图调色板的名称
-   * @param colorGenerator 调色板生成器函数
-   * @returns 调色板 RGB 数据
-   */
-  setPalette: (name: string, colorGenerator: (t: number) => [number, number, number]) => void
 }
 
 const SpectrogramContextKey: InjectionKey<SpectrogramContext> = Symbol('SpectrogramContext')
@@ -103,6 +95,7 @@ interface SpectrogramProviderOptions {
   gainModel: Ref<number>
   zoomModel: Ref<number>
   scrollLeftModel: Ref<number>
+  paletteIdModel: Ref<string>
   paletteModel: Ref<Uint8Array>
 }
 
@@ -111,6 +104,7 @@ export function useSpectrogramProvider({
   gainModel,
   zoomModel,
   scrollLeftModel,
+  paletteIdModel,
   paletteModel,
 }: SpectrogramProviderOptions) {
   const containerWidth = ref(0)
@@ -121,15 +115,10 @@ export function useSpectrogramProvider({
   const gain = gainModel
   const zoom = zoomModel
   const scrollLeft = scrollLeftModel.value ? scrollLeftModel : ref(0)
-  const paletteId = ref('icy-blue')
+  const paletteId = paletteIdModel?.value ? paletteIdModel : ref('icyBlue')
   const palette = paletteModel?.value ? paletteModel : ref(generatePalette(getIcyBlueColor))
   const displayHeight = ref(240)
   const renderHeight = ref(240)
-
-  const setPalette = (name: string, colorGenerator: (t: number) => [number, number, number]) => {
-    paletteId.value = name
-    palette.value = generatePalette(colorGenerator)
-  }
 
   const duration = computed(() => audioBufferComputed.value?.duration || 0)
 
@@ -169,7 +158,6 @@ export function useSpectrogramProvider({
     viewEndTime,
     hoverTime,
     pixelsPerSecond: zoom,
-    setPalette,
   }
 
   provide(SpectrogramContextKey, context)

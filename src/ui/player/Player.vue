@@ -2,7 +2,7 @@
   <Card class="player">
     <template #content>
       <KeepAlive>
-        <Spectrogram v-if="showSpectrogram" :key="refresher" class="spectrogram-view" />
+        <Spectrogram v-if="showSpectrogram" class="spectrogram-view" />
       </KeepAlive>
       <div class="player-toolbar">
         <Button
@@ -50,7 +50,7 @@
 <script setup lang="ts">
 import { t } from '@i18n'
 import { clamp } from 'lodash-es'
-import { computed, onUnmounted, ref, useTemplateRef } from 'vue'
+import { computed, ref, useTemplateRef } from 'vue'
 
 import { audioEngine } from '@core/audio'
 import { compatibilityMap } from '@core/compat'
@@ -107,11 +107,6 @@ async function handleSelectFile() {
     })
   }
 }
-
-const refresher = ref(Symbol())
-const refresh = () => (refresher.value = Symbol())
-audioEngine.onLoaded(refresh)
-onUnmounted(() => audioEngine.offLoaded(refresh))
 
 const loading = ref(false)
 audioEngine.onLoadStart(() => (loading.value = true))
