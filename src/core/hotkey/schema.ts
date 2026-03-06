@@ -58,6 +58,12 @@ export const hotkeyCommandList = [
   'cut',
   'paste',
 ] as const
+export const reservedHotkeyCommands = [
+  'copy',
+  'cut',
+  'paste',
+  'delete',
+] as const satisfies HK.Command[]
 
 export const hotkeyInputBlockList: HK.Key[] = [
   k(Ctrl, 'z'),

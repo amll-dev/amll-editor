@@ -1,7 +1,8 @@
-import type { hotkeyCommandList } from './schema'
+import type { hotkeyCommandList, reservedHotkeyCommands } from './schema'
 
 export namespace HotKey {
   export type Command = (typeof hotkeyCommandList)[number]
+  export type ReservedCommand = (typeof reservedHotkeyCommands)[number]
   export interface Key {
     code: string
     ctrl: boolean

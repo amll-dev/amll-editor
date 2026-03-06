@@ -115,7 +115,12 @@ const groupedCmdList = [
   title: keyof (typeof t)['hotkey']['groupTitles']
   commands: HotKey.Command[]
 }[]
-// type _Check = Expect<Equal<(typeof groupedCmdList)[number]['commands'][number], HotKey.Command>>
+type _Check = Expect<
+  Equal<
+    (typeof groupedCmdList)[number]['commands'][number] | HotKey.ReservedCommand,
+    HotKey.Command
+  >
+>
 </script>
 
 <style lang="scss">

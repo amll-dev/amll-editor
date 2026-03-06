@@ -1,4 +1,8 @@
 import stableStringify from 'json-stable-stringify'
+import { omit } from 'lodash-es'
+
+import { getDefaultHotkeyMap } from '@core/hotkey'
+import { reservedHotkeyCommands } from '@core/hotkey/schema'
 
 import { type PreferenceSchema, getDefaultPref } from './schema'
 
@@ -20,6 +24,11 @@ export function loadPreference(): PreferenceSchema {
       console.warn(
         `Found preference version ${parsed.prefVersion}, newer than current version ${PREF_VERSION}.`,
       )
+    if (parsed.data.hotkeyMap)
+      parsed.data.hotkeyMap = {
+        ...getDefaultHotkeyMap(),
+        ...omit(parsed.data.hotkeyMap, reservedHotkeyCommands),
+      }
     return {
       ...getDefaultPref(),
       ...parsed.data,
