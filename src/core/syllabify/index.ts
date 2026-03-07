@@ -8,6 +8,7 @@ import { basicSplit } from './engines/basic'
 import { compromiseSplit } from './engines/compromise'
 import { japaneseSplit } from './engines/japanese'
 import { prosoticSplit } from './engines/prosotic'
+import { silabasSplit } from './engines/silabas'
 import { silabeadorSplit } from './engines/silabeador'
 import { syllabifySplit } from './engines/syllabify'
 import { syllabifyFrSplit } from './engines/syllabifyFr'
@@ -29,8 +30,13 @@ const rawEngines = [
     processor: prosoticSplit,
   },
   {
+    key: 'silabas',
+    processor: silabasSplit,
+  },
+  {
     key: 'silabeador',
     processor: silabeadorSplit,
+    notRecommend: true,
   },
   {
     key: 'compromise',

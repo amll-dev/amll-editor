@@ -630,14 +630,20 @@ const en = {
         description:
           'Uses SUBTLEXus corpus. Syllables are derived from CMUdict via Prosodic, then matched back to spelling to build a dictionary. High-frequency words are manually verified. Falls back to Compromise for unmatched words.',
       },
+      silabas: {
+        name: 'Silabas Spanish Syllabification',
+        description:
+          'Orthographic Spanish syllabification provided by the Silabas.js library, based on modern corpus. Ported from the ULPGC Silabeador TIP C++ implementation.',
+      },
       silabeador: {
         name: 'Silabeador Spanish Syllabification',
         description:
-          'Orthographic Spanish syllabification provided by the Silabeador library, with built-in exception table. Tolerates uncommon or non-standard diacritics and consonant clusters.',
+          'Orthographic Spanish syllabification provided by the Silabeador library, mainly based on Golden Age corpus. Runs via Pyodide, may be slow on first load.',
       },
       compromise: {
         name: 'Compromise English Syllabification',
-        description: 'Orthographic English syllable splitting provided by the Compromise library.',
+        description:
+          'Pure orthographic English syllable splitting provided by the Compromise library.',
       },
       syllabifyFr: {
         name: 'Syllabify-fr French Syllabification',

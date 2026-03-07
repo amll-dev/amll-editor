@@ -57,6 +57,7 @@
     "primevue": "^4.5.4",
     "pyodide": "^0.29.3",
     "save-file": "^2.3.1",
+    "silabas": "^1.0.3",
     "syllabify": "^1.0.1",
     "syllabify-fr": "^1.0.1",
     "typesafe-i18n": "^5.27.1",

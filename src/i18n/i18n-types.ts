@@ -1798,13 +1798,23 @@ type RootTranslation = {
 				 */
 				description: string
 			}
+			silabas: {
+				/**
+				 * S​i​l​a​b​a​s​ ​西​班​牙​语​断​字
+				 */
+				name: string
+				/**
+				 * 由​ ​S​i​l​a​b​a​s​.​j​s​ ​库​提​供​的​西​班​牙​语​正​字​法​音​节​切​分​，​基​于​现​代​语​料​。​移​植​自​ ​U​L​P​G​C​ ​S​i​l​a​b​e​a​d​o​r​ ​T​I​P​ ​C​+​+​ ​实​现​。
+				 */
+				description: string
+			}
 			silabeador: {
 				/**
 				 * S​i​l​a​b​e​a​d​o​r​ ​西​班​牙​语​断​字
 				 */
 				name: string
 				/**
-				 * 由​ ​S​i​l​a​b​e​a​d​o​r​ ​库​提​供​的​正​字​法​西​班​牙​语​音​节​划​分​，​内​置​例​外​表​。​同​时​可​容​忍​不​常​见​或​非​西​班​牙​语​变​音​符​号​与​辅​音​集​群​。
+				 * 由​ ​S​i​l​a​b​e​a​d​o​r​ ​库​提​供​，​主​要​基​于​黄​金​时​代​语​料​的​西​班​牙​语​正​字​法​音​节​切​分​，​与​现​代​规​则​有​一​定​出​入​。​通​过​ ​P​y​o​d​i​d​e​ ​运​行​，​初​次​加​载​可​能​较​慢​。
 				 */
 				description: string
 			}
@@ -1814,7 +1824,7 @@ type RootTranslation = {
 				 */
 				name: string
 				/**
-				 * 由​ ​C​o​m​p​r​o​m​i​s​e​ ​库​提​供​的​正​字​法​英​语​音​节​拆​分​。
+				 * 由​ ​C​o​m​p​r​o​m​i​s​e​ ​库​提​供​的​纯​正​字​法​英​语​音​节​拆​分​。​由​于​英​语​发​音​不​规​则​情​况​较​多​，​请​优​先​使​用​ ​P​r​o​s​o​d​i​c​ ​引​擎​。
 				 */
 				description: string
 			}
@@ -3870,13 +3880,23 @@ export type TranslationFunctions = {
 				 */
 				description: () => LocalizedString
 			}
+			silabas: {
+				/**
+				 * Silabas 西班牙语断字
+				 */
+				name: () => LocalizedString
+				/**
+				 * 由 Silabas.js 库提供的西班牙语正字法音节切分，基于现代语料。移植自 ULPGC Silabeador TIP C++ 实现。
+				 */
+				description: () => LocalizedString
+			}
 			silabeador: {
 				/**
 				 * Silabeador 西班牙语断字
 				 */
 				name: () => LocalizedString
 				/**
-				 * 由 Silabeador 库提供的正字法西班牙语音节划分，内置例外表。同时可容忍不常见或非西班牙语变音符号与辅音集群。
+				 * 由 Silabeador 库提供，主要基于黄金时代语料的西班牙语正字法音节切分，与现代规则有一定出入。通过 Pyodide 运行，初次加载可能较慢。
 				 */
 				description: () => LocalizedString
 			}
@@ -3886,7 +3906,7 @@ export type TranslationFunctions = {
 				 */
 				name: () => LocalizedString
 				/**
-				 * 由 Compromise 库提供的正字法英语音节拆分。
+				 * 由 Compromise 库提供的纯正字法英语音节拆分。由于英语发音不规则情况较多，请优先使用 Prosodic 引擎。
 				 */
 				description: () => LocalizedString
 			}

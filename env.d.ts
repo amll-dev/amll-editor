@@ -30,6 +30,15 @@ declare module 'save-file' {
   export default saveFile
 }
 
+declare module 'silabas' {
+  class Silabas {
+    constructor(word: string)
+    positions(): number[]
+    syllables(): string[]
+  }
+  export default function silabas(word: string): Silabas
+}
+
 /**
  * LaunchQueue provides access to functionality that allows custom launch navigation handling to be implemented in the PWA.
  *
