@@ -33,8 +33,9 @@ with open(CSV_FILE, encoding="utf-8", newline="") as infile, open(
             if val == "/":
                 skipped += 1
                 continue
-            row["splitted"] = val
-            updated += 1
+            if row["splitted"] != val:
+                updated += 1
+                row["splitted"] = val
         writer.writerow(row)
 
 print(f"Updated CSV saved to {OUTPUT_FILE}")
