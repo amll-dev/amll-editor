@@ -21,6 +21,8 @@
 访问稳定版：<https://editor.amll.dev/>  
 开发分支部署：<https://beta-editor.amll.dev/>
 
+~~主要开发者 Linho 想投米哈游实习喵，请点点star谢谢喵~~
+
 ## 部署
 
 本项目部署在 Cloudflare Pages 上，你可以直接从上方的链接访问。
