@@ -12,17 +12,16 @@ export function parseSeparatePlainText(
   const lineStrs = zip(
     ...[originalStr, translationStr, romanStr].map((s) => s.split(/\r?\n/).map((s) => s.trim())),
   ).filter(([orig, trans, roman]) => orig || trans || roman)
-  const lyricLines = lineStrs.map(([orig, trans, roman]) => {
-    return coreCreate.newLine({
-      syllables: [
-        coreCreate.newSyllable({
-          text: orig || '',
-        }),
-      ],
-      translation: trans || '',
-      romanization: roman || '',
+  const lyricLines = lineStrs
+    .map(([orig, trans, roman]) => {
+      if (!orig && !trans && !roman) return null
+      return coreCreate.newLine({
+        syllables: [coreCreate.newSyllable({ text: orig || '' })],
+        translation: trans || '',
+        romanization: roman || '',
+      })
     })
-  })
+    .filter((v) => v !== null)
   return { metadata: {}, lines: lyricLines }
 }
 
@@ -46,6 +45,7 @@ export function parseInterleavedPlainText(
     const original = rawLines[i + originalIndex] || ''
     const translation = translationIndex === undefined ? '' : rawLines[i + translationIndex] || ''
     const romanization = romanIndex === undefined ? '' : rawLines[i + romanIndex] || ''
+    if (!original && !translation && !romanization) continue
     lyricLines.push(
       coreCreate.newLine({
         syllables: [
