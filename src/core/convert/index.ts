@@ -29,7 +29,12 @@ const portFormatHandlers: Record<CV.PortFormatKey, CV.FormatHandler> = {
 const tt = t.formats.sharedReferences
 const formatReferences: Partial<Record<CV.PortFormatKey, CV.FormatCaption['reference']>> = {
   lrc: [{ name: tt.wikipedia(), url: 'https://wikipedia.org/wiki/LRC_(file_format)' }],
-  lrcA2: [{ name: tt.wikipedia(), url: 'https://en.wikipedia.org/wiki/LRC_(file_format)' }],
+  lrcA2: [
+    {
+      name: tt.wikipedia(),
+      url: 'https://en.wikipedia.org/wiki/LRC_(file_format)#A2_extension_(Enhanced_LRC_format)',
+    },
+  ],
   spl: [{ name: tt.officialDoc(), url: 'https://moriafly.com/standards/spl.html' }],
   lyl: [
     {
