@@ -1794,7 +1794,7 @@ type RootTranslation = {
 				 */
 				name: string
 				/**
-				 * 将​ ​S​U​B​T​L​E​X​u​s​ ​作​为​语​料​，​由​ ​P​r​o​s​o​d​i​c​ ​根​据​ ​C​M​U​D​i​c​t​ ​进​行​音​节​划​分​后​，​匹​配​回​拼​写​得​到​词​典​，​高​频​词​经​人​工​校​对​。​未​命​中​的​词​将​回​退​至​ ​C​o​m​p​r​o​m​i​s​e​。
+				 * 将​ ​S​U​B​T​L​E​X​u​s​ ​作​为​语​料​，​由​ ​P​r​o​s​o​d​i​c​ ​根​据​读​音​进​行​音​节​划​分​并​匹​配​回​拼​写​得​到​词​典​，​高​频​词​经​人​工​校​对​。​未​命​中​的​词​将​回​退​至​ ​C​o​m​p​r​o​m​i​s​e​。
 				 */
 				description: string
 			}
@@ -3876,7 +3876,7 @@ export type TranslationFunctions = {
 				 */
 				name: () => LocalizedString
 				/**
-				 * 将 SUBTLEXus 作为语料，由 Prosodic 根据 CMUDict 进行音节划分后，匹配回拼写得到词典，高频词经人工校对。未命中的词将回退至 Compromise。
+				 * 将 SUBTLEXus 作为语料，由 Prosodic 根据读音进行音节划分并匹配回拼写得到词典，高频词经人工校对。未命中的词将回退至 Compromise。
 				 */
 				description: () => LocalizedString
 			}

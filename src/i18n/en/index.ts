@@ -628,7 +628,7 @@ const en = {
       prosodic: {
         name: 'Prosodic English Syllabification',
         description:
-          'Uses SUBTLEXus corpus. Syllables are derived from CMUdict via Prosodic, then matched back to spelling to build a dictionary. High-frequency words are manually verified. Falls back to Compromise for unmatched words.',
+          'Uses SUBTLEXus corpus. Syllables are derived from Prosodic to build a dictionary. High-frequency words are manually verified. Falls back to Compromise for unmatched words.',
       },
       silabas: {
         name: 'Silabas Spanish Syllabification',

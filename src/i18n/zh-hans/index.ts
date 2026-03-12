@@ -607,7 +607,7 @@ const zhHans = {
       prosodic: {
         name: 'Prosodic 英语断字',
         description:
-          '将 SUBTLEXus 作为语料，由 Prosodic 根据 CMUDict 进行音节划分后，匹配回拼写得到词典，高频词经人工校对。未命中的词将回退至 Compromise。',
+          '将 SUBTLEXus 作为语料，由 Prosodic 根据读音进行音节划分并匹配回拼写得到词典，高频词经人工校对。未命中的词将回退至 Compromise。',
       },
       silabas: {
         name: 'Silabas 西班牙语断字',
