@@ -1,7 +1,7 @@
 import type { Syllabify as SL } from '..'
 import { splitTextByIndices } from '../shared'
 
-const pureLatin = `0-9A-Za-z\\u00C0-\\u00ff\\u0370-\\u03FF\\u0400-\\u04FF`
+const pureLatin = `0-9A-Za-z\\u00C0-\\u024F\\u1E00-\\u1EFF\\u0300-\\u036F`
 const halfwidthPunc = `'"‘’“”.,\\-/#!?¿¡$%^&*;:{}=\\-_\`~()`
 const frontAssocPunc = `，。？！；：）】］｝〉》」』〗］）»`
 const backAssocPunc = `（【［｛〈《「『〖〔［（«`
