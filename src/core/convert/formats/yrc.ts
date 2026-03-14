@@ -62,6 +62,10 @@ export function parseYRC(yrc: string): Persist {
   }
 }
 
+function makeParenthesesFull(text: string): string {
+  return text.replace(/\(/g, '（').replace(/\)/g, '）')
+}
+
 export function stringifyYRC(data: Persist): string {
   const lines = data.lines
   return lines
@@ -76,8 +80,9 @@ export function stringifyYRC(data: Persist): string {
         }
         const sStart = startTime
         const sDur = endTime - startTime
-        lSyls.push(`(${sStart},${sDur},0)${text}`)
+        lSyls.push(`(${sStart},${sDur},0)${makeParenthesesFull(text)}`)
       }
+      if (line.background) return `[${lStart},${lDur}]（${lSyls.join('')}）`
       return `[${lStart},${lDur}]${lSyls.join('')}`
     })
     .join('\n')

@@ -62,20 +62,28 @@ export function parseQRC(qrc: string) {
   }
 }
 
+function makeParenthesesFull(text: string): string {
+  return text.replace(/\(/g, '（').replace(/\)/g, '）')
+}
+
 export function stringifyQRC(data: Persist): string {
   const lines = data.lines
   return lines
     .map((line) => {
       const lStart = line.startTime
       const lDur = line.endTime - line.startTime
-      const lSyls = line.syllables
-        .map((s) => {
-          const sStart = s.startTime
-          const sDur = s.endTime - s.startTime
-          return `${s.text}(${sStart},${sDur})`
-        })
-        .join('')
-      return `[${lStart},${lDur}]${lSyls}`
+      const lSyls: string[] = []
+      for (const { text, startTime, endTime } of line.syllables) {
+        if (!text.trim() && lSyls.length) {
+          lSyls[lSyls.length - 1] += text
+          continue
+        }
+        const sStart = startTime
+        const sDur = endTime - startTime
+        lSyls.push(`${makeParenthesesFull(text)}(${sStart},${sDur})`)
+      }
+      if (line.background) return `[${lStart},${lDur}]（${lSyls.join('')}）`
+      else return `[${lStart},${lDur}]${lSyls.join('')}`
     })
     .join('\n')
 }
