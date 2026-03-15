@@ -21,7 +21,9 @@
 访问稳定版：<https://editor.amll.dev/>  
 开发分支部署：<https://beta-editor.amll.dev/>
 
-~~主要开发者 Linho 想投米哈游实习喵，请点点star谢谢喵~~
+我们在 [项目 wiki](https://github.com/amll-dev/amll-editor/wiki) 上提供了用户指南，欢迎查阅。
+
+~~主要开发者 Linho 想投米哈游实习喵，请点点 star 谢谢喵~~
 
 ## 部署
 
