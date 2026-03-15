@@ -23,28 +23,32 @@
         <div class="description">
           {{ selectedFormat.description || tt.noDescriptionProvided() }}
         </div>
-        <div class="references" v-if="selectedFormat.reference || selectedFormat.example">
-          <Button
-            v-if="selectedFormat.example"
-            :label="tt.showExamples()"
-            size="small"
-            icon="mdi mdi-file-eye-outline"
-            :severity="showExample ? undefined : 'secondary'"
-            @click="showExample = !showExample"
-          />
-          <Button
-            v-for="item in selectedFormat.reference"
-            :key="item.url"
-            :label="item.name"
-            size="small"
-            icon="mdi mdi-open-in-new"
-            severity="secondary"
-            @click="openUrl(item.url)"
-          />
-        </div>
-        <div class="example" v-if="selectedFormat.example && showExample">
-          <div class="example-label">{{ tt.exampleLabel() }}</div>
-          <pre class="example-pre monospace">{{ selectedFormat.example }}</pre>
+        <div class="extra-info">
+          <div class="references" v-if="selectedFormat.reference || selectedFormat.example">
+            <Button
+              v-if="selectedFormat.example"
+              :label="tt.showExamples()"
+              size="small"
+              icon="mdi mdi-file-eye-outline"
+              :severity="showExample ? undefined : 'secondary'"
+              @click="showExample = !showExample"
+            />
+            <Button
+              v-for="item in selectedFormat.reference"
+              :key="item.url"
+              :label="item.name"
+              size="small"
+              icon="mdi mdi-open-in-new"
+              severity="secondary"
+              @click="openUrl(item.url)"
+            />
+          </div>
+          <AnimatedFold :folded="!selectedFormat.example || !showExample">
+            <div class="example" v-if="selectedFormat.example">
+              <div class="example-label">{{ tt.exampleLabel() }}</div>
+              <pre class="example-pre monospace">{{ selectedFormat.example }}</pre>
+            </div>
+          </AnimatedFold>
         </div>
         <hr />
         <CodeMirror class="input-cm" showLineNumbers v-model:content="inputText" />
@@ -87,6 +91,7 @@ import { ref } from 'vue'
 import { type Convert as CV, portFormatRegister } from '@core/convert'
 import { fileState as FS, simpleChooseTextFile } from '@core/file'
 
+import AnimatedFold from '@ui/components/AnimatedFold.vue'
 import CodeMirror from '@ui/components/CodeMirror.vue'
 import EmptyTip from '@ui/components/EmptyTip.vue'
 import { Button, Dialog, Listbox } from 'primevue'
@@ -165,6 +170,7 @@ function openUrl(url: string) {
       flex-wrap: wrap;
     }
     .example {
+      margin-top: 0.8rem;
       user-select: text;
       cursor: text;
       white-space: pre-wrap;
