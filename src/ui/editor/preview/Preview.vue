@@ -115,7 +115,7 @@ function passToPlayer(event: Event) {
   }
 
   & > .amll-lyric-player {
-    max-width: 1200px;
+    max-width: max(1200px, 50vw);
     overflow-x: visible;
   }
 }
@@ -131,7 +131,7 @@ function passToPlayer(event: Event) {
   font-weight: 500;
   --bright-mask-alpha: 1;
   --dark-mask-alpha: 0.4;
-  --amll-lp-font-size: max(max(4.5vh, 2.3vw), 3rem);
+  --amll-lp-font-size: min(max(max(4.5vh, 2.3vw), 2.5rem), 3.5rem);
   --amll-lp-color: light-dark(var(--p-neutral-800), var(--p-neutral-100));
   --amll-lp-hover-bg-color: color-mix(in srgb, var(--amll-lp-color), transparent 95%);
 
