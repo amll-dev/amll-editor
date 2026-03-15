@@ -1,5 +1,6 @@
 import { t } from '@i18n'
 
+import { lqeReg } from './formats/lqe'
 import { lrcReg } from './formats/lrc'
 import { lrcA2Reg } from './formats/lrca2'
 import { lylReg } from './formats/lyl'
@@ -14,7 +15,7 @@ export type { Convert } from './types'
 
 export { detectFormat } from './detect'
 
-export const portFormats = ['lrc', 'lrcA2', 'yrc', 'qrc', 'lyl', 'lys', 'spl'] as const
+export const portFormats = ['lrc', 'lrcA2', 'yrc', 'qrc', 'lyl', 'lys', 'lqe', 'spl'] as const
 
 const portFormatHandlers: Record<CV.PortFormatKey, CV.FormatHandler> = {
   lrc: lrcReg,
@@ -23,6 +24,7 @@ const portFormatHandlers: Record<CV.PortFormatKey, CV.FormatHandler> = {
   qrc: qrcReg,
   lyl: lylReg,
   lys: lysReg,
+  lqe: lqeReg,
   spl: splReg,
 } as const
 

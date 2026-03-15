@@ -428,6 +428,10 @@ const zhHans = {
       name: 'Lyricify Syllable',
       description: 'Lyricify 的私有逐字时间戳歌词格式，支持逐字、背景与对唱。',
     },
+    lqe: {
+      name: 'Lyricify 快速导出',
+      description: 'Lyricify 的私有快速导出格式，在 Lyricify Syllable 逐字基础上支持翻译与音译。',
+    },
     spl: {
       name: '椒盐音乐逐字',
       description:

@@ -27,7 +27,6 @@
     "accept": [".qrc"],
     "example": "[190871,1984]For (190871,361)the (191232,172)first (191404,376)time(191780,1075)\n[193459,4198]What's (193459,412)past (193871,574)is (194445,506)past(194951,2706)"
   },
-
   "lyl": {
     "mime": "application/x-lyricify-lyl",
     "accept": [".lyl"],
@@ -37,6 +36,11 @@
     "mime": "application/x-lyricify-lys",
     "accept": [".lys"],
     "example": "[0]Lately (358,1336)I've (1694,487)been, (2181,673)I've (2854,268)been (3122,280)losing (3402,345)sleep(3747,1186)\n[0]Dreaming (5245,696)about (5941,471)the (6412,306)things (6718,458)that (7176,292)we (7468,511)could (7979,393)be(8372,737)"
+  },
+  "lqe": {
+    "mime": "application/x-lyricify-lqe",
+    "accept": [".lqe"],
+    "example": "[Lyricify Quick Export]\n[version:1.0]\n\n[lyrics: format@Lyricify Syllable]\n[1]We (25494,139)ven(25633,246)ture (25879,339)through (26218,167)the (26385,224)cos(26609,136)mic (26745,335)sea(27080,461)\n[1]A (27541,346)thou(27887,345)sand (28232,325)light(28557,323)-years, (28880,330)wild (29210,151)and (29361,342)free(29703,867)\n\n\n[translation: format@LRC]\n[00:25.494]我们冒险穿越星海\n[00:27.541]跨越一千光年 自由而洒脱"
   },
   "spl": {
     "mime": "application/x-salt-player-spl",

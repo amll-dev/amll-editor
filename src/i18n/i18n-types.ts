@@ -1270,6 +1270,16 @@ type RootTranslation = {
 			 */
 			description: string
 		}
+		lqe: {
+			/**
+			 * L​y​r​i​c​i​f​y​ ​快​速​导​出
+			 */
+			name: string
+			/**
+			 * L​y​r​i​c​i​f​y​ ​的​私​有​快​速​导​出​格​式​，​在​ ​L​y​r​i​c​i​f​y​ ​S​y​l​l​a​b​l​e​ ​逐​字​基​础​上​支​持​翻​译​与​音​译​。
+			 */
+			description: string
+		}
 		spl: {
 			/**
 			 * 椒​盐​音​乐​逐​字
@@ -3351,6 +3361,16 @@ export type TranslationFunctions = {
 			name: () => LocalizedString
 			/**
 			 * Lyricify 的私有逐字时间戳歌词格式，支持逐字、背景与对唱。
+			 */
+			description: () => LocalizedString
+		}
+		lqe: {
+			/**
+			 * Lyricify 快速导出
+			 */
+			name: () => LocalizedString
+			/**
+			 * Lyricify 的私有快速导出格式，在 Lyricify Syllable 逐字基础上支持翻译与音译。
 			 */
 			description: () => LocalizedString
 		}

@@ -448,6 +448,11 @@ const en = {
       description:
         'Lyricify proprietary syllable timestamp format, supports syllable-level, background and duet lyrics.',
     },
+    lqe: {
+      name: 'Lyricify Quick Export',
+      description:
+        'Lyricify proprietary quick export format, based on Lyricify Syllable with added support for translations and romanizations.',
+    },
     spl: {
       name: 'SaltPlayer Lyrics',
       description:
