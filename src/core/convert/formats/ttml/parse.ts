@@ -209,7 +209,8 @@ export function parseTTML(ttmlText: string): Persist {
     const itunesKey = background ? parentItunesKey : lineEl.getAttribute('itunes:key')
 
     const romanWordData = itunesKey ? itunesWordRomanizations.get(itunesKey) : undefined
-    const romanWords = background ? romanWordData?.bg : romanWordData?.main
+    const sourceRomanList = background ? romanWordData?.bg : romanWordData?.main
+    const availableRomanWords = sourceRomanList ? [...sourceRomanList] : []
 
     if (itunesKey) {
       const metadataAttr = background ? 'bg' : 'main'
@@ -254,11 +255,15 @@ export function parseTTML(ttmlText: string): Persist {
           const sBookmarked = sylEl.getAttribute('amll:bookmarked')
           if (sBookmarked) syllable.bookmarked = sBookmarked === 'true'
 
-          if (romanWords) {
-            const matchingRoman = romanWords.find(
-              (r) => r.startTime === sylStartTime && r.endTime === sylEndTime,
+          if (availableRomanWords.length > 0) {
+            const matchIndex = availableRomanWords.findIndex(
+              (r) => r.startTime === syllable.startTime && r.endTime === syllable.endTime,
             )
-            if (matchingRoman) syllable.romanization = matchingRoman.text
+
+            if (matchIndex !== -1) {
+              syllable.romanization = availableRomanWords[matchIndex]!.text
+              availableRomanWords.splice(matchIndex, 1)
+            }
           }
 
           line.syllables.push(syllable)
