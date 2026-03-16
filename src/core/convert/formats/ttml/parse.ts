@@ -201,6 +201,11 @@ export function parseTTML(ttmlText: string): Persist {
     const line: LyricLine = newLine({ background, duet, startTime, endTime })
     lineArr.push(line)
 
+    const lBookmarked = lineEl.getAttribute('amll:bookmarked')
+    if (lBookmarked) line.bookmarked = lBookmarked === 'true'
+    const connectNext = lineEl.getAttribute('amll:connect-next')
+    if (connectNext) line.connectNext = connectNext === 'true'
+
     const itunesKey = background ? parentItunesKey : lineEl.getAttribute('itunes:key')
 
     const romanWordData = itunesKey ? itunesWordRomanizations.get(itunesKey) : undefined
@@ -212,9 +217,9 @@ export function parseTTML(ttmlText: string): Persist {
       line.romanization = itunesLineRomanizations.get(itunesKey)?.[metadataAttr] ?? ''
     }
 
-    lineEl.childNodes.forEach((wordNode) => {
-      if (wordNode.nodeType === Node.TEXT_NODE) {
-        const text = wordNode.textContent ?? ''
+    lineEl.childNodes.forEach((sylNode) => {
+      if (sylNode.nodeType === Node.TEXT_NODE) {
+        const text = sylNode.textContent ?? ''
         line.syllables.push(
           newSyllable({
             text,
@@ -222,39 +227,41 @@ export function parseTTML(ttmlText: string): Persist {
             endTime: text.trim() ? endTime : 0,
           }),
         )
-      } else if (wordNode.nodeType === Node.ELEMENT_NODE) {
-        const wordEl = wordNode as Element
-        const role = wordEl.getAttribute('ttm:role')
+      } else if (sylNode.nodeType === Node.ELEMENT_NODE) {
+        const sylEl = sylNode as Element
+        const role = sylEl.getAttribute('ttm:role')
 
-        if (wordEl.nodeName === 'span' && role) {
+        if (sylEl.nodeName === 'span' && role) {
           if (role === 'x-bg') {
-            parseLineElement(wordEl, true, line.duet, itunesKey)
+            parseLineElement(sylEl, true, line.duet, itunesKey)
           } else if (role === 'x-translation') {
             // Use inline translation only if there is no Apple Music style translation
-            line.translation ||= wordEl.textContent.trim()
+            line.translation ||= sylEl.textContent.trim()
           } else if (role === 'x-roman') {
-            line.romanization ||= wordEl.textContent.trim()
+            line.romanization ||= sylEl.textContent.trim()
           }
-        } else if (hasTimestamps(wordEl)) {
-          const wordStartTime = str2ms(wordEl.getAttribute('begin'))
-          const wordEndTime = str2ms(wordEl.getAttribute('end'))
+        } else if (hasTimestamps(sylEl)) {
+          const sylStartTime = str2ms(sylEl.getAttribute('begin'))
+          const sylEndTime = str2ms(sylEl.getAttribute('end'))
 
-          const word = newSyllable({
-            text: wordEl.textContent,
-            startTime: wordStartTime,
-            endTime: wordEndTime,
+          const syllable = newSyllable({
+            text: sylEl.textContent,
+            startTime: sylStartTime,
+            endTime: sylEndTime,
           })
-          const placeholdingBeat = wordEl.getAttribute('amll:empty-beat')
-          if (placeholdingBeat) word.placeholdingBeat = Number(placeholdingBeat)
+          const placeholdingBeat = sylEl.getAttribute('amll:empty-beat')
+          if (placeholdingBeat) syllable.placeholdingBeat = Number(placeholdingBeat)
+          const sBookmarked = sylEl.getAttribute('amll:bookmarked')
+          if (sBookmarked) syllable.bookmarked = sBookmarked === 'true'
 
           if (romanWords) {
             const matchingRoman = romanWords.find(
-              (r) => r.startTime === wordStartTime && r.endTime === wordEndTime,
+              (r) => r.startTime === sylStartTime && r.endTime === sylEndTime,
             )
-            if (matchingRoman) word.romanization = matchingRoman.text
+            if (matchingRoman) syllable.romanization = matchingRoman.text
           }
 
-          line.syllables.push(word)
+          line.syllables.push(syllable)
         }
       }
     })
@@ -262,16 +269,16 @@ export function parseTTML(ttmlText: string): Persist {
     if (!startTime && !endTime) alignLineTime(line)
 
     if (background) {
-      const firstWord = line.syllables[0]
-      if (firstWord) {
-        firstWord.text = firstWord.text.replace(/^\s*[（(]/, '')
-        if (!firstWord.text.trim()) line.syllables.shift()
+      const firstSyl = line.syllables[0]
+      if (firstSyl) {
+        firstSyl.text = firstSyl.text.replace(/^\s*[（(]/, '')
+        if (!firstSyl.text.trim()) line.syllables.shift()
       }
 
-      const lastWord = line.syllables.at(-1)
-      if (lastWord) {
-        lastWord.text = lastWord.text.replace(/[)）]\s*$/, '')
-        if (!lastWord.text.trim()) line.syllables.pop()
+      const lastSyl = line.syllables.at(-1)
+      if (lastSyl) {
+        lastSyl.text = lastSyl.text.replace(/[)）]\s*$/, '')
+        if (!lastSyl.text.trim()) line.syllables.pop()
       }
     }
   }

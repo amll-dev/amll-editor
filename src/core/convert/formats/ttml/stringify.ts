@@ -44,6 +44,7 @@ export function stringifyTTML(ttmlLyric: Persist): string {
       begin: ms2str(word.startTime),
       end: ms2str(word.endTime),
       'amll:empty-beat': word.placeholdingBeat || undefined,
+      'amll:bookmarked': word.bookmarked ? 'true' : undefined,
     })
 
   const makeRomanizationSpan = (word: LyricSyllable) =>
@@ -128,6 +129,8 @@ export function stringifyTTML(ttmlLyric: Persist): string {
       end: ms2str(endTime),
       'ttm:agent': line.duet ? 'v2' : 'v1',
       'itunes:key': itunesKey,
+      'amll:connect-next': line.connectNext ? 'true' : undefined,
+      'amll:bookmarked': line.bookmarked ? 'true' : undefined,
     })
 
     const mainWords = line.syllables
