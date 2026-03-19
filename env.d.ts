@@ -39,6 +39,31 @@ declare module 'silabas' {
   export default function silabas(word: string): Silabas
 }
 
+declare module 'essentia.js' {
+  export default class Essentia {
+    constructor(module: any)
+
+    arrayToVector(arr: Float32Array): any
+    vectorToArray(vec: any): Float32Array
+
+    PercivalBpmEstimator(
+      audio: any,
+      frameSize: number,
+      hopSize: number,
+      minBpm: number,
+      maxBpm: number,
+      sampleRate: number,
+    ): { bpm: number }
+
+    BeatTrackerMultiFeature(audio: any, maxBpm: number, minBpm: number): { ticks: any }
+  }
+}
+
+declare module 'essentia.js/dist/essentia-wasm.web.js' {
+  const EssentiaWASM: (opts?: any) => Promise<any>
+  export default EssentiaWASM
+}
+
 /**
  * LaunchQueue provides access to functionality that allows custom launch navigation handling to be implemented in the PWA.
  *
