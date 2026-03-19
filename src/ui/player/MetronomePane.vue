@@ -32,6 +32,8 @@
 import { clamp } from 'lodash-es'
 import { ref } from 'vue'
 
+import { detectCurrentBpm } from '@core/audio/bpmDetect'
+
 import {
   Button,
   Divider,
@@ -55,7 +57,9 @@ interface DetectedOpt {
   offset: number
 }
 const detectedOpt: DetectedOpt | null = null
-function autoDetect() {}
+function autoDetect() {
+  detectCurrentBpm()
+}
 function resetOptn() {
   bpm.value = detectedOpt?.bpm ?? 120
   offset.value = detectedOpt?.offset ?? 0

@@ -46,20 +46,38 @@ declare module 'essentia.js' {
     arrayToVector(arr: Float32Array): any
     vectorToArray(vec: any): Float32Array
 
+    /**
+     * This algorithm estimates the tempo in beats per minute (BPM) from an input signal.
+     * Check [this page](https://essentia.upf.edu/reference/std_PercivalBpmEstimator.html) for more details.
+     *
+     * @param signal input signal
+     * @param frameSize frame size for the analysis of the input signal
+     * @param frameSizeOSS frame size for the analysis of the Onset Strength Signal
+     * @param hopSize hop size for the analysis of the input signal
+     * @param hopSizeOSS hop size for the analysis of the Onset Strength Signal
+     * @param maxBPM maximum BPM to detect
+     * @param minBPM minimum BPM to detect
+     * @param sampleRate the sampling rate of the audio signal [Hz]
+     */
     PercivalBpmEstimator(
-      audio: any,
-      frameSize: number,
-      hopSize: number,
-      minBpm: number,
-      maxBpm: number,
-      sampleRate: number,
-    ): { bpm: number }
+      signal: any,
+      frameSize?: number,
+      frameSizeOSS?: number,
+      hopSize?: number,
+      hopSizeOSS?: number,
+      maxBPM?: number,
+      minBPM?: number,
+      sampleRate?: number,
+    ): {
+      /** the tempo estimation [bpm] */
+      bpm: number
+    }
 
     BeatTrackerMultiFeature(audio: any, maxBpm: number, minBpm: number): { ticks: any }
   }
 }
 
-declare module 'essentia.js/dist/essentia-wasm.web.js' {
+declare module 'essentia.js/dist/essentia-wasm.es.js' {
   const EssentiaWASM: (opts?: any) => Promise<any>
   export default EssentiaWASM
 }
