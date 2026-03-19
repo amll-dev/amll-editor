@@ -30,6 +30,12 @@
         <ProgressTime />
         <Waveform />
         <Button
+          icon="mdi mdi-metronome"
+          :severity="metronomePane?.enabled ? 'primary' : 'secondary'"
+          @click="toggleMetronomePopover"
+        />
+        <Popover ref="metronomePopover"> <MetronomePane ref="metronomePane" /> </Popover>
+        <Button
           icon="mdi mdi-chart-box-outline"
           :severity="showSpectrogram ? 'primary' : 'secondary'"
           @click="showSpectrogram = !showSpectrogram"
@@ -61,6 +67,7 @@ import { usePrefStore } from '@states/stores'
 
 import { tipHotkey, tipMultiLine } from '@utils/generateTooltip'
 
+import MetronomePane from './MetronomePane.vue'
 import PopoverPane from './Popover.vue'
 import ProgressTime from './ProgressTime.vue'
 import Waveform from './Waveform.vue'
@@ -156,6 +163,12 @@ function handlePopBtnWheel(e: WheelEvent) {
 }
 
 const showSpectrogram = ref(false)
+
+const metronomePopover = useTemplateRef('metronomePopover')
+const metronomePane = useTemplateRef('metronomePane')
+function toggleMetronomePopover(e: MouseEvent) {
+  metronomePopover.value?.toggle(e)
+}
 </script>
 
 <style lang="scss">
