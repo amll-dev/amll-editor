@@ -48,4 +48,11 @@ export default defineConfigWithVueTs(
       '@typescript-eslint/no-namespace': 'off',
     },
   },
+  {
+    files: ['src/env/*.d.ts'],
+    rules: {
+      'no-var': 'off',
+      '@typescript-eslint/no-namespace': 'off',
+    },
+  },
 )
