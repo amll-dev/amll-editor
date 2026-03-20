@@ -1,6 +1,5 @@
-import Essentia from 'essentia.js'
-import EssentiaWASM from 'essentia.js/dist/essentia-wasm.es.js'
-import wasmUrl from 'essentia.js/dist/essentia-wasm.web.wasm?url'
+import { EssentiaWASM } from 'essentia.js/dist/essentia-wasm.es.js'
+import Essentia from 'essentia.js/dist/essentia.js-core.es.js'
 
 import { pairwise } from '@utils/pairwise'
 
@@ -20,25 +19,8 @@ type BPMDetectWorkerScope = Omit<DedicatedWorkerGlobalScope, 'postMessage' | 'on
 }
 const ctx: BPMDetectWorkerScope = self as BPMDetectWorkerScope
 
-let essentiaInstance: Essentia | null = null
-
-async function getEssentia() {
-  if (!essentiaInstance) essentiaInstance = await createEssentia()
-  return essentiaInstance
-}
-async function createEssentia() {
-  console.log('Initializing Essentia WASM...')
-  console.log(Essentia)
-  const wasmModule = await EssentiaWASM({
-    locateFile: (file: string) => {
-      if (file.endsWith('.wasm')) return wasmUrl
-      return file
-    },
-  })
-  ctx.postMessage({ type: 'INIT_COMPLETE' })
-  console.log('Essentia WASM initialized')
-  return new Essentia(wasmModule)
-}
+const essentia = new Essentia(EssentiaWASM)
+ctx.postMessage({ type: 'INIT_COMPLETE' })
 
 function sliceAudio(data: Float32Array, sampleRate: number, durationSec = 30, offsetRatio = 0.3) {
   const totalSec = data.length / sampleRate
@@ -82,7 +64,6 @@ ctx.onmessage = async (ev) => {
   try {
     console.log('Received BPM detection request')
     const { audioData, sampleRate } = ev.data
-    const essentia = await getEssentia()
     const slice1 = sliceAudio(audioData, sampleRate, 120, 0.05)
 
     const bpmResult = essentia.PercivalBpmEstimator(
