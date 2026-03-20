@@ -24,7 +24,13 @@
       <InputNumber placeholder="0" v-model="offset" size="small" :maxFractionDigits="0" />
     </InputGroup>
     <Divider />
-    <Button icon="mdi mdi-auto-fix" size="small" label="自动识别" @click="autoDetect" />
+    <Button
+      icon="mdi mdi-auto-fix"
+      size="small"
+      label="自动识别"
+      @click="autoDetect"
+      :loading="autoDetectLoading"
+    />
   </div>
 </template>
 
@@ -57,8 +63,14 @@ interface DetectedOpt {
   offset: number
 }
 const detectedOpt: DetectedOpt | null = null
-function autoDetect() {
-  detectCurrentBpm()
+const autoDetectLoading = ref(false)
+async function autoDetect() {
+  autoDetectLoading.value = true
+  const result = await detectCurrentBpm()
+  autoDetectLoading.value = false
+  if (!result) return
+  bpm.value = result.bpm
+  offset.value = result.offset
 }
 function resetOptn() {
   bpm.value = detectedOpt?.bpm ?? 120

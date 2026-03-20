@@ -38,9 +38,13 @@ function sliceAudio(data: Float32Array, sampleRate: number, durationSec = 30, of
 
 function getMainInterval(ticks: number[]) {
   const hist = new Map<string, number>()
+  const dtTickMap = new Map<number, number[]>()
   for (const [lastTick, tick] of pairwise(ticks)) {
-    const dt = (tick - lastTick).toFixed(4)
+    const dt = (tick - lastTick).toFixed(5)
     hist.set(dt, (hist.get(dt) || 0) + 1)
+    const arr = dtTickMap.get(Number(dt)) || []
+    arr.push(tick)
+    dtTickMap.set(Number(dt), arr)
   }
   let bestDt = 0
   let bestCount = 0
@@ -50,12 +54,13 @@ function getMainInterval(ticks: number[]) {
       bestCount = count
     }
   }
-  return bestDt
+  return { interval: bestDt, ticks: dtTickMap.get(bestDt) || [] }
 }
 
-function estimateOffset(ticks: number[], interval: number) {
+function estimateOffset(ticks: number[], bpm: number) {
   if (!ticks.length) return 0
   const first = ticks[0]!
+  const interval = 60 / bpm
   const offset = first % interval
   return offset
 }
@@ -77,25 +82,25 @@ ctx.onmessage = async (ev) => {
       sampleRate,
     )
     console.log('BPM estimation result:', bpmResult)
-    let bpm = bpmResult.bpm
-    const decimal = (bpm * 100) % 100
-    if (decimal >= 40 && decimal <= 60) bpm *= 2
-    if (bpm > 160) bpm /= 2
-
+    let rawBpm = bpmResult.bpm
+    const decimal = (rawBpm * 100) % 100
+    if (decimal >= 40 && decimal <= 60) rawBpm *= 2
+    if (rawBpm > 160) rawBpm /= 2
+    const estimatedBpm = rawBpm
     const slice2 = sliceAudio(audioData, sampleRate, 75, 0.3)
     const tracker = essentia.BeatTrackerMultiFeature(
       essentia.arrayToVector(slice2.buffer),
-      Math.floor(bpm + 10),
-      Math.floor(bpm - 10),
+      Math.floor(estimatedBpm + 10),
+      Math.floor(estimatedBpm - 10),
     )
     const ticksFloat32Arr = essentia.vectorToArray(tracker.ticks)
     const ticks = Array.from(ticksFloat32Arr)
-    const interval = getMainInterval(ticks)
-    const offset = estimateOffset(ticks, interval)
+    const { interval, ticks: bestTicks } = getMainInterval(ticks)
+    const offset = estimateOffset(bestTicks, estimatedBpm)
     console.log('Beat tracking result:', { ticks, interval, offset })
     ctx.postMessage({
       type: 'DETECT_COMPLETE',
-      bpm,
+      bpm: estimatedBpm,
       offset,
     })
   } catch (err: any) {

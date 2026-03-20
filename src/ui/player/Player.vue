@@ -34,7 +34,9 @@
           :severity="metronomePane?.enabled ? 'primary' : 'secondary'"
           @click="toggleMetronomePopover"
         />
-        <Popover ref="metronomePopover"> <MetronomePane ref="metronomePane" /> </Popover>
+        <Popover ref="metronomePopover">
+          <KeepAlive> <MetronomePane ref="metronomePane" /> </KeepAlive>
+        </Popover>
         <Button
           icon="mdi mdi-chart-box-outline"
           :severity="showSpectrogram ? 'primary' : 'secondary'"
