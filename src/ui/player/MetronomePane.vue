@@ -5,23 +5,21 @@
       <ToggleSwitch v-model="enabled" />
     </div>
     <div class="knob-wrapper">
-      <Knob v-model="bpm" :strokeWidth="6" :min="20" :max="240" />
+      <Knob v-model="metronomeBpmRef" :strokeWidth="6" :min="20" :max="240" />
     </div>
     <div class="buttons-wrapper">
       <Button label="÷2" size="small" severity="secondary" fluid @click="halfBPM" />
-      <Button
-        icon="mdi mdi-undo-variant"
-        size="small"
-        severity="secondary"
-        fluid
-        @click="resetOptn"
-        :disabled="!detectedOpt"
-      />
+      <Button icon="mdi mdi-undo-variant" size="small" severity="secondary" fluid />
       <Button label="×2" size="small" severity="secondary" fluid @click="doubleBPM" />
     </div>
     <InputGroup class="offset-input">
       <InputGroupAddon><i class="mdi mdi-timelapse"></i> 偏移</InputGroupAddon>
-      <InputNumber placeholder="0" v-model="offset" size="small" :maxFractionDigits="0" />
+      <InputNumber
+        placeholder="0"
+        v-model="metronomeOffsetRef"
+        size="small"
+        :maxFractionDigits="0"
+      />
     </InputGroup>
     <Divider />
     <Button
@@ -38,6 +36,7 @@
 import { clamp } from 'lodash-es'
 import { ref } from 'vue'
 
+import { audioEngine } from '@core/audio'
 import { detectCurrentBpm } from '@core/audio/bpmDetect'
 
 import {
@@ -51,18 +50,13 @@ import {
 } from 'primevue'
 
 const enabled = ref(false)
-const bpm = ref(120)
-const offset = ref(0)
 defineExpose({ enabled })
 
 const MAXBPM = 240
 const MINBPM = 20
 
-interface DetectedOpt {
-  bpm: number
-  offset: number
-}
-const detectedOpt: DetectedOpt | null = null
+const { metronomeBpmRef, metronomeOffsetRef } = audioEngine
+
 const autoDetectLoading = ref(false)
 async function autoDetect() {
   autoDetectLoading.value = true
@@ -70,18 +64,15 @@ async function autoDetect() {
   autoDetectLoading.value = false
   if (!result) return
   console.log('Auto-detected BPM and offset:', result)
-  bpm.value = Math.round(result.bpm)
-  offset.value = Math.round(result.offset * 1000)
-}
-function resetOptn() {
-  bpm.value = detectedOpt?.bpm ?? 120
-  offset.value = detectedOpt?.offset ?? 0
+  metronomeBpmRef.value = Math.round(result.bpm)
+  metronomeOffsetRef.value = Math.round(result.offset * 1000)
+  audioEngine.mountMetronome(result.bpm, result.offset)
 }
 function doubleBPM() {
-  bpm.value = clamp(bpm.value * 2, MINBPM, MAXBPM)
+  metronomeBpmRef.value = clamp(metronomeBpmRef.value * 2, MINBPM, MAXBPM)
 }
 function halfBPM() {
-  bpm.value = clamp(bpm.value / 2, MINBPM, MAXBPM)
+  metronomeBpmRef.value = clamp(metronomeBpmRef.value / 2, MINBPM, MAXBPM)
 }
 </script>
 

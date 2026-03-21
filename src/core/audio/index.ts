@@ -1,18 +1,30 @@
-import { computed, readonly, ref, shallowRef } from 'vue'
+import { computed, readonly, ref, shallowRef, watch } from 'vue'
 
 import { usePrefStore } from '@states/stores'
 
 import { provideListener } from '@utils/provideListener'
 
+import metronomeAudioUrl from '@assets/audio/druminfected_metronome.wav?url'
+
 import { useNcmResolver } from './ncm'
 
 const audioEl = new Audio()
+const metronomeAudioEls = Array.from({ length: 5 }, () => {
+  const el = new Audio(metronomeAudioUrl)
+  el.preload = 'auto'
+  return el
+})
+let revokeMetronomeHook: (() => void) | null = null
 let revokeUrlHook: (() => void) | null = null
 const activatedRef = ref(false)
 const lengthRef = ref(0)
 const audioBufferRef = shallowRef<AudioBuffer | null>(null)
 const rawFileRef = shallowRef<File | null>(null)
 const filenameRef = ref<string | undefined>(undefined)
+const metronomeEnabledRef = ref(false)
+const metronomeVolumeRef = ref(0.5)
+const metronomeBpmRef = ref(120)
+const metronomeOffsetRef = ref(0)
 
 const { on: onLoaded, off: offLoaded, _dispatch: _dispatchLoaded } = provideListener()
 const { on: onLoadStart, off: offLoadStart, _dispatch: _dispatchLoadStart } = provideListener()
@@ -42,7 +54,7 @@ async function _mountNcm(src: File) {
   rawFileRef.value = src
   const ncmResolver = useNcmResolver()
   const extractedBlob = await ncmResolver.transform(src)
-  await _mount(extractedBlob, src.name)
+  _mount(extractedBlob, src.name)
   ncmResolver.destroy()
 }
 
@@ -55,9 +67,12 @@ function _mount(src: Blob | File, filename?: string): void {
   audioEl.volume = 1
   filenameRef.value = filename ?? (src instanceof File ? src.name : undefined)
   revokeUrlHook?.()
-  revokeUrlHook = null
+  revokeMetronomeHook?.()
   const objUrl = URL.createObjectURL(src)
-  revokeUrlHook = () => URL.revokeObjectURL(objUrl)
+  revokeUrlHook = () => {
+    URL.revokeObjectURL(objUrl)
+    revokeUrlHook = null
+  }
   audioEl.addEventListener(
     'loadedmetadata',
     async () => {
@@ -150,10 +165,43 @@ const playbackRateRef = computed({
 })
 //#endregion
 
+//#region Metronome
+
+function mountMetronome(bpm: number, offset: number) {
+  metronomeEnabledRef.value = true
+  metronomeBpmRef.value = bpm
+  metronomeOffsetRef.value = offset
+  if (revokeMetronomeHook) return
+  let lastProgress = audioEl.currentTime
+  let counter = 0
+  function onProgress() {
+    const progress = audioEl.currentTime
+    const interval = 60 / metronomeBpmRef.value
+    if (
+      Math.floor((lastProgress - metronomeOffsetRef.value) / interval) !==
+      Math.floor((progress - metronomeOffsetRef.value) / interval)
+    ) {
+      counter = (counter + 1) % metronomeAudioEls.length
+      const metronomeAudioEl = metronomeAudioEls[counter]!
+      metronomeAudioEl.currentTime = 0
+      metronomeAudioEl.volume = metronomeVolumeRef.value
+      metronomeAudioEl.play()
+    }
+    lastProgress = progress
+  }
+  const unwatchHandle = watch(progressRef, onProgress)
+  revokeMetronomeHook = () => {
+    unwatchHandle()
+    revokeMetronomeHook = null
+    metronomeEnabledRef.value = false
+  }
+}
+//#endregion
+
 const destroy = () => {
   audioEl.pause()
   revokeUrlHook?.()
-  revokeUrlHook = null
+  revokeMetronomeHook?.()
   audioEl.src = ''
   activatedRef.value = false
   progressRef.value = 0
@@ -171,6 +219,8 @@ export const audioEngine = {
   onLoadStart,
   offLoadStart,
   mount,
+  mountMetronome,
+  unmountMetronome: () => revokeMetronomeHook?.(),
   play,
   pause,
   togglePlay,
@@ -194,5 +244,7 @@ export const audioEngine = {
   audioBufferComputed: readonly(audioBufferRef),
   filenameComputed: readonly(filenameRef),
   rawFileComputed: readonly(rawFileRef),
+  metronomeBpmRef,
+  metronomeOffsetRef,
   destroy,
 }
