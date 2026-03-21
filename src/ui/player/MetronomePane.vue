@@ -69,8 +69,9 @@ async function autoDetect() {
   const result = await detectCurrentBpm()
   autoDetectLoading.value = false
   if (!result) return
-  bpm.value = result.bpm
-  offset.value = result.offset
+  console.log('Auto-detected BPM and offset:', result)
+  bpm.value = Math.round(result.bpm)
+  offset.value = Math.round(result.offset * 1000)
 }
 function resetOptn() {
   bpm.value = detectedOpt?.bpm ?? 120

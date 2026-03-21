@@ -12,23 +12,45 @@ function getWorker(): BPMDetectWorker {
   return workerInstance
 }
 
+async function resampleTo44100(audioBuffer: AudioBuffer): Promise<AudioBuffer> {
+  if (audioBuffer.sampleRate === 44100) return audioBuffer
+  const offlineCtx = new OfflineAudioContext(
+    audioBuffer.numberOfChannels,
+    Math.ceil(audioBuffer.duration * 44100),
+    44100,
+  )
+  const source = offlineCtx.createBufferSource()
+  source.buffer = audioBuffer
+  source.connect(offlineCtx.destination)
+  source.start(0)
+
+  const rendered = await offlineCtx.startRendering()
+  return rendered
+}
+
 export async function detectCurrentBpm() {
   console.log('Starting BPM detection...')
   const { audioBuffer } = audioEngine
-  if (!audioBuffer) return null
-  const { sampleRate } = audioBuffer
-  const audioData = audioBuffer.getChannelData(0)
-  console.log('Audio data extracted, sample rate:', sampleRate, 'data length:', audioData.length)
+  if (!audioBuffer) return
+  const resampledBuffer = await resampleTo44100(audioBuffer)
+  const resampledData = resampledBuffer.getChannelData(0)
   const worker = getWorker()
-  return new Promise<{ bpm: number; offset: number } | null>((resolve) => {
+  return new Promise<{ bpm: number; reliableTick: number; offset: number } | null>((resolve) => {
     worker.onmessage = (ev) => {
       if (ev.data.type === 'INIT_COMPLETE') return
       console.log(ev.data)
+      const bpm: number = ev.data.bpm
+      const reliableTick: number = ev.data.reliableTick
+
+      const interval = 60 / bpm
+      const offset = reliableTick % interval
+
       resolve({
-        bpm: ev.data.bpm,
-        offset: ev.data.offset,
+        bpm,
+        reliableTick,
+        offset,
       })
     }
-    worker.postMessage({ audioData, sampleRate })
+    worker.postMessage({ audioDataArray: resampledData })
   })
 }
