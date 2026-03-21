@@ -1844,7 +1844,7 @@ type RootTranslation = {
 				 */
 				name: string
 				/**
-				 * 由​ ​S​y​l​l​a​b​i​f​y​-​f​r​ ​库​提​供​的​正​字​法​法​语​语​音​节​划​分​。
+				 * 由​ ​S​y​l​l​a​b​i​f​y​-​f​r​ ​库​提​供​的​正​字​法​法​语​音​节​划​分​。
 				 */
 				description: string
 			}
@@ -1855,6 +1855,16 @@ type RootTranslation = {
 				name: string
 				/**
 				 * 由​ ​S​y​l​l​a​b​i​f​y​ ​库​提​供​的​正​字​法​俄​语​音​节​划​分​。
+				 */
+				description: string
+			}
+			none: {
+				/**
+				 * 不​断​字
+				 */
+				name: string
+				/**
+				 * 不​进​行​音​节​划​分​，​将​每​行​的​所​有​文​本​合​并​为​一​个​音​节​。​自​定​义​规​则​不​产​生​作​用​。​适​用​于​制​作​逐​行​歌​词​。
 				 */
 				description: string
 			}
@@ -3936,7 +3946,7 @@ export type TranslationFunctions = {
 				 */
 				name: () => LocalizedString
 				/**
-				 * 由 Syllabify-fr 库提供的正字法法语语音节划分。
+				 * 由 Syllabify-fr 库提供的正字法法语音节划分。
 				 */
 				description: () => LocalizedString
 			}
@@ -3947,6 +3957,16 @@ export type TranslationFunctions = {
 				name: () => LocalizedString
 				/**
 				 * 由 Syllabify 库提供的正字法俄语音节划分。
+				 */
+				description: () => LocalizedString
+			}
+			none: {
+				/**
+				 * 不断字
+				 */
+				name: () => LocalizedString
+				/**
+				 * 不进行音节划分，将每行的所有文本合并为一个音节。自定义规则不产生作用。适用于制作逐行歌词。
 				 */
 				description: () => LocalizedString
 			}

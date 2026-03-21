@@ -621,42 +621,47 @@ const en = {
   syllabify: {
     engines: {
       basic: {
-        name: 'Basic Syllabification',
+        name: 'Basic',
         description:
           'Splits Western words by whitespace; splits CJK text character-by-character. Custom rules are applied to the resulting tokens (pre-split words are not merged).',
       },
       jaBasic: {
-        name: 'Japanese Basic Syllabification',
+        name: 'Japanese Basic',
         description:
           'Special handling for Japanese small kana (ゃゅょ etc.). Custom rules take priority; remaining parts are split according to built-in rules.',
       },
       prosodic: {
-        name: 'Prosodic English Syllabification',
+        name: 'Prosodic (English)',
         description:
           'Uses SUBTLEXus corpus. Syllables are derived from Prosodic to build a dictionary. High-frequency words are manually verified. Falls back to Compromise for unmatched words.',
       },
       silabas: {
-        name: 'Silabas Spanish Syllabification',
+        name: 'Silabas (Spanish)',
         description:
           'Orthographic Spanish syllabification provided by the Silabas.js library, based on modern corpus. Ported from the ULPGC Silabeador TIP C++ implementation.',
       },
       silabeador: {
-        name: 'Silabeador Spanish Syllabification',
+        name: 'Silabeador (Spanish)',
         description:
           'Orthographic Spanish syllabification provided by the Silabeador library, mainly based on Golden Age corpus. Runs via Pyodide, may be slow on first load.',
       },
       compromise: {
-        name: 'Compromise English Syllabification',
+        name: 'Compromise (English)',
         description:
           'Pure orthographic English syllable splitting provided by the Compromise library.',
       },
       syllabifyFr: {
-        name: 'Syllabify-fr French Syllabification',
+        name: 'Syllabify-fr (French)',
         description: 'Orthographic French syllable splitting provided by the Syllabify-fr library.',
       },
       syllabify: {
-        name: 'Syllabify Russian Syllabification',
+        name: 'Syllabify (Russian)',
         description: 'Orthographic Russian syllable splitting provided by the Syllabify library.',
+      },
+      none: {
+        name: 'None',
+        description:
+          'Does not perform syllable splitting. All text in a line is merged into a single syllable. Custom rules have no effect. Suitable for creating line-by-line lyrics.',
       },
     },
   },

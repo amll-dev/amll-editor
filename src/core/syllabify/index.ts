@@ -5,8 +5,9 @@
 import { t } from '@i18n'
 
 import { basicSplit } from './engines/basic'
-import { compromiseSplit } from './engines/compromise'
+// import { compromiseSplit } from './engines/compromise'
 import { japaneseSplit } from './engines/japanese'
+import { noneSplit } from './engines/none'
 import { prosoticSplit } from './engines/prosotic'
 import { silabasSplit } from './engines/silabas'
 import { silabeadorSplit } from './engines/silabeador'
@@ -38,11 +39,11 @@ const rawEngines = [
     processor: silabeadorSplit,
     notRecommend: true,
   },
-  {
-    key: 'compromise',
-    processor: compromiseSplit,
-    notRecommend: true,
-  },
+  // {
+  //   key: 'compromise',
+  //   processor: compromiseSplit,
+  //   notRecommend: true,
+  // },
   {
     key: 'syllabifyFr',
     processor: syllabifyFrSplit,
@@ -53,7 +54,12 @@ const rawEngines = [
     processor: syllabifySplit,
     notRecommend: true,
   },
-] as const
+  {
+    key: 'none',
+    processor: noneSplit,
+    notRecommend: true,
+  },
+] as const satisfies (Omit<SL.Engine, 'name' | 'description'> & { key: string })[]
 
 export type EngineKey = (typeof rawEngines)[number]['key']
 

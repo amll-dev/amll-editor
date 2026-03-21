@@ -630,11 +630,16 @@ const zhHans = {
       },
       syllabifyFr: {
         name: 'Syllabify-fr 法语断字',
-        description: '由 Syllabify-fr 库提供的正字法法语语音节划分。',
+        description: '由 Syllabify-fr 库提供的正字法法语音节划分。',
       },
       syllabify: {
         name: 'Syllabify 俄语断字',
         description: '由 Syllabify 库提供的正字法俄语音节划分。',
+      },
+      none: {
+        name: '不断字',
+        description:
+          '不进行音节划分，将每行的所有文本合并为一个音节。自定义规则不产生作用。适用于制作逐行歌词。',
       },
     },
   },
