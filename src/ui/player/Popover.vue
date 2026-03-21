@@ -38,6 +38,7 @@
       :max="DOMAIN"
       :step="1"
       v-model="rateSliderRef"
+      :disabled="runtimeStore.isPreviewView"
     />
     <InputGroup>
       <InputNumber
@@ -50,6 +51,7 @@
         size="small"
         placeholder="1.00"
         v-model="rateInputRef"
+        :disabled="runtimeStore.isPreviewView"
       />
       <InputGroupAddon class="audio-popover-addon">
         <Button
@@ -61,6 +63,7 @@
           fluid
           @click="rateInputRef = 1"
           v-tooltip="tt.resetTo('1.00')"
+          :disabled="runtimeStore.isPreviewView"
         />
       </InputGroupAddon>
     </InputGroup>
@@ -73,9 +76,12 @@ import { computed, ref, watch } from 'vue'
 
 import { audioEngine } from '@core/audio'
 
+import { useRuntimeStore } from '@states/stores'
+
 import { Button, InputGroup, InputGroupAddon, InputNumber, Slider } from 'primevue'
 
 const { volumeRef, playbackRateRef } = audioEngine
+const runtimeStore = useRuntimeStore()
 
 const tt = t.player
 

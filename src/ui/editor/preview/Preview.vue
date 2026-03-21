@@ -96,6 +96,20 @@ function passToPlayer(event: Event) {
   const newEvent = new (event.constructor as any)(event.type, event)
   playerEl.dispatchEvent(newEvent)
 }
+
+let enteringPlaybackRate: number | null = null
+onMounted(() => {
+  if (audioEngine.playbackRateRef.value !== 1) {
+    enteringPlaybackRate = audioEngine.playbackRateRef.value
+    audioEngine.playbackRateRef.value = 1
+  }
+})
+onUnmounted(() => {
+  if (enteringPlaybackRate !== null) {
+    audioEngine.playbackRateRef.value = enteringPlaybackRate
+    enteringPlaybackRate = null
+  }
+})
 </script>
 
 <style lang="scss">
