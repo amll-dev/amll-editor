@@ -39,7 +39,7 @@ export async function detectCurrentBpm() {
     worker.onmessage = (ev) => {
       if (ev.data.type === 'INIT_COMPLETE') return
       console.log(ev.data)
-      const bpm: number = ev.data.bpm
+      const bpm: number = Math.round(ev.data.bpm)
       const reliableTick: number = ev.data.reliableTick
 
       const interval = 60 / bpm
