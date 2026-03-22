@@ -1800,7 +1800,7 @@ type RootTranslation = {
 			}
 			prosodic: {
 				/**
-				 * P​r​o​s​o​d​i​c​ ​英​语​断​字
+				 * 英​语​ ​(​P​r​o​s​o​d​i​c​)
 				 */
 				name: string
 				/**
@@ -1810,7 +1810,7 @@ type RootTranslation = {
 			}
 			silabas: {
 				/**
-				 * S​i​l​a​b​a​s​ ​西​班​牙​语​断​字
+				 * 西​班​牙​语​ ​(​S​i​l​a​b​a​s​)
 				 */
 				name: string
 				/**
@@ -1820,7 +1820,7 @@ type RootTranslation = {
 			}
 			silabeador: {
 				/**
-				 * S​i​l​a​b​e​a​d​o​r​ ​西​班​牙​语​断​字
+				 * 西​班​牙​语​ ​(​S​i​l​a​b​e​a​d​o​r​)
 				 */
 				name: string
 				/**
@@ -1830,7 +1830,7 @@ type RootTranslation = {
 			}
 			compromise: {
 				/**
-				 * C​o​m​p​r​o​m​i​s​e​ ​英​语​断​字
+				 * 英​语​ ​(​C​o​m​p​r​o​m​i​s​e​)
 				 */
 				name: string
 				/**
@@ -1840,7 +1840,7 @@ type RootTranslation = {
 			}
 			syllabifyFr: {
 				/**
-				 * S​y​l​l​a​b​i​f​y​-​f​r​ ​法​语​断​字
+				 * 法​语​ ​(​S​y​l​l​a​b​i​f​y​-​f​r​)
 				 */
 				name: string
 				/**
@@ -1850,7 +1850,7 @@ type RootTranslation = {
 			}
 			syllabify: {
 				/**
-				 * S​y​l​l​a​b​i​f​y​ ​俄​语​断​字
+				 * 俄​语​ ​(​S​y​l​l​a​b​i​f​y​)
 				 */
 				name: string
 				/**
@@ -3902,7 +3902,7 @@ export type TranslationFunctions = {
 			}
 			prosodic: {
 				/**
-				 * Prosodic 英语断字
+				 * 英语 (Prosodic)
 				 */
 				name: () => LocalizedString
 				/**
@@ -3912,7 +3912,7 @@ export type TranslationFunctions = {
 			}
 			silabas: {
 				/**
-				 * Silabas 西班牙语断字
+				 * 西班牙语 (Silabas)
 				 */
 				name: () => LocalizedString
 				/**
@@ -3922,7 +3922,7 @@ export type TranslationFunctions = {
 			}
 			silabeador: {
 				/**
-				 * Silabeador 西班牙语断字
+				 * 西班牙语 (Silabeador)
 				 */
 				name: () => LocalizedString
 				/**
@@ -3932,7 +3932,7 @@ export type TranslationFunctions = {
 			}
 			compromise: {
 				/**
-				 * Compromise 英语断字
+				 * 英语 (Compromise)
 				 */
 				name: () => LocalizedString
 				/**
@@ -3942,7 +3942,7 @@ export type TranslationFunctions = {
 			}
 			syllabifyFr: {
 				/**
-				 * Syllabify-fr 法语断字
+				 * 法语 (Syllabify-fr)
 				 */
 				name: () => LocalizedString
 				/**
@@ -3952,7 +3952,7 @@ export type TranslationFunctions = {
 			}
 			syllabify: {
 				/**
-				 * Syllabify 俄语断字
+				 * 俄语 (Syllabify)
 				 */
 				name: () => LocalizedString
 				/**
