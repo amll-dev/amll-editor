@@ -188,18 +188,18 @@ async function applyToLines(lines: LyricLine[]) {
    * |           |           |           |
    */
   const filterRegex = /[\s\p{P}]+/gu
-  lines.forEach((line, lineIndex) => {
+  for (const [lineIndex, line] of lines.entries()) {
     const result = results[lineIndex]!
     if (result.length === line.syllables.length) {
       const getText = (s: SL.SplittedSyl) => (typeof s === 'string' ? s : s.text)
       const allTheSame = line.syllables.every(({ text }, i) => text === getText(result[i]!))
-      if (allTheSame) return // No change
+      if (allTheSame) continue // No change
     }
     const newPartialSyls = result.map((s) => (typeof s === 'string' ? { text: s } : s))
     let currOldPos = 0
     type XY = [number, number]
     const oldPosTime: XY[] = line.syllables.flatMap((s) => {
-      const text = s.text.replace(filterRegex, '')
+      const text = s.text.replaceAll(filterRegex, '')
       if (text.length === 0) {
         // Skip filtered-out syllables
         return []
@@ -220,12 +220,12 @@ async function applyToLines(lines: LyricLine[]) {
      */
     const maxOldPos = currOldPos
     const newMaxPos = newPartialSyls
-      .map((s) => s.text.replace(filterRegex, '').length)
+      .map((s) => s.text.replaceAll(filterRegex, '').length)
       .reduce((a, b) => a + b, 0)
     if (!maxOldPos || !newMaxPos) {
       // All filtered out, just reset timings
       line.syllables = newPartialSyls.map((syl) => coreStore.newSyllable(syl))
-      return
+      continue
     }
     const averagedPosTime: XY[] = []
     let accumulatedItemCount = 0
@@ -241,7 +241,7 @@ async function applyToLines(lines: LyricLine[]) {
         // 0-length syllables will cause more than 2 points at same position
       }
     }
-    averagedPosTime.forEach((point) => (point[0] = point[0] / maxOldPos)) // Normalize X to [0,1]
+    for (const point of averagedPosTime) (point[0] = point[0] / maxOldPos) // Normalize X to [0,1]
 
     let currNewPos = 0
     let apIndex = 0
@@ -258,14 +258,14 @@ async function applyToLines(lines: LyricLine[]) {
       return Math.round(y1 + (y2 - y1) * t)
     }
     line.syllables = newPartialSyls.map((syl) => {
-      const charCount = syl.text.replace(filterRegex, '').length
+      const charCount = syl.text.replaceAll(filterRegex, '').length
       const startRatio = currNewPos / newMaxPos
       const startTime = getTimeAtRatio(startRatio)
       const endRatio = (currNewPos += charCount) / newMaxPos
       const endTime = getTimeAtRatio(endRatio)
       return coreStore.newSyllable({ ...syl, startTime, endTime })
     })
-  })
+  }
   working.value = false
 }
 
@@ -297,7 +297,7 @@ function handleDrop() {
         continuity = false
         continue
       }
-      if (continuity && syls.length) syls[syls.length - 1] += syl.text
+      if (continuity && syls.length > 0) syls[syls.length - 1] += syl.text
       else syls.push(syl.text)
       continuity = true
     }

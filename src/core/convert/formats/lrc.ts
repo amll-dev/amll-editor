@@ -35,15 +35,15 @@ export function parseLRC(lrc: string): Persist {
     .map((l) => l.trim())
     .filter((l) => l.length > 0)
   const lyricLines: LyricLine[] = []
-  lines.forEach((lineStr) => {
-    if (lineStr.startsWith('#') || lineStr.startsWith('{')) return
+  for (let lineStr of lines) {
+    if (lineStr.startsWith('#') || lineStr.startsWith('{')) continue
     const tagMatch = lineStr.match(/^\[([a-z]+):([^\]]+)\]$/)
     if (tagMatch) {
       const [, tag, value] = tagMatch
       const key = tag!
       if (!metadata[key]) metadata[key] = []
       metadata[key]!.push(value!.trim())
-      return
+      continue
     }
     const timeStamps: number[] = []
     while (true) {
@@ -54,12 +54,12 @@ export function parseLRC(lrc: string): Persist {
       timeStamps.push(timeStamp)
       lineStr = text!
     }
-    if (timeStamps.length === 0) return
+    if (timeStamps.length === 0) continue
     lineStr = lineStr.trim()
     const backgroundMatch = lineStr.match(/^[\(（](.+)[\)）]$/)
     const isBackground = !!backgroundMatch
     if (backgroundMatch) lineStr = backgroundMatch[1]!
-    timeStamps.forEach((ts) => {
+    for (const ts of timeStamps) {
       lyricLines.push(
         coreCreate.newLine({
           startTime: ts,
@@ -68,17 +68,17 @@ export function parseLRC(lrc: string): Persist {
           background: isBackground,
         }),
       )
-    })
-  })
+    }
+  }
   lyricLines.sort((a, b) => a.startTime - b.startTime)
   for (const [prev, curr] of pairwise(lyricLines)) {
     prev.endTime = prev.syllables[0]!.endTime = curr.startTime
   }
-  if (lyricLines.length && metadata.length && metadata.length.length) {
+  if (lyricLines.length > 0 && metadata.length) {
     const length = str2ms(metadata.length[0]!)
     if (length) {
-      lyricLines[lyricLines.length - 1]!.endTime = length
-      lyricLines[lyricLines.length - 1]!.syllables[0]!.endTime = length
+      lyricLines.at(-1)!.endTime = length
+      lyricLines.at(-1)!.syllables[0]!.endTime = length
     }
   }
   return {
@@ -91,8 +91,8 @@ export function stringifyLRC(data: Persist): string {
   const lines = data.lines
   return lines
     .map((line) => {
-      const min = Math.floor(line.startTime / 60000)
-      const sec = Math.floor((line.startTime % 60000) / 1000)
+      const min = Math.floor(line.startTime / 60_000)
+      const sec = Math.floor((line.startTime % 60_000) / 1000)
       const ms = line.startTime % 1000
       const text = line.syllables.map((s) => s.text).join('')
       const printText = line.background ? `(${text})` : text

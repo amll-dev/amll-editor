@@ -6,7 +6,7 @@ import init, {
 
 import type { SpectrogramWorkerScope } from './types'
 
-const ctx: SpectrogramWorkerScope = self as SpectrogramWorkerScope
+const ctx: SpectrogramWorkerScope = globalThis as SpectrogramWorkerScope
 
 let fullAudioData: Float32Array | null = null
 let audioSampleRate: number = 0
@@ -23,21 +23,23 @@ async function initializeWasm() {
   await wasmInitialized
 }
 
-ctx.onmessage = async (event) => {
+ctx.addEventListener('message', async (event) => {
   await initializeWasm()
 
   const msg = event.data
 
   switch (msg.type) {
-    case 'INIT':
+    case 'INIT': {
       fullAudioData = msg.audioData
       audioSampleRate = msg.sampleRate
       currentPalette = null
       ctx.postMessage({ type: 'INIT_COMPLETE' })
       break
-    case 'SET_PALETTE':
+    }
+    case 'SET_PALETTE': {
       currentPalette = msg.palette
       break
+    }
     case 'GET_TILE': {
       const { reqId, params } = msg
 
@@ -101,14 +103,14 @@ ctx.onmessage = async (event) => {
           },
           [imageBitmap],
         )
-      } catch (e) {
+      } catch (error) {
         ctx.postMessage({
           type: 'ERROR',
           reqId,
-          message: (e as Error).message,
+          message: (error as Error).message,
         })
       }
       break
     }
   }
-}
+})

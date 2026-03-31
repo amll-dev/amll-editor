@@ -70,11 +70,11 @@ function handleResizeStart(e: MouseEvent) {
     prefStore.sidebarWidth = Math.max(MIN_SIDEBAR_WIDTH, startWidth + deltaX)
   }
   function handleMouseUp() {
-    window.removeEventListener('mousemove', handleMouseMove)
-    window.removeEventListener('mouseup', handleMouseUp)
+    globalThis.removeEventListener('mousemove', handleMouseMove)
+    globalThis.removeEventListener('mouseup', handleMouseUp)
   }
-  window.addEventListener('mousemove', handleMouseMove)
-  window.addEventListener('mouseup', handleMouseUp)
+  globalThis.addEventListener('mousemove', handleMouseMove)
+  globalThis.addEventListener('mouseup', handleMouseUp)
 }
 </script>
 

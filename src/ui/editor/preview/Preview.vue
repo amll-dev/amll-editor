@@ -75,8 +75,8 @@ onUnmounted(() => {
     if (line.endTime > progressComputed.value) {
       runtimeStore.selectLine(line)
       tryRaf(() => {
-        if (!staticStore.editorHook) return
-        else staticStore.editorHook.scrollTo(index, { align: 'center' })
+        if (staticStore.editorHook) {staticStore.editorHook.scrollTo(index, { align: 'center' })}
+        else {return}
         return true
       })
       return
@@ -84,8 +84,8 @@ onUnmounted(() => {
   }
   runtimeStore.selectLine(coreStore.lyricLines.at(-1)!)
   tryRaf(() => {
-    if (!staticStore.editorHook) return
-    else staticStore.editorHook.scrollTo(coreStore.lyricLines.length - 1, { align: 'end' })
+    if (staticStore.editorHook) {staticStore.editorHook.scrollTo(coreStore.lyricLines.length - 1, { align: 'end' })}
+    else {return}
     return true
   })
 })

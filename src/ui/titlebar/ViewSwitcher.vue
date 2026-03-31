@@ -22,8 +22,8 @@ const viewOptions = [
 const stateToView = () => viewOptions.find((v) => v.value === runtimeStore.currentView)!
 const viewHandler = ref<(typeof viewOptions)[number] | null>(stateToView())
 watch(viewHandler, (value) => {
-  if (!value) nextTick(() => (viewHandler.value = stateToView()))
-  else runtimeStore.currentView = value.value
+  if (value) {runtimeStore.currentView = value.value}
+  else {nextTick(() => (viewHandler.value = stateToView()))}
 })
 watch(
   () => runtimeStore.currentView,

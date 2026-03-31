@@ -253,7 +253,7 @@ const wrapSearch = ref(true)
 const compiledPattern = computed<RegExp | null>(() => {
   if (findInput.value === '') return null
   let pattern = useRegex.value ? findInput.value : escapeRegExp(findInput.value)
-  if (matchWholeWord.value) pattern = `\\b${pattern}\\b`
+  if (matchWholeWord.value) pattern = String.raw`\b${pattern}\b`
   if (matchFullField.value) pattern = `^${pattern}$`
   const flags = matchCase.value ? '' : 'i'
   try {
@@ -312,14 +312,14 @@ const { handleFindNext, handleFindPrev, handleReplace, handleReplaceAll } = useF
 //#region Keyboard Shortcuts
 useGlobalKeyboard('find', () => {
   applyCurrentToFind()
-  if (!visible.value) visible.value = true
-  else focusFindInput()
+  if (visible.value) {focusFindInput()}
+  else {visible.value = true}
   showReplace.value = false
 })
 useGlobalKeyboard('replace', () => {
   applyCurrentToFind()
-  if (!visible.value) visible.value = true
-  else focusFindInput()
+  if (visible.value) {focusFindInput()}
+  else {visible.value = true}
   showReplace.value = true
 })
 function handleFindInputKeydown(e: KeyboardEvent) {
@@ -349,7 +349,7 @@ function disableCrossMatch() {
 }
 const escapeRegOnUsing = (text: string) => (useRegex.value ? escapeRegExp(text) : text)
 function applyCurrentToFind() {
-  const nativeSel = window.getSelection()?.toString()
+  const nativeSel = globalThis.getSelection()?.toString()
   const activeEl = document.activeElement as HTMLElement | null
   let inputSel = nativeSel
   if (
@@ -433,7 +433,7 @@ const focusFindInput = () => {
 // So wait after that to focus our input
 // Ideal waiting time should be 200ms
 const openingPendingMaxTimeout = 1000
-let openingPending: undefined | TimeoutHandle = undefined
+let openingPending: undefined | TimeoutHandle
 watch(visible, (newVal) => {
   if (newVal)
     openingPending = setTimeout(() => {

@@ -16,15 +16,15 @@ export const h5NativeBackend = defineFileBackend<H5NativeFileHandle>({
       input.type = 'file'
       input.accept = accept
       input.style.display = 'none'
-      document.body.appendChild(input)
+      document.body.append(input)
       input.addEventListener('change', () => {
-        document.body.removeChild(input)
+        input.remove()
         const file = input.files?.[0]
-        if (!file) reject('The user aborted a request.')
-        else resolve(file)
+        if (file) {resolve(file)}
+        else {reject('The user aborted a request.')}
       })
       input.addEventListener('cancel', () => {
-        document.body.removeChild(input)
+        input.remove()
         reject('The user aborted a request.')
       })
       input.click()

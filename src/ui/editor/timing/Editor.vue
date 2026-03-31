@@ -105,7 +105,6 @@ onMounted(() => {
 const shouldIgnore = (line: LyricLine) =>
   line.ignoreInTiming ||
   (prefStore.alwaysIgnoreBackground && line.background) ||
-  !line.syllables.length ||
   line.syllables.every((s) => !s.text.trim())
 
 function findNextLineSyl(
@@ -114,7 +113,11 @@ function findNextLineSyl(
   if (!syl) return null
   let found = false
   for (const [lineIndex, line] of coreStore.lyricLines.entries()) {
-    if (!found) {
+    if (found) {
+      if (shouldIgnore(line)) continue
+      if (line.syllables.length === 0) continue
+      return [lineIndex, line, line.syllables[0]!]
+    } else {
       const sylIndex = line.syllables.indexOf(syl)
       if (sylIndex === -1) continue
       for (let i = sylIndex + 1; i < line.syllables.length; i++) {
@@ -122,10 +125,6 @@ function findNextLineSyl(
         if (nextSyl.text.trim()) return [lineIndex, line, nextSyl]
       }
       found = true
-    } else {
-      if (shouldIgnore(line)) continue
-      if (line.syllables.length === 0) continue
-      return [lineIndex, line, line.syllables[0]!]
     }
   }
   return null
@@ -137,7 +136,11 @@ function findLastLineSyl(
   let found = false
   for (let lineIndex = coreStore.lyricLines.length - 1; lineIndex >= 0; lineIndex--) {
     const line = coreStore.lyricLines[lineIndex]!
-    if (!found) {
+    if (found) {
+      if (shouldIgnore(line)) continue
+      if (line.syllables.length === 0) continue
+      return [lineIndex, line, line.syllables.at(-1)!]
+    } else {
       const sylIndex = line.syllables.indexOf(syl)
       if (sylIndex === -1) continue
       for (let i = sylIndex - 1; i >= 0; i--) {
@@ -145,10 +148,6 @@ function findLastLineSyl(
         if (prevSyl.text.trim()) return [lineIndex, line, prevSyl]
       }
       found = true
-    } else {
-      if (shouldIgnore(line)) continue
-      if (line.syllables.length === 0) continue
-      return [lineIndex, line, line.syllables.at(-1)!]
     }
   }
   return null

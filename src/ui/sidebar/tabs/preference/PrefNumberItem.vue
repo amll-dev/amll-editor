@@ -31,8 +31,7 @@ const defaultValue = getDefaultPref()[props.prefKey]
 const model = computed({
   get: () => prefStore[props.prefKey],
   set: (value: Maybe<number>) => {
-    if (typeof value !== 'number') prefStore[props.prefKey] = defaultValue
-    else prefStore[props.prefKey] = clamp(value, props.min ?? -Infinity, props.max ?? Infinity)
+    prefStore[props.prefKey] = typeof value === 'number' ? clamp(value, props.min ?? -Infinity, props.max ?? Infinity) : defaultValue;
   },
 })
 

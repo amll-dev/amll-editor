@@ -97,8 +97,8 @@ const highlightRanges = computed(() => {
   if (!prefStore.highlightSelectedLineOnProgress || !containRect) return []
   const containerWidth = containRect.width.value
   const highlights = [...runtimeStore.selectedLines.values()].map((line) => {
-    const start = !prefStore.hideLineTiming ? line.startTime : (line.syllables[0]?.startTime ?? 0)
-    const end = !prefStore.hideLineTiming ? line.endTime : (line.syllables.at(-1)?.endTime ?? 0)
+    const start = prefStore.hideLineTiming ? (line.syllables[0]?.startTime ?? 0) : line.startTime
+    const end = prefStore.hideLineTiming ? (line.syllables.at(-1)?.endTime ?? 0) : line.endTime
     const dur = end - start
     return {
       key: line.id,

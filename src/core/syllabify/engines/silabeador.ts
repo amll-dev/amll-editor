@@ -23,9 +23,9 @@ export async function silabeadorSplit(
   const pendingWords = [...pendingWordsSet]
   const results = await split(pendingWords)
   const resultsMap = new Map<string, string[]>()
-  pendingWords.forEach((syl, index) => {
+  for (const [index, syl] of pendingWords.entries()) {
     resultsMap.set(syl, results[index]!)
-  })
+  }
   return basicSplit(strs, rewrites, caseSensitive, (token) => {
     return resultsMap.get(token) || [token]
   })

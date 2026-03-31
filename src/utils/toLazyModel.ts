@@ -28,7 +28,7 @@ export function toLazyModel<T extends Primitive>(
       }),
     )
   const unbind = () => {
-    unwatchHandlers.forEach((unwatch) => unwatch())
+    for (const unwatch of unwatchHandlers) unwatch()
   }
   return [internalModel, flush, unbind] as const
 }

@@ -55,7 +55,7 @@ export function useSpectrogramTiles({ ctx, audioBuffer }: UseSpectrogramTilesOpt
       if (i < 0 || i >= totalTiles) continue
 
       const targetLodWidth =
-        LOD_WIDTHS.find((w) => w >= tileDisplayWidthPx) ?? LOD_WIDTHS[LOD_WIDTHS.length - 1]!
+        LOD_WIDTHS.find((w) => w >= tileDisplayWidthPx) ?? LOD_WIDTHS.at(-1)!
 
       const cacheId = `tile-${i}`
 

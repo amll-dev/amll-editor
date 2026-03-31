@@ -111,8 +111,10 @@ const drawDropCursor = ViewPlugin.fromClass(
         }
       } else {
         if (!this.cursor) {
-          this.cursor = this.view.scrollDOM.appendChild(document.createElement('div'))
-          this.cursor!.className = 'cm-dropCursor'
+          const cursor = document.createElement('div')
+          cursor.className = 'cm-dropCursor'
+          this.view.scrollDOM.append(cursor)
+          this.cursor = cursor
         }
         if (
           update.startState.field(dropCursorPos) !== cursorPos ||

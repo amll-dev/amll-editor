@@ -32,7 +32,7 @@ class SpectrogramWorkerClient {
 
   constructor() {
     this.worker = new SpectrogramWorker()
-    this.worker.onmessage = this.handleMessage.bind(this)
+    this.worker.addEventListener('message', this.handleMessage.bind(this))
   }
 
   private handleMessage(event: MessageEvent<WorkerResponse>) {
@@ -95,7 +95,7 @@ export function useSpectrogramWorker(
 
   const lastTileTimestamp = ref(0)
 
-  if (typeof window !== 'undefined' && typeof Worker !== 'undefined') {
+  if (globalThis.window !== undefined && typeof Worker !== 'undefined') {
     client = new SpectrogramWorkerClient()
   }
   if (paletteData.value) {
@@ -111,7 +111,7 @@ export function useSpectrogramWorker(
       activeRequests.clear()
 
       const channelData = newBuffer.getChannelData(0)
-      const channelDataCopy = channelData.slice()
+      const channelDataCopy = copyFloat32ArrayBuffer(channelData)
 
       client.initAudio(channelDataCopy, newBuffer.sampleRate)
 
@@ -166,8 +166,8 @@ export function useSpectrogramWorker(
         })
 
         lastTileTimestamp.value = Date.now()
-      } catch (err) {
-        console.error('生成频谱图瓦片失败', err)
+      } catch (error) {
+        console.error('生成频谱图瓦片失败', error)
       } finally {
         activeRequests.delete(requestFingerprint)
       }
@@ -179,4 +179,12 @@ export function useSpectrogramWorker(
     requestTileIfNeeded,
     lastTileTimestamp,
   }
+}
+
+function copyFloat32ArrayBuffer(float32Arr: Float32Array): Float32Array {
+  const bufferCopy = float32Arr.buffer.slice(
+    float32Arr.byteOffset,
+    float32Arr.byteOffset + float32Arr.byteLength,
+  )
+  return new Float32Array(bufferCopy)
 }

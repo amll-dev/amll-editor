@@ -6,6 +6,6 @@ export function provideListener<T = void>() {
     if (listeners.has(listener)) listeners.delete(listener)
     else console.warn('Trying to remove a listener that is not registered.')
   }
-  const _dispatch = (e: T) => listeners.forEach((l) => l(e))
+  const _dispatch = (e: T) => { for (const l of listeners) l(e) }
   return { on, off, _dispatch }
 }

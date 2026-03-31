@@ -16,14 +16,13 @@ const sharedArrayBufferInfo = {
 } as const satisfies CP.CompatibilityInfo
 
 const meet =
-  window.isSecureContext && window.crossOriginIsolated && typeof SharedArrayBuffer === 'function'
+  globalThis.isSecureContext && globalThis.crossOriginIsolated && typeof SharedArrayBuffer === 'function'
 
 function findWhy(): string | undefined {
   if (meet) return undefined
-  if (!window.isSecureContext) return t.compat.sharedReasons.insecureContext()
-  if (!window.crossOriginIsolated) {
-    if (import.meta.env.VITE_COI_WORKAROUND) return tt.coiWorkaround()
-    else return tt.coiRequired()
+  if (!globalThis.isSecureContext) return t.compat.sharedReasons.insecureContext()
+  if (!globalThis.crossOriginIsolated) {
+    return import.meta.env.VITE_COI_WORKAROUND ? tt.coiWorkaround() : tt.coiRequired();
   }
   return tt.apiNotSupported()
 }

@@ -45,12 +45,12 @@ export function useTitlebarFileLogics({ openWorking, saveWorking }: TitlebarFile
     openWorking.value = true
     try {
       successTip(tf.loadFileSuccess(), await fsopener())
-    } catch (e) {
-      console.error(e)
-      const err = e as Error
+    } catch (error) {
+      console.error(error)
+      const err = error as Error
       if (isUserAbortError(err))
         errorTip(tf.failedToLoadErr.summary(), tf.failedToLoadErr.detailAborted())
-      else errorTip(tf.failedToLoadErr.summary(), (e as Error).message)
+      else errorTip(tf.failedToLoadErr.summary(), (error as Error).message)
     }
     openWorking.value = false
   }
@@ -74,20 +74,20 @@ export function useTitlebarFileLogics({ openWorking, saveWorking }: TitlebarFile
       const persist = parseTTML(text)
       await FS.importPersist(persist)
       successTip(tf.pasteTTMLSuccess())
-    } catch (err) {
-      console.error(err)
-      errorTip(tf.failedToPasteTTML(), (err as Error).message)
+    } catch (error) {
+      console.error(error)
+      errorTip(tf.failedToPasteTTML(), (error as Error).message)
     }
   }
   async function handleCreateBlankProject() {
     try {
       await FS.createBlankProject()
       successTip(tf.newBlankProjectSuccess())
-    } catch (e) {
-      console.error(e)
-      if (isUserAbortError(e))
+    } catch (error) {
+      console.error(error)
+      if (isUserAbortError(error))
         errorTip(tf.failedBlankProject.summary(), tf.failedBlankProject.detailAborted())
-      else errorTip(tf.failedBlankProject.summary(), (e as Error).message)
+      else errorTip(tf.failedBlankProject.summary(), (error as Error).message)
     }
   }
   async function handleExportToClipboard() {
@@ -95,9 +95,9 @@ export function useTitlebarFileLogics({ openWorking, saveWorking }: TitlebarFile
     try {
       await navigator.clipboard.writeText(ttml)
       successTip(tf.copyTTMLSuccess())
-    } catch (err) {
-      console.error(err)
-      errorTip(tf.failedToCopyTTML(), (err as Error).message)
+    } catch (error) {
+      console.error(error)
+      errorTip(tf.failedToCopyTTML(), (error as Error).message)
     }
   }
 
@@ -106,11 +106,11 @@ export function useTitlebarFileLogics({ openWorking, saveWorking }: TitlebarFile
     saveWorking.value = true
     try {
       successTip(tf.saveFileSuccess(), await FS.saveFile())
-    } catch (e) {
-      console.error(e)
-      if (isUserAbortError(e))
+    } catch (error) {
+      console.error(error)
+      if (isUserAbortError(error))
         errorTip(tf.failedToSaveErr.summary(), tf.failedToSaveErr.detailAborted())
-      else errorTip(tf.failedToSaveErr.summary(), (e as Error).message)
+      else errorTip(tf.failedToSaveErr.summary(), (error as Error).message)
     }
     saveWorking.value = false
   }
@@ -119,11 +119,11 @@ export function useTitlebarFileLogics({ openWorking, saveWorking }: TitlebarFile
     saveWorking.value = true
     try {
       successTip(tf.saveAsSuccess(), await savePromise)
-    } catch (e) {
-      console.error(e)
-      if (isUserAbortError(e))
+    } catch (error) {
+      console.error(error)
+      if (isUserAbortError(error))
         errorTip(tf.failedToSaveAsErr.summary(), tf.failedToSaveAsErr.detailAborted())
-      else errorTip(tf.failedToSaveAsErr.summary(), (e as Error).message)
+      else errorTip(tf.failedToSaveAsErr.summary(), (error as Error).message)
     }
     saveWorking.value = false
   }

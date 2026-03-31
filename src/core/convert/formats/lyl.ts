@@ -31,12 +31,12 @@ export function parseLYL(lrc: string): Persist {
     .map((l) => l.trim())
     .filter((l) => l.length > 0)
   const lyricLines: LyricLine[] = []
-  lines.forEach((lineStr) => {
+  for (let lineStr of lines) {
     lineStr = lineStr.trim()
-    if (lineStr.startsWith('#') || lineStr.startsWith('{')) return
-    if (lineStr === '[type:LyricifyLines]') return
+    if (lineStr.startsWith('#') || lineStr.startsWith('{')) continue
+    if (lineStr === '[type:LyricifyLines]') continue
     const timeMatch = lineStr.match(/^\[(\d+),(\d+)\](.*)$/)
-    if (!timeMatch) return
+    if (!timeMatch) continue
     const [, startStr, endStr, text] = timeMatch
     const startTime = Number(startStr)
     const endTime = Number(endStr!)
@@ -51,7 +51,7 @@ export function parseLYL(lrc: string): Persist {
         syllables: [coreCreate.newSyllable({ text: textContent.trim(), startTime, endTime })],
       }),
     )
-  })
+  }
   return {
     metadata: {},
     lines: lyricLines,

@@ -16,14 +16,14 @@ const clipboardInfo = {
 } as const satisfies CP.CompatibilityInfo
 
 const meet =
-  window.isSecureContext &&
+  globalThis.isSecureContext &&
   'clipboard' in navigator &&
   'readText' in navigator.clipboard &&
   'writeText' in navigator.clipboard
 
 function findWhy(): string | undefined {
   if (meet) return undefined
-  if (!window.isSecureContext) return t.compat.sharedReasons.insecureContext()
+  if (!globalThis.isSecureContext) return t.compat.sharedReasons.insecureContext()
   return tt.apiNotSupported()
 }
 const why = findWhy()

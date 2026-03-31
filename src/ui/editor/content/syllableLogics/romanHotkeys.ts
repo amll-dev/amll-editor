@@ -138,7 +138,7 @@ function shiftRoman(line: LyricLine, fromSylIndex: number) {
   const shifted = romans.shift()
   if (!shifted) return
   for (const syl of syls) {
-    if (!romans.length) {
+    if (romans.length === 0) {
       syl.romanization = ''
       continue
     }
@@ -158,7 +158,7 @@ function unshiftRoman(line: LyricLine, toSylIndex: number, roman: string) {
   const romans = syls.flatMap((syl) => syl.romanization.split(' ')).filter((r) => r.trim())
   romans.unshift(roman)
   for (const syl of syls) {
-    if (!romans.length) {
+    if (romans.length === 0) {
       syl.romanization = ''
       continue
     }

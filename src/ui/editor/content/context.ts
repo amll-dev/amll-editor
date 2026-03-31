@@ -39,7 +39,7 @@ export function combineLines() {
   const [mainLine, ...linesToMerge] = lines
   if (!mainLine) return
   for (const line of linesToMerge) {
-    if (line.syllables.length)
+    if (line.syllables.length > 0)
       mainLine.syllables.push(coreStore.newSyllable({ text: ' ' }), ...line.syllables)
     if (line.translation.trim()) mainLine.translation += ' ' + line.translation.trim()
     if (line.romanization.trim()) mainLine.romanization += ' ' + line.romanization.trim()
@@ -53,7 +53,7 @@ export function execCopy() {
   if (!compatibilityMap.clipboard) return
   const runtimeStore = useRuntimeStore()
   if (runtimeStore.selectedLines.size === 0 && runtimeStore.selectedSyllables.size === 0) return
-  const pendingData = runtimeStore.selectedSyllables.size
+  const pendingData = runtimeStore.selectedSyllables.size > 0
     ? packSyllables(sortSyllables(...runtimeStore.selectedSyllables))
     : packLines(sortLines(...runtimeStore.selectedLines))
   const serializedData = serializeClipboardData(pendingData)
@@ -64,7 +64,7 @@ export function execCut() {
   execCopy()
   const runtimeStore = useRuntimeStore()
   const coreStore = useCoreStore()
-  if (runtimeStore.selectedSyllables.size)
+  if (runtimeStore.selectedSyllables.size > 0)
     coreStore.deleteSyllable(...runtimeStore.selectedSyllables)
   else coreStore.deleteLine(...runtimeStore.selectedLines)
 }
@@ -113,7 +113,7 @@ export async function execPaste(lineIndex?: number) {
       coreStore.lyricLines.splice(i + 1, 0, ...duplicatedLines)
       shouldSelectLines.push(...duplicatedLines)
     }
-    if (shouldSelectLines.length) runtimeStore.selectLine(...shouldSelectLines)
+    if (shouldSelectLines.length > 0) runtimeStore.selectLine(...shouldSelectLines)
     if (staticStore.lastTouchedLine) {
       const index = coreStore.lyricLines.indexOf(staticStore.lastTouchedLine)
       if (index !== -1) nextTick(() => staticStore.scrollToHook?.(index + 1, { align: 'nearest' }))
@@ -153,7 +153,7 @@ export async function execPaste(lineIndex?: number) {
         shouldSelectSyls.push(...duplicatedSyls)
       }
     }
-    if (shouldSelectSyls.length) runtimeStore.selectSyllable(...shouldSelectSyls)
+    if (shouldSelectSyls.length > 0) runtimeStore.selectSyllable(...shouldSelectSyls)
     if (staticStore.lastTouchedLine) {
       const index = coreStore.lyricLines.indexOf(staticStore.lastTouchedLine)
       if (index !== -1) nextTick(() => staticStore.scrollToHook?.(index, { align: 'nearest' }))

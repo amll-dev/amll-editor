@@ -58,9 +58,9 @@ export const fileSystemBackend = defineFileBackend<FileSystemFileHandle>({
     },
   },
   onLaunchFile(callback) {
-    if (!('launchQueue' in window)) return
-    window.launchQueue.setConsumer(async (launchParams) => {
-      const [handle] = launchParams.files.filter((f) => f instanceof FileSystemFileHandle)
+    if (!('launchQueue' in globalThis)) return
+    globalThis.launchQueue.setConsumer(async (launchParams) => {
+      const handle = launchParams.files.find((f) => f instanceof FileSystemFileHandle)
       if (!handle) return
       callback({
         handle,

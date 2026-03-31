@@ -19,14 +19,14 @@ const fileSystemInfo = {
 } as const satisfies CP.CompatibilityInfo
 
 const meet =
-  window.isSecureContext &&
+  globalThis.isSecureContext &&
   typeof showOpenFilePicker === 'function' &&
   typeof showSaveFilePicker === 'function' &&
   typeof FileSystemHandle === 'function'
 
 function findWhy(): string | undefined {
   if (meet) return undefined
-  if (!window.isSecureContext) return t.compat.sharedReasons.insecureContext()
+  if (!globalThis.isSecureContext) return t.compat.sharedReasons.insecureContext()
   return tt.apiNotSupported()
 }
 const why = findWhy()

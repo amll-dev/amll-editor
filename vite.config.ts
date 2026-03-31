@@ -1,5 +1,5 @@
 import vue from '@vitejs/plugin-vue'
-import chalk, { ChalkInstance } from 'chalk'
+import chalk from 'chalk'
 import { URL, fileURLToPath } from 'node:url'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { simpleGit } from 'simple-git'
@@ -34,7 +34,7 @@ const defineObjMap: Record<string, string | number | boolean | undefined> = {
   __AMLL_VUE_VERSION__: packageJSON.dependencies['@applemusic-like-lyrics/vue'],
 }
 
-const channelColors: Record<string, ChalkInstance> = {
+const channelColors: Record<string, typeof chalk> = {
   STABLE: chalk.hex('#10B981'),
   BETA: chalk.hex('#F97316'),
   UNSPECIFIED: chalk.gray,

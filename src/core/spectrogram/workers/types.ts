@@ -22,10 +22,7 @@ export interface SpectrogramWorker extends Omit<Worker, 'postMessage'> {
   postMessage(message: WorkerRequest, transfer?: Transferable[]): void
 }
 
-export type SpectrogramWorkerScope = Omit<
-  DedicatedWorkerGlobalScope,
-  'postMessage' | 'onmessage'
-> & {
+export type SpectrogramWorkerScope = Omit<typeof globalThis, 'postMessage' | 'onmessage'> & {
   postMessage(message: WorkerResponse, transfer?: Transferable[]): void
   onmessage: ((this: SpectrogramWorkerScope, ev: MessageEvent<WorkerRequest>) => void) | null
 }

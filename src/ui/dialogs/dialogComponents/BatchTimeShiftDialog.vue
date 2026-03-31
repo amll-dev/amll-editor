@@ -24,7 +24,7 @@
         icon="pi pi-ellipsis-h"
         fluid
         severity="secondary"
-        :disabled="!shiftMs || !runtimeStore.selectedSyllables.size"
+        :disabled="!shiftMs || runtimeStore.selectedSyllables.size === 0"
         @click="handleApplyToSelectedWords"
       />
       <Button
@@ -32,7 +32,7 @@
         icon="pi pi-bars"
         fluid
         severity="secondary"
-        :disabled="!shiftMs || !runtimeStore.selectedLines.size"
+        :disabled="!shiftMs || runtimeStore.selectedLines.size === 0"
         @click="handleApplyToSelectedLines"
       />
       <Button
@@ -73,23 +73,23 @@ function applyToSyl(ms: number, syl: LyricSyllable) {
 function applyToLine(ms: number, line: LyricLine) {
   line.startTime = Math.max(0, line.startTime + ms)
   line.endTime = Math.max(0, line.endTime + ms)
-  line.syllables.forEach((syl) => applyToSyl(ms, syl))
+  for (const syl of line.syllables) applyToSyl(ms, syl)
 }
 
 function handleApplyToSelectedWords() {
   if (!shiftMs.value) return
   const shift = shiftMs.value
-  runtimeStore.selectedSyllables.forEach((syl) => applyToSyl(shift, syl))
+  for (const syl of runtimeStore.selectedSyllables) applyToSyl(shift, syl)
 }
 function handleApplyToSelectedLines() {
   if (!shiftMs.value) return
   const shift = shiftMs.value
-  runtimeStore.selectedLines.forEach((line) => applyToLine(shift, line))
+  for (const line of runtimeStore.selectedLines) applyToLine(shift, line)
 }
 function handleApplyToAll() {
   if (!shiftMs.value) return
   const shift = shiftMs.value
-  coreStore.lyricLines.forEach((line) => applyToLine(shift, line))
+  for (const line of coreStore.lyricLines) applyToLine(shift, line)
 }
 </script>
 

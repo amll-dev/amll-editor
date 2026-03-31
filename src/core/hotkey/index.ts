@@ -84,7 +84,7 @@ export function hotkeyToString(hotkey: HK.Key, macStyle: boolean = false) {
 export function getHotkeyStr(hotkeyCmd: HK.Command) {
   const prefStore = usePrefStore()
   const hotkey = prefStore.hotkeyMap[hotkeyCmd][0]
-  if (!hotkey) return undefined
+  if (!hotkey) return
   const hotkeyStr = hotkeyToString(hotkey, prefStore.macStyleShortcuts)
   return hotkeyStr
 }

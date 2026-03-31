@@ -63,7 +63,7 @@ export function parseQRC(qrc: string) {
 }
 
 function makeParenthesesFull(text: string): string {
-  return text.replace(/\(/g, '（').replace(/\)/g, '）')
+  return text.replaceAll('(', '（').replaceAll(')', '）')
 }
 
 export function stringifyQRC(data: Persist): string {
@@ -74,7 +74,7 @@ export function stringifyQRC(data: Persist): string {
       const lDur = line.endTime - line.startTime
       const lSyls: string[] = []
       for (const { text, startTime, endTime } of line.syllables) {
-        if (!text.trim() && lSyls.length) {
+        if (!text.trim() && lSyls.length > 0) {
           lSyls[lSyls.length - 1] += text
           continue
         }
@@ -82,8 +82,7 @@ export function stringifyQRC(data: Persist): string {
         const sDur = endTime - startTime
         lSyls.push(`${makeParenthesesFull(text)}(${sStart},${sDur})`)
       }
-      if (line.background) return `[${lStart},${lDur}]（${lSyls.join('')}）`
-      else return `[${lStart},${lDur}]${lSyls.join('')}`
+      return line.background ? `[${lStart},${lDur}]（${lSyls.join('')}）` : `[${lStart},${lDur}]${lSyls.join('')}`;
     })
     .join('\n')
 }

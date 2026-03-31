@@ -14,13 +14,13 @@ export function sortSyllables(...syls: LyricSyllable[]): LyricSyllable[] {
   let index = 0
   for (const line of coreStore.lyricLines)
     for (const syl of line.syllables) indexMap.set(syl, index++)
-  return syls.sort((a, b) => indexMap.get(a)! - indexMap.get(b)!)
+  return syls.toSorted((a, b) => indexMap.get(a)! - indexMap.get(b)!)
 }
 
 export function sortLines(...lines: LyricLine[]): LyricLine[] {
   if (lines.length <= 1) return lines
   const coreStore = useCoreStore()
   const indexMap = new WeakMap<LyricLine, number>()
-  coreStore.lyricLines.forEach((line, index) => indexMap.set(line, index))
-  return lines.sort((a, b) => indexMap.get(a)! - indexMap.get(b)!)
+  for (const [index, line] of coreStore.lyricLines.entries()) indexMap.set(line, index)
+  return lines.toSorted((a, b) => indexMap.get(a)! - indexMap.get(b)!)
 }

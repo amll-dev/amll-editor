@@ -107,16 +107,16 @@ function placeholdingBeatInputs() {
   const numericComputed = (key: 'placeholdingBeat' | 'currentplaceholdingBeat') =>
     computed<number | undefined>({
       get() {
-        if (!setFirstItem.value) return undefined
+        if (!setFirstItem.value) return
         const firstValue = setFirstItem.value[key]
         if (setOnlyOne.value) return firstValue
         for (const item of runtimeStore.selectedSyllables)
-          if (item[key] !== firstValue) return undefined
+          if (item[key] !== firstValue) return
         return firstValue
       },
       set(value) {
         if (typeof value !== 'number') value = 0
-        runtimeStore.selectedSyllables.forEach((item) => (item[key] = value))
+        for (const item of runtimeStore.selectedSyllables) (item[key] = value)
       },
     })
 
@@ -127,12 +127,12 @@ function placeholdingBeatInputs() {
   })
   const phBeatApplyToAll = () => {
     if (typeof phBeatInput.value !== 'number' || typeof currPhBeatInput.value !== 'number') return
-    coreStore.lyricLines.forEach((line) => {
-      line.syllables.forEach((word) => {
-        if (word.text !== setFirstItem.value?.text) return
+    for (const line of coreStore.lyricLines) {
+      for (const word of line.syllables) {
+        if (word.text !== setFirstItem.value?.text) continue
         word.placeholdingBeat = phBeatInput.value!
-      })
-    })
+      }
+    }
   }
   return { phBeatInput, currPhBeatInput, phBeatApplyToAllEnabled, phBeatApplyToAll }
 }

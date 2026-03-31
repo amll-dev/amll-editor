@@ -24,7 +24,7 @@ const prefStore = usePrefStore()
 const [model] = defineModel<HK.Key[]>({ required: true })
 
 const displayValue = computed(() =>
-  model.value.length
+  model.value.length > 0
     ? model.value.map((hk) => hotkeyToString(hk, prefStore.macStyleShortcuts)).join(', ')
     : undefined,
 )
@@ -38,7 +38,7 @@ function handleKeyDown(e: KeyboardEvent) {
   model.value = [newKey]
 }
 function handleBlur() {
-  if (model.value.length !== 0 && model.value.some((k) => !k.code))
+  if (model.value.some((k) => !k.code))
     model.value = model.value.filter((k) => k.code)
 }
 </script>

@@ -10,14 +10,14 @@ export function compromiseSplitCore(nlp: any, token: string): string[] {
   if (syllables.length <= 1) return [token]
   let index = 0
   const intervals = syllables.map((syl) => {
-    const left = token.substring(index)
+    const left = token.slice(Math.max(0, index))
     const match = left.toLowerCase().indexOf(syl.toLowerCase())
-    const end = index + (match < 0 ? 0 : match) + syl.length
+    const end = index + (Math.max(match, 0)) + syl.length
     const nextBegin = index
     index = end
     return { begin: nextBegin, end }
   })
-  intervals.forEach((itv, index) => {
+  for (const [index, itv] of intervals.entries()) {
     if (index === intervals.length - 1) itv.end = token.length
     else {
       const nextItv = intervals[index + 1]!
@@ -29,8 +29,8 @@ export function compromiseSplitCore(nlp: any, token: string): string[] {
       }
     }
     if (index === 0) itv.begin = 0
-  })
-  return intervals.map((itv) => token.substring(itv.begin, itv.end))
+  }
+  return intervals.map((itv) => token.slice(itv.begin, itv.end))
 }
 
 export function compromiseSplit(

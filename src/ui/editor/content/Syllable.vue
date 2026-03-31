@@ -138,17 +138,14 @@ function handleMousedown(e: MouseEvent) {
   leftForClick = false
   if (e.ctrlKey || e.metaKey) {
     touch()
-    if (!isSelected.value) {
+    if (isSelected.value) {leftForClick = true} else {
       runtimeStore.addSylToSelection(props.syllable)
-    } else leftForClick = true
+    }
   } else if (e.shiftKey && staticStore.lastTouchedSyl) {
     const { lastTouchedSyl: lastTouchedWord, lastTouchedLine } = staticStore
     touch()
     if (!lastTouchedLine || !lastTouchedWord) return
-    if (lastTouchedLine !== props.parent) {
-      const [start, end] = sortIndex(coreStore.lyricLines.indexOf(lastTouchedLine), props.lineIndex)
-      runtimeStore.selectLine(...coreStore.lyricLines.slice(start, end + 1))
-    } else {
+    if (lastTouchedLine === props.parent) {
       const [start, end] = sortIndex(
         lastTouchedLine.syllables.indexOf(lastTouchedWord),
         props.index,
@@ -156,6 +153,9 @@ function handleMousedown(e: MouseEvent) {
       const affectedWords = props.parent.syllables.slice(start, end + 1)
       if (isSelected.value) runtimeStore.removeSylFromSelection(...affectedWords)
       else runtimeStore.addSylToSelection(...affectedWords)
+    } else {
+      const [start, end] = sortIndex(coreStore.lyricLines.indexOf(lastTouchedLine), props.lineIndex)
+      runtimeStore.selectLine(...coreStore.lyricLines.slice(start, end + 1))
     }
   } else {
     if (isSelected.value) return
@@ -207,7 +207,7 @@ const placeholder = computed(() => {
   if (focused.value) return ''
   const sylText = inputModel.value
   if (!sylText) return '/'
-  if (sylText.match(/^\s+$/)) {
+  if (/^\s+$/.test(sylText)) {
     if (sylText.length === 1) return '␣'
     const upperCount = [...sylText.length.toString()].map(digit2Sup).join('')
     return `␣${upperCount}`
@@ -238,7 +238,7 @@ function handleRomanKeydown(e: KeyboardEvent) {
 }
 
 // Register hooks
-let highlightTimeout: TimeoutHandle | undefined = undefined
+let highlightTimeout: TimeoutHandle | undefined
 function __focusGivenInput(
   focusRef: Ref<boolean>,
   elRef: Ref<Maybe<HTMLInputElement>>,
@@ -258,9 +258,9 @@ function __focusGivenInput(
 }
 function __hightLightGivenInput(elRef: Ref<Maybe<HTMLInputElement>>) {
   if (!elRef.value) return
-  document.querySelectorAll('.p-inputtext[data-highlight]').forEach((el) => {
+  for (const el of document.querySelectorAll('.p-inputtext[data-highlight]')) {
     delete (el as HTMLInputElement).dataset.highlight
-  })
+  }
   const el = elRef.value
   if (highlightTimeout !== undefined) clearTimeout(highlightTimeout)
   delete el.dataset.highlight
@@ -272,10 +272,10 @@ function __hightLightGivenInput(elRef: Ref<Maybe<HTMLInputElement>>) {
   }, 2000)
 }
 const hooks: SylComponentActions = {
-  focusInput: (position = undefined) => {
+  focusInput: (position) => {
     __focusGivenInput(focused, inputEl, position)
   },
-  focusRomanInput: (position = undefined) => {
+  focusRomanInput: (position) => {
     __focusGivenInput(romanFocused, romanInputEl, position)
   },
   hightLightInput: () => __hightLightGivenInput(inputEl),

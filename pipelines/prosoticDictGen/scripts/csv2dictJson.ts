@@ -1,12 +1,12 @@
 // from SUBTLEXus_syllables-corrected.csv to SUBTLEXus_prosotic.dict.json
 import nlpSpeech from 'compromise-speech'
 import nlp from 'compromise/tokenize'
-import fs from 'fs'
+import fs from 'node:fs'
 
 const SRC = './pipelines/prosoticDictGen/SUBTLEXus_syllables-corrected.csv'
 const OUT = './public/dicts/SUBTLEXus_prosotic.dict.json'
 
-const data = fs.readFileSync(SRC, 'utf-8').trim()
+const data = fs.readFileSync(SRC, 'utf8').trim()
 const lines = data.split(/\r?\n/)
 
 const header = lines[0].split(',')
@@ -28,7 +28,6 @@ for (const row of lines.slice(1)) {
   }
   const syllableLengths = syllable.split('-').map((s) => s.length)
   syllableLengths.pop()
-  if (syllableLengths.length === 1) results[word] = syllableLengths[0]
-  else results[word] = syllableLengths
+  results[word] = syllableLengths.length === 1 ? syllableLengths[0] : syllableLengths;
 }
 fs.writeFileSync(OUT, JSON.stringify(results))

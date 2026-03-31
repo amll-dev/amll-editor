@@ -63,7 +63,7 @@ export function parseYRC(yrc: string): Persist {
 }
 
 function makeParenthesesFull(text: string): string {
-  return text.replace(/\(/g, '（').replace(/\)/g, '）')
+  return text.replaceAll('(', '（').replaceAll(')', '）')
 }
 
 export function stringifyYRC(data: Persist): string {
@@ -74,7 +74,7 @@ export function stringifyYRC(data: Persist): string {
       const lDur = line.endTime - line.startTime
       const lSyls: string[] = []
       for (const { text, startTime, endTime } of line.syllables) {
-        if (!text.trim() && lSyls.length) {
+        if (!text.trim() && lSyls.length > 0) {
           lSyls[lSyls.length - 1] += text
           continue
         }

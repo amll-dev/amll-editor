@@ -164,7 +164,7 @@ const handleLineInsertContext = handleContext('lineInsert')
 const handleWordContext = handleContext('syl')
 
 useGlobalKeyboard('delete', () => {
-  if (runtimeStore.selectedSyllables.size) {
+  if (runtimeStore.selectedSyllables.size > 0) {
     coreStore.deleteSyllable(...runtimeStore.selectedSyllables)
   } else coreStore.deleteLine(...runtimeStore.selectedLines)
 })

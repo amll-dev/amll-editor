@@ -93,9 +93,9 @@ const maintainProgressRef = () => {
   progressRef.value = getProgress()
   if (!audioEl.paused) requestAnimationFrame(maintainProgressRef)
 }
-audioEl.onseeked = () => (progressRef.value = getProgress())
+audioEl.addEventListener('seeked', () => (progressRef.value = getProgress()))
 const amendmentComputed = computed(() =>
-  !playingRef.value ? 0 : usePrefStore().globalLatencyMs * playbackRateRef.value,
+  playingRef.value ? usePrefStore().globalLatencyMs * playbackRateRef.value : 0,
 )
 const amendedProgressComputed = computed(() =>
   Math.min(Math.max(0, progressRef.value - amendmentComputed.value), lengthRef.value),
@@ -120,16 +120,16 @@ const togglePlay = () => {
 }
 
 const playingRef = ref(false)
-audioEl.onplay = () => {
+audioEl.addEventListener('play', () => {
   playingRef.value = true
   maintainProgressRef()
-}
-audioEl.onpause = () => (playingRef.value = false)
+})
+audioEl.addEventListener('pause', () => (playingRef.value = false))
 
 const _volume = ref(audioEl.volume)
-audioEl.onvolumechange = () => {
+audioEl.addEventListener('volumechange', () => {
   _volume.value = audioEl.volume
-}
+})
 const volumeRef = computed({
   get: () => _volume.value,
   set: (v: number) => {
@@ -139,9 +139,9 @@ const volumeRef = computed({
 })
 
 const _playbackRate = ref(audioEl.playbackRate)
-audioEl.onratechange = () => {
+audioEl.addEventListener('ratechange', () => {
   _playbackRate.value = audioEl.playbackRate
-}
+})
 const playbackRateRef = computed({
   get: () => _playbackRate.value,
   set: (v: number) => {

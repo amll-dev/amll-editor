@@ -33,7 +33,7 @@ export function parseSPL(spl: string): Persist {
     .map((l) => l.trim())
     .filter((l) => l.length > 0)
   const lyricLines: LyricLine[] = []
-  lines.forEach((lineStr) => {
+  for (let lineStr of lines) {
     const lineTimeStamps: number[] = []
     while (true) {
       const match = lineStr.match(/^\[(\d{1,3}:\d{1,2}\.\d{1,3})\d{0,3}\](.*)$/)
@@ -48,38 +48,41 @@ export function parseSPL(spl: string): Persist {
       lineTimeStamps.length === 0 ||
       (lineTimeStamps.length === 1 && lineTimeStamps[0] === lastLine?.startTime)
     ) {
-      if (!lastLine) return
-      if (!lastLine.translation) lastLine.translation = lineStr
-      else lastLine.romanization = lineStr
-      return
+      if (!lastLine) continue
+      if (lastLine.translation) {
+        lastLine.romanization = lineStr
+      } else {
+        lastLine.translation = lineStr
+      }
+      continue
     }
     const sylTimestampRegex = /^[<[](\d{1,3}:\d{1,2}\.\d{1,3})\d{0,3}[>\]]/
     const textRegex = /^[^<\[]*/
     const lineItems: (number | string)[] = []
-    while (lineStr.length) {
+    while (lineStr.length > 0) {
       const timeStampMatch = lineStr.match(sylTimestampRegex)
-      if (!timeStampMatch) {
-        const textMatch = lineStr.match(textRegex)![0]
-        lineItems.push(textMatch)
-        lineStr = lineStr.slice(textMatch.length)
-      } else {
+      if (timeStampMatch) {
         const [sylTimeStamp, sylTimeStr] = timeStampMatch
         lineItems.push(str2ms(sylTimeStr!)!)
         lineStr = lineStr.slice(sylTimeStamp.length)
+      } else {
+        const textMatch = lineStr.match(textRegex)![0]
+        lineItems.push(textMatch)
+        lineStr = lineStr.slice(textMatch.length)
       }
     }
     const syls: { text: string; startTime: number | undefined; endTime: number | undefined }[] = []
-    lineItems.forEach((item, index) => {
-      if (typeof item === 'number') return
+    for (const [index, item] of lineItems.entries()) {
+      if (typeof item === 'number') continue
       const startTime = lineItems[index - 1]
       const endTime = lineItems[index + 1]
-      if (typeof startTime === 'string' || typeof endTime === 'string') return
+      if (typeof startTime === 'string' || typeof endTime === 'string') continue
       if (item.startsWith(' ') && syls.at(-1)?.text.trim())
         syls.push({ text: ' ', startTime: 0, endTime: 0 })
       syls.push({ text: item.trim(), startTime, endTime })
       if (item.endsWith(' ')) syls.push({ text: ' ', startTime: 0, endTime: 0 })
-    })
-    lineTimeStamps.forEach((lineStartTime) => {
+    }
+    for (const lineStartTime of lineTimeStamps) {
       lyricLines.push(
         coreCreate.newLine({
           startTime: lineStartTime,
@@ -93,8 +96,8 @@ export function parseSPL(spl: string): Persist {
           ),
         }),
       )
-    })
-  })
+    }
+  }
   return {
     metadata: {},
     lines: lyricLines,
@@ -103,18 +106,18 @@ export function parseSPL(spl: string): Persist {
 
 export function stringifySPL(data: Persist): string {
   const lineStrs: string[] = []
-  data.lines.forEach((line) => {
-    if (line.syllables.length === 0) return `[${ms2str(line.startTime)}]`
+  for (const line of data.lines) {
+    if (line.syllables.length === 0) continue
     const normalizedSyls: { text: string; startTime: number; endTime: number }[] = []
-    line.syllables.forEach((s) => {
-      if (!s.text.trim() && normalizedSyls.length) {
+    for (const s of line.syllables) {
+      if (!s.text.trim() && normalizedSyls.length > 0) {
         normalizedSyls.at(-1)!.text += s.text
-        return
+        continue
       }
       normalizedSyls.push({ text: s.text, startTime: s.startTime, endTime: s.endTime })
-    })
+    }
     const lineItems: (number | string)[] = []
-    normalizedSyls.forEach((s) => lineItems.push(s.startTime, s.text))
+    for (const s of normalizedSyls) lineItems.push(s.startTime, s.text)
     if (lineItems[0] === line.startTime) lineItems.shift()
     const lineStr =
       `[${ms2str(line.startTime)}]` +
@@ -123,6 +126,6 @@ export function stringifySPL(data: Persist): string {
     lineStrs.push(lineStr)
     if (line.translation) lineStrs.push(line.translation)
     if (line.romanization) lineStrs.push(line.romanization)
-  })
+  }
   return lineStrs.join('\n')
 }

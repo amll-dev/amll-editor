@@ -80,15 +80,27 @@ function parseLQE(lrc: string): Persist {
     .filter((l) => l.length > 0)
   const matcher = /^\[([a-zA-Z]+):.+\]$/
   const matchResults: HeaderMatch[] = []
-  lines.forEach((line, index) => {
+  for (const [index, line] of lines.entries()) {
     const match = line.match(matcher)
-    if (!match) return
+    if (!match) continue
     const [, type] = match
-    if (type === 'lyrics') matchResults.push({ index, type: 'lyric' })
-    else if (type === 'translation') matchResults.push({ index, type: 'translation' })
-    else if (type === 'pronunciation') matchResults.push({ index, type: 'romanization' })
-    else matchResults.push({ index, type: 'unknown' })
-  })
+    switch (type) {
+    case 'lyrics': {
+    matchResults.push({ index, type: 'lyric' })
+    break;
+    }
+    case 'translation': {
+    matchResults.push({ index, type: 'translation' })
+    break;
+    }
+    case 'pronunciation': {
+    matchResults.push({ index, type: 'romanization' })
+    break;
+    }
+    default: { matchResults.push({ index, type: 'unknown' })
+    }
+    }
+  }
   matchResults.push({ index: lines.length, type: 'unknown' }) // sentinel
   console.log('LQE parse header matches:', matchResults)
   const lyricHeaderItemIndex = matchResults.findIndex((r) => r.type === 'lyric')
@@ -116,7 +128,7 @@ function stringifyAttr(persist: Persist, attr: 'translation' | 'romanization'): 
   return [header, ...lines].join('\n')
 }
 function stringifyLQE(persist: Persist): string {
-  persist.lines.forEach((l) => alignLineTime(l))
+  for (const l of persist.lines) alignLineTime(l)
   const header = '[Lyricify Quick Export]\n[version:1.0]'
   const lyric = `[lyrics: format@Lyricify Syllable]\n${lysReg.stringifier(persist)}`
   const translation = stringifyAttr(persist, 'translation')

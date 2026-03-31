@@ -126,9 +126,7 @@ const metadataTemplates: Readonly<MetadataTemplate>[] = [amllMetaTemplate, lrcMe
 const currentTemplate = shallowRef<Readonly<MetadataTemplate> | undefined>(metadataTemplates[0])
 const currentLabelMap = computed(() => {
   const labelMap: Map<string, string> = new Map()
-  currentTemplate.value?.fields.forEach((field) => {
-    labelMap.set(field.key, field.label)
-  })
+  for (const field of currentTemplate.value?.fields ?? []) labelMap.set(field.key, field.label)
   return labelMap
 })
 const currentTemplateKeys = computed(() => {
@@ -169,10 +167,10 @@ function handleOpenDocUrl() {
 }
 function handleAddAllFields() {
   if (!currentTemplate.value) return
-  currentTemplate.value.fields.forEach((field) => {
-    if (!internalMetadataList.value.find(({ key }) => key === field.key))
+  for (const field of currentTemplate.value.fields) {
+    if (!internalMetadataList.value.some(({ key }) => key === field.key))
       internalMetadataList.value.push({ key: field.key, values: [] })
-  })
+  }
   flushToStore()
 }
 function handleClearAllFields() {
@@ -183,7 +181,7 @@ const panelEl = useTemplateRef('panelEl')
 function handleAddField() {
   const defaultName = 'unnamed_field'
   let suffix = 1
-  while (internalMetadataList.value.find(({ key }) => key === `${defaultName}_${suffix}`)) suffix++
+  while (internalMetadataList.value.some(({ key }) => key === `${defaultName}_${suffix}`)) suffix++
   internalMetadataList.value.push({ key: `${defaultName}_${suffix}`, values: [] })
   flushToStore()
   requestAnimationFrame(() => {
@@ -198,11 +196,11 @@ function isKeyInvalid(key: string) {
 
 onMounted(() => {
   if (internalMetadataList.value.length === 0) return
-  let maxHitTemplate: Readonly<MetadataTemplate> | undefined = undefined
+  let maxHitTemplate: Readonly<MetadataTemplate> | undefined
   let maxHitCount = -1
   for (const template of metadataTemplates) {
     const hitCount = internalMetadataList.value
-      .map(({ key }): number => (template.fields.find((field) => field.key === key) ? 1 : 0))
+      .map(({ key }): number => (template.fields.some((field) => field.key === key) ? 1 : 0))
       .reduce((a, b) => a + b, 0)
     if (hitCount > maxHitCount) {
       maxHitCount = hitCount
@@ -220,8 +218,7 @@ function search({ query }: { query: string }) {
     return
   }
   const suggestions = currentTemplateKeys.value.filter((key) => key.toLowerCase().startsWith(query))
-  if (suggestions.length) currentSuggestions.value = suggestions
-  else currentSuggestions.value = [...currentTemplateKeys.value]
+  currentSuggestions.value = suggestions.length > 0 ? suggestions : [...currentTemplateKeys.value]
 }
 </script>
 

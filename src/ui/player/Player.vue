@@ -96,9 +96,9 @@ async function handleSelectFile() {
     )
     audioEngine.mount(new File([result.blob], result.filename))
     // loading will be set to false on audio loaded event
-  } catch (e) {
+  } catch (error) {
     loading.value = false
-    const detail = isUserAbortError(e) ? tt.failedToLoadAudio.detailAborted() : String(e)
+    const detail = isUserAbortError(error) ? tt.failedToLoadAudio.detailAborted() : String(error)
     toast.add({
       severity: 'error',
       summary: tt.failedToLoadAudio.summary(),

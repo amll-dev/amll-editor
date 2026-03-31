@@ -4,21 +4,23 @@ import type { Syllabify as SL } from '..'
 
 function isCJK(char: string | undefined): char is string {
   if (!char) return false
-  const code = char.charCodeAt(0)
+  const code = char.codePointAt(0)
+  if (!code) return false
   const cjkRanges: [number, number][] = [
-    [0x4e00, 0x9fff],
-    [0x3040, 0x309f],
-    [0x30a0, 0x30ff],
+    [0x4e_00, 0x9f_ff],
+    [0x30_40, 0x30_9f],
+    [0x30_a0, 0x30_ff],
   ]
   return char === '々' || cjkRanges.some(([s, e]) => code >= s && code <= e)
 }
 
 function isPunctuation(char: string | undefined): char is string {
   if (!char) return false
-  const code = char.charCodeAt(0)
+  const code = char.codePointAt(0)
+  if (!code) return false
   return (
-    (code >= 0x2000 && code <= 0x206f) ||
-    (code >= 0x3000 && code <= 0x303f) ||
+    (code >= 0x20_00 && code <= 0x20_6f) ||
+    (code >= 0x30_00 && code <= 0x30_3f) ||
     /[.,!?，。！？、「」『』]/.test(char)
   )
 }
@@ -34,7 +36,7 @@ function splitLine(line: string): string[] {
   if (!line.trim()) return [line]
   const chars = [...line]
   const tokens: string[] = []
-  while (chars.length) {
+  while (chars.length > 0) {
     const currToken: string[] = []
     if (chars.length === line.length && isPunctuation(chars[0])) {
       currToken.push(chars.shift()!)
@@ -43,7 +45,7 @@ function splitLine(line: string): string[] {
         if (isJapaneseYoonOrSokuon(chars[0])) currToken.push(chars.shift()!)
         while (isPunctuation(chars[0])) currToken.push(chars.shift()!)
       } else {
-        while (chars.length && !isPunctuation(chars[0]) && !/\s/.test(chars[0]!))
+        while (chars.length > 0 && !isPunctuation(chars[0]) && !/\s/.test(chars[0]!))
           currToken.push(chars.shift()!)
       }
       tokens.push(currToken.join(''))
@@ -56,11 +58,16 @@ function splitLine(line: string): string[] {
       tokens.push(currToken.join(''))
       continue
     }
-    while (chars.length && !/\s/.test(chars[0]!) && !isPunctuation(chars[0]) && !isCJK(chars[0]))
+    while (
+      chars.length > 0 &&
+      !/\s/.test(chars[0]!) &&
+      !isPunctuation(chars[0]) &&
+      !isCJK(chars[0])
+    )
       currToken.push(chars.shift()!)
-    while (chars.length && isPunctuation(chars[0])) currToken.push(chars.shift()!)
-    if (currToken.length) tokens.push(currToken.join(''))
-    if (chars.length && /\s/.test(chars[0]!)) tokens.push(chars.shift()!)
+    while (chars.length > 0 && isPunctuation(chars[0])) currToken.push(chars.shift()!)
+    if (currToken.length > 0) tokens.push(currToken.join(''))
+    if (chars.length > 0 && /\s/.test(chars[0]!)) tokens.push(chars.shift()!)
   }
   return tokens
 }

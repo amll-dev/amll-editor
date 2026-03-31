@@ -90,7 +90,7 @@ export const useRuntimeStore = defineStore('runtime', () => {
       return
     }
     clearSylSelection()
-    syls.forEach((syl) => selectedSyllables.add(syl))
+    for (const syl of syls) selectedSyllables.add(syl)
     applySylSelectToLine()
   }
   function selectLine(...lines: LyricLine[]) {
@@ -99,30 +99,30 @@ export const useRuntimeStore = defineStore('runtime', () => {
       return
     }
     clearSelection()
-    lines.forEach((line) => selectedLines.add(line))
+    for (const line of lines) selectedLines.add(line)
   }
   function selectLineSyl(line: LyricLine, ...syls: LyricSyllable[]) {
     clearSelection()
     selectedLines.add(line)
-    syls.forEach((syl) => selectedSyllables.add(syl))
+    for (const syl of syls) selectedSyllables.add(syl)
   }
   function addSylToSelection(...syls: LyricSyllable[]) {
-    syls.forEach((syl) => selectedSyllables.add(syl))
+    for (const syl of syls) selectedSyllables.add(syl)
     applySylSelectToLine()
   }
   function addLineToSelection(...lines: LyricLine[]) {
-    lines.forEach((line) => selectedLines.add(line))
+    for (const line of lines) selectedLines.add(line)
     clearSylSelection()
   }
   function removeSylFromSelection(...syls: LyricSyllable[]) {
-    syls.forEach((syl) => selectedSyllables.delete(syl))
+    for (const syl of syls) selectedSyllables.delete(syl)
     applySylSelectToLine()
   }
   function removeSylFromSelectionWithoutApply(...syls: LyricSyllable[]) {
-    syls.forEach((syl) => selectedSyllables.delete(syl))
+    for (const syl of syls) selectedSyllables.delete(syl)
   }
   function removeLineFromSelection(...lines: LyricLine[]) {
-    lines.forEach((line) => selectedLines.delete(line))
+    for (const line of lines) selectedLines.delete(line)
     clearSylSelection()
   }
   function applySylSelectToLine() {
@@ -142,10 +142,10 @@ export const useRuntimeStore = defineStore('runtime', () => {
   }
 
   function openSidebar(key: SidebarKey) {
-    if (!openedSidebars.includes(key)) {
+    if (openedSidebars.includes(key)) {currentSidebarIndex.value = openedSidebars.indexOf(key)} else {
       openedSidebars.push(key)
       currentSidebarIndex.value = openedSidebars.length - 1
-    } else currentSidebarIndex.value = openedSidebars.indexOf(key)
+    }
 
     if (isPreviewView.value) currentView.value = View.Content
   }

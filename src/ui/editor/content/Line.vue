@@ -156,9 +156,11 @@ function handleMouseDown(e: MouseEvent) {
   if (e.metaKey || e.ctrlKey) {
     touch()
     staticStore.lastTouchedLine = props.line
-    if (!isSelected.value) {
+    if (isSelected.value) {
+      leftForClick = true
+    } else {
       runtimeStore.addLineToSelection(props.line)
-    } else leftForClick = true
+    }
   } else if (e.shiftKey && staticStore.lastTouchedLine) {
     const lastTouchedLine = staticStore.lastTouchedLine
     touch()
@@ -166,8 +168,8 @@ function handleMouseDown(e: MouseEvent) {
     const [start, end] = sortIndex(lines.indexOf(lastTouchedLine), props.index)
     const affectedLines = lines.slice(start, end + 1)
     if (isSelected.value)
-      affectedLines.forEach((line) => runtimeStore.removeLineFromSelection(line))
-    else affectedLines.forEach((line) => runtimeStore.addLineToSelection(line))
+      for (const line of affectedLines) runtimeStore.removeLineFromSelection(line)
+    else for (const line of affectedLines) runtimeStore.addLineToSelection(line)
   } else {
     touch()
     runtimeStore.clearSylSelection()
@@ -176,8 +178,8 @@ function handleMouseDown(e: MouseEvent) {
   }
 }
 function handleClick(e: MouseEvent) {
-  if (leftForClick && (e.ctrlKey || e.metaKey))
-    if (isSelected.value) runtimeStore.removeLineFromSelection(props.line)
+  if (leftForClick && (e.ctrlKey || e.metaKey) && isSelected.value)
+    runtimeStore.removeLineFromSelection(props.line)
   leftForClick = false
 }
 function handleDbClick() {
@@ -225,7 +227,7 @@ const secondaryFields = [
   },
 ] as const
 const orderedFields = computed(() =>
-  prefStore.swapTranslateRoman ? [...secondaryFields].reverse() : secondaryFields,
+  prefStore.swapTranslateRoman ? secondaryFields.toReversed() : secondaryFields,
 )
 
 const secondaryInputShellEl = useTemplateRef('secondaryInputShellEl')
@@ -250,9 +252,9 @@ function handleSecondaryInputFocus(fieldKey: string, position?: number) {
 }
 const elementTimeouts = new WeakMap<HTMLElement, TimeoutHandle>()
 function handleSecondaryInputHighlight(fieldKey: string) {
-  document.querySelectorAll('.p-inputtext[data-highlight]').forEach((el) => {
+  for (const el of document.querySelectorAll('.p-inputtext[data-highlight]')) {
     delete (el as HTMLInputElement).dataset.highlight
-  })
+  }
   const inputEl = secondaryInputShellEl.value?.querySelector(
     `.p-inputtext[data-line-field-key="${fieldKey}"]`,
   ) as HTMLInputElement | null
@@ -280,10 +282,10 @@ onUnmounted(() => {
 })
 
 function handleRomanApply() {
-  if (!prefStore.sylRomanEnabled || !props.line.syllables.length) return
+  if (!prefStore.sylRomanEnabled || props.line.syllables.length === 0) return
   const romans = props.line.romanization.split(/[\s,']+/)
   for (const syl of props.line.syllables) {
-    if (!romans.length || !syl.text.trim()) {
+    if (romans.length === 0 || !syl.text.trim()) {
       syl.romanization = ''
       continue
     }
@@ -293,11 +295,11 @@ function handleRomanApply() {
   if (romans.length > 0) props.line.syllables.at(-1)!.romanization += ' ' + romans.join(' ')
 }
 function handleRomanGenerate() {
-  if (!prefStore.sylRomanEnabled || !props.line.syllables.length) return
+  if (!prefStore.sylRomanEnabled || props.line.syllables.length === 0) return
   const generatedRomans = props.line.syllables
     .map((syl) => syl.romanization)
     .filter((r) => r.trim())
-  props.line.romanization = generatedRomans.join(' ').replace(/\s+/g, ' ')
+  props.line.romanization = generatedRomans.join(' ').replaceAll(/\s+/g, ' ')
 }
 </script>
 

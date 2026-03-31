@@ -20,17 +20,13 @@ export async function simpleChooseTextFile(
   description: string = tt.allSupportedFormats(),
   id?: string,
 ): Promise<string | null> {
-  return new Promise(async (resolve) => {
-    const file = await simpleChooseFile(dotExts, description, id)
-    if (!file) return null
-    const reader = new FileReader()
-    reader.onload = () => {
-      const content = reader.result as string
-      resolve(content)
-    }
-    reader.onerror = () => resolve(null)
-    reader.readAsText(file)
-  })
+  const file = await simpleChooseFile(dotExts, description, id)
+  if (!file) return null
+  try {
+    return await file.text()
+  } catch {
+    return null
+  }
 }
 
 async function simpleSaveFile(

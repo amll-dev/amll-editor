@@ -1,14 +1,14 @@
 import type { Syllabify as SL } from '..'
 import { splitTextByIndices } from '../shared'
 
-const pureLatin = `0-9A-Za-z\\u00C0-\\u024F\\u1E00-\\u1EFF\\u0300-\\u036F`
+const pureLatin = String.raw`0-9A-Za-z\u00C0-\u024F\u1E00-\u1EFF\u0300-\u036F`
 const halfwidthPunc = `'"‘’“”.,\\-/#!?¿¡$%^&*;:{}=\\-_\`~()`
 const frontAssocPunc = `，。？！；：）】］｝〉》」』〗］）»`
 const backAssocPunc = `（【［｛〈《「『〖〔［（«`
 
 function basicSplitCore(strs: string[]): string[][] {
   const latin = pureLatin + halfwidthPunc
-  const tokenReg = new RegExp(`[${latin}]+|\\s+|[^${latin}]`, 'gu')
+  const tokenReg = new RegExp(String.raw`[${latin}]+|\s+|[^${latin}]`, 'gu')
   return strs.map((str) => str.match(tokenReg) || [])
 }
 
@@ -35,14 +35,14 @@ export function basicSplit(
         const partResult: string[] = []
         for (const token of split) {
           const stickToLast = () => {
-            if (partResult.length) {
+            if (partResult.length > 0) {
               partResult[partResult.length - 1] += token
             } else partResult.push(token)
           }
           const handleSubparts = (subParts: string[]) => {
             if (subParts.length === 0) stickToLast()
             else {
-              if (partResult.length) partResult[partResult.length - 1] += subParts.shift()!
+              if (partResult.length > 0) partResult[partResult.length - 1] += subParts.shift()!
               else partResult.push(subParts.shift()!)
               partResult.push(...subParts)
             }
@@ -73,7 +73,7 @@ export function basicSplit(
       const merged: string[] = []
       let shouldMergeToLast = false
       const mergeToLast = (s: string) =>
-        merged.length ? (merged[merged.length - 1] += s) : merged.push(s)
+        merged.length > 0 ? (merged[merged.length - 1] += s) : merged.push(s)
       for (const token of line) {
         if (isFrontAssocPunc(token)) {
           mergeToLast(token)

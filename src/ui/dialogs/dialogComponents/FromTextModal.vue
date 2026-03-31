@@ -161,7 +161,7 @@ const lineOrderInput = useTemplateRef('lineOrderInput') as unknown as Readonly<
 >
 
 const highlightPattern = computed(() => {
-  if (currentMode.value !== interleaved) return undefined
+  if (currentMode.value !== interleaved) return
   const cycleLength = lineOrderInput.value?.cycleLength ?? 1
   const map: Record<number, string> = {}
   const originalOrder = lineOrderInput.value?.originalOrder
@@ -224,23 +224,23 @@ async function handleImportAction() {
     const toTextArr = (str: string) => {
       return str.split(/\r?\n/).map((t) => t.trim())
     }
-    if (!originalChecked.value) {
-      const translations = translationChecked.value ? toTextArr(translationInput.value) : []
-      const romans = romanChecked.value ? toTextArr(romanInput.value) : []
-      coreStore.lyricLines.forEach((line, index) => {
-        const translation = translations[index]
-        const roman = romans[index]
-        if (translation !== undefined) line.translation = translation
-        if (roman !== undefined) line.romanization = roman
-      })
-    } else
-      await FS.importPersist(
+    if (originalChecked.value) {await FS.importPersist(
         parseSeparatePlainText(
           originalInput.value,
           translationChecked.value ? translationInput.value : undefined,
           romanChecked.value ? romanInput.value : undefined,
         ),
-      )
+      )} else
+      {
+      const translations = translationChecked.value ? toTextArr(translationInput.value) : []
+      const romans = romanChecked.value ? toTextArr(romanInput.value) : []
+      for (const [index, line] of coreStore.lyricLines.entries()) {
+        const translation = translations[index]
+        const roman = romans[index]
+        if (translation !== undefined) line.translation = translation
+        if (roman !== undefined) line.romanization = roman
+      }
+    }
   } else if (currentMode.value === interleaved) {
     const loi = lineOrderInput.value
     if (!loi) return
@@ -281,8 +281,8 @@ function handleNormalizeSpaces() {
   applyProcessToInputs((text: string) =>
     text
       .split(/\r?\n/)
-      .map((line) => line.replace(/\s+/g, ' ').trim())
-      .map((line) => line.replace(/([,.:])(?=\S)/g, '$1 '))
+      .map((line) => line.replaceAll(/\s+/g, ' ').trim())
+      .map((line) => line.replaceAll(/([,.:])(?=\S)/g, '$1 '))
       .join('\n')
       .trim(),
   )
@@ -299,7 +299,7 @@ function handleCapitalizeFirstLetter() {
   applyProcessToInputs((text: string) =>
     text
       .split(/\r?\n/)
-      .map((line) => line.replace(/(^\s*\w)|(\.\s*\w)/g, (match) => match.toUpperCase()))
+      .map((line) => line.replaceAll(/(^\s*\w)|(\.\s*\w)/g, (match) => match.toUpperCase()))
       .join('\n'),
   )
 }

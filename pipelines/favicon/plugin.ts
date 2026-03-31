@@ -1,10 +1,10 @@
 import 'dotenv/config'
-import { join } from 'node:path'
+import path from 'node:path'
 import { normalizePath } from 'vite'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 export function faviconPlugin() {
-  const faviconDir = join(
+  const faviconDir = path.join(
     process.cwd(),
     'favicons',
     process.env.VITE_BUILD_CHANNEL === 'BETA' ? 'beta' : 'normal',
@@ -12,7 +12,7 @@ export function faviconPlugin() {
   return viteStaticCopy({
     targets: [
       {
-        src: [normalizePath(join(faviconDir, '*'))],
+        src: [normalizePath(path.join(faviconDir, '*'))],
         dest: 'favicons',
       },
     ],

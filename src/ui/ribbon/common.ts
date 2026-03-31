@@ -28,7 +28,7 @@ export function attrCheckbox<T extends object>(itemSet: ReadonlySet<T>, attr: Bo
       return first
     },
     set(value) {
-      itemSet.forEach((item) => ((item[attr] as boolean) = value))
+      for (const item of itemSet) ((item[attr] as boolean) = value)
       indeterminate.value = false
     },
   })
@@ -53,23 +53,23 @@ export function itemTimeInput<T extends { startTime: number; endTime: number }>(
         if (typeof value !== 'string') return
         const ms = str2ms(value)
         if (ms === null) return
-        itemSet.forEach((item) => (item[timeKey] = ms))
+        for (const item of itemSet) (item[timeKey] = ms)
       },
     })
   const startTime = getTimeComputed('startTime')
   const endTime = getTimeComputed('endTime')
   const duration = computed<number | undefined>({
     get() {
-      if (!setFirstItem.value) return undefined
+      if (!setFirstItem.value) return
       const calcDuration = (item: T) => item.endTime - item.startTime
       const firstDuration = calcDuration(setFirstItem.value)
       if (setOnlyOne.value) return firstDuration
-      for (const item of itemSet) if (calcDuration(item) !== firstDuration) return undefined
+      for (const item of itemSet) if (calcDuration(item) !== firstDuration) return
       return firstDuration
     },
     set(ms) {
       if (typeof ms !== 'number') return
-      itemSet.forEach((item) => (item.endTime = item.startTime + ms))
+      for (const item of itemSet) (item.endTime = item.startTime + ms)
     },
   })
   return { startTime, endTime, duration }

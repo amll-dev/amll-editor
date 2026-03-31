@@ -48,7 +48,7 @@ type BackingFmt = ValueOf<typeof BackingFmt>
 const allSupportedExt = new Set([
   '.alp',
   '.ttml',
-  ...portFormatRegister.map((f) => f.accept).flat(),
+  ...portFormatRegister.flatMap((f) => f.accept),
 ]) as Set<string>
 
 const manifest2formats = (
@@ -166,9 +166,7 @@ async function handleProjFile(result: FileReadResult) {
     displayFilename: filename,
   })
   editHistory.markSaved()
-  if (usePrefStore().askPermissionOnOpen) {
-    if (await askForWrite(handle)) scheduleAutoSave()
-  }
+  if (usePrefStore().askPermissionOnOpen && await askForWrite(handle)) scheduleAutoSave()
 }
 async function handleTTMLFile(result: FileReadResult) {
   const { handle, blob, filename } = result
@@ -182,9 +180,7 @@ async function handleTTMLFile(result: FileReadResult) {
     displayFilename: filename,
   })
   editHistory.markSaved()
-  if (usePrefStore().askPermissionOnOpen) {
-    if (await askForWrite(handle)) scheduleAutoSave()
-  }
+  if (usePrefStore().askPermissionOnOpen && await askForWrite(handle)) scheduleAutoSave()
 }
 async function handleMiscFile(result: FileReadResult) {
   const { blob, filename } = result
@@ -293,7 +289,7 @@ async function saveAsProjectFile() {
   return await __saveAsFile(alpPickerType)
 }
 
-let autoSaveTimer: TimeoutHandle | undefined = undefined
+let autoSaveTimer: TimeoutHandle | undefined
 function scheduleAutoSave() {
   if (autoSaveTimer) {
     clearTimeout(autoSaveTimer)
@@ -366,8 +362,8 @@ function initDragListener(notifier: Notifier) {
         await handleFile(result)
         notifier(tt.loaded(), file.name, 'success')
       })
-      .catch((err) => {
-        notifier(tt.failedToReadErr.summary(), String(err), 'error')
+      .catch((error) => {
+        notifier(tt.failedToReadErr.summary(), String(error), 'error')
       })
   })
 }
@@ -383,8 +379,8 @@ function init(notifier: Notifier) {
     try {
       await handleFile(result)
       notifier(tt.loaded(), result.filename, 'success')
-    } catch (err) {
-      notifier(tt.failedToReadErr.summary(), String(err), 'error')
+    } catch (error) {
+      notifier(tt.failedToReadErr.summary(), String(error), 'error')
     }
   })
 }

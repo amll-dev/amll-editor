@@ -12,7 +12,7 @@ import type { FindReplace as FR } from './types'
 
 export type { FindReplace } from './types'
 
-const MAX_SEARCH_STEPS = 100000
+const MAX_SEARCH_STEPS = 100_000
 
 const tt = t.find
 
@@ -93,7 +93,7 @@ export function useFindReplaceEngine(
   // Order:
   // Whole -> (Syllable -> SylRoman)*n -> <FirstSecField> -> <LastSecField> -> Whole(next line)
   function getNextPos(nullablePos: FR.AbstractPos | null): FR.Pos | null {
-    if (!coreStore.lyricLines.length) return null
+    if (coreStore.lyricLines.length === 0) return null
     const pos = nullablePos ?? { lineIndex: 0, field: PF.Whole }
     const [firstSecField, lastSecField] = prefStore.swapTranslateRoman
       ? ([PF.Roman, PF.Translation] as const)
@@ -102,7 +102,7 @@ export function useFindReplaceEngine(
     function getFirstPosOfLine(lineIndex: number): FR.Pos | null {
       if (lineIndex >= coreStore.lyricLines.length) return null
       const line = coreStore.lyricLines[lineIndex]!
-      if (!line.syllables.length) return { lineIndex, field: firstSecField }
+      if (line.syllables.length === 0) return { lineIndex, field: firstSecField }
       if (state.crossSylMatch)
         return {
           lineIndex,
@@ -118,8 +118,9 @@ export function useFindReplaceEngine(
     }
 
     switch (pos.field) {
-      case PF.Whole:
+      case PF.Whole: {
         return getFirstPosOfLine(pos.lineIndex)
+      }
       case PF.Syllable: {
         if (state.crossSylMatch) {
           const currLine = coreStore.lyricLines[pos.lineIndex]!
@@ -191,23 +192,26 @@ export function useFindReplaceEngine(
           sylIndex: pos.endSylIndex + 1,
         }
       }
-      case firstSecField:
+      case firstSecField: {
         return {
           lineIndex: pos.lineIndex,
           field: lastSecField,
         }
-      case lastSecField:
+      }
+      case lastSecField: {
         return getFirstPosOfLine(pos.lineIndex + 1)
+      }
 
-      default:
+      default: {
         throw new Error('Unreachable: Invalid AbstractPos field.')
+      }
     }
   }
 
   // Order:
   // Whole -> <LastSecField> -> <FirstSecField> -> (SylRoman -> Syllable)*n -> Whole(prev line)
   function getPrevPos(nullablePos: FR.AbstractPos | null): FR.Pos | null {
-    if (!coreStore.lyricLines.length) return null
+    if (coreStore.lyricLines.length === 0) return null
     const pos = nullablePos ?? {
       lineIndex: coreStore.lyricLines.length - 1,
       field: PF.Whole,
@@ -225,26 +229,24 @@ export function useFindReplaceEngine(
     }
 
     switch (pos.field) {
-      case PF.Whole:
+      case PF.Whole: {
         return getLastPosOfLine(pos.lineIndex)
+      }
       case PF.Syllable:
       case PF.MultiSyllable: {
         const currentWordIndex = pos.field === PF.Syllable ? pos.sylIndex : pos.startSylIndex
         const prevWordIndex = currentWordIndex - 1
         if (prevWordIndex < 0) return getLastPosOfLine(pos.lineIndex - 1)
-        if (state.crossSylMatch)
-          return {
+        return state.crossSylMatch ? {
             lineIndex: pos.lineIndex,
             field: PF.MultiSylRoman,
             startSylIndex: 0,
             endSylIndex: prevWordIndex,
-          }
-        else
-          return {
+          } : {
             lineIndex: pos.lineIndex,
             field: PF.SylRoman,
             sylIndex: prevWordIndex,
-          }
+          };
       }
       case PF.SylRoman: {
         if (state.crossSylMatch && pos.sylIndex !== 0)
@@ -274,14 +276,15 @@ export function useFindReplaceEngine(
           sylIndex: pos.endSylIndex,
         }
       }
-      case lastSecField:
+      case lastSecField: {
         return {
           lineIndex: pos.lineIndex,
           field: firstSecField,
         }
+      }
       case firstSecField: {
         const currLine = coreStore.lyricLines[pos.lineIndex]!
-        if (!currLine.syllables.length) return getLastPosOfLine(pos.lineIndex - 1)
+        if (currLine.syllables.length === 0) return getLastPosOfLine(pos.lineIndex - 1)
         if (state.crossSylMatch)
           return {
             lineIndex: pos.lineIndex,
@@ -295,8 +298,9 @@ export function useFindReplaceEngine(
           sylIndex: currLine.syllables.length - 1,
         }
       }
-      default:
+      default: {
         throw new Error('Unreachable: Invalid FR.AbstractPos field.')
+      }
     }
   }
 
@@ -411,24 +415,30 @@ export function useFindReplaceEngine(
   function getPosText(pos: FR.Pos): string {
     const line = coreStore.lyricLines[pos.lineIndex]!
     switch (pos.field) {
-      case PF.Syllable:
+      case PF.Syllable: {
         return line.syllables[pos.sylIndex]!.text
-      case PF.MultiSyllable:
+      }
+      case PF.MultiSyllable: {
         return line.syllables
           .slice(pos.startSylIndex, pos.endSylIndex + 1)
           .map((s) => s.text)
           .join('')
-      case PF.SylRoman:
+      }
+      case PF.SylRoman: {
         return line.syllables[pos.sylIndex]!.romanization
-      case PF.MultiSylRoman:
+      }
+      case PF.MultiSylRoman: {
         return line.syllables
           .slice(pos.startSylIndex, pos.endSylIndex + 1)
           .map((s) => s.romanization)
           .join(' ')
-      case PF.Translation:
+      }
+      case PF.Translation: {
         return line.translation
-      case PF.Roman:
+      }
+      case PF.Roman: {
         return line.romanization
+      }
     }
   }
   function isPosMatch(pos: FR.Pos): FR.Pos | null {

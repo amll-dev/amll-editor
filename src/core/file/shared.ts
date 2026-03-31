@@ -31,7 +31,7 @@ export function breakExtension(filename: string): [name: string, extension: stri
 
 export const extractMIMEs = (...types: FileBackendPickerAccept[]): string[] =>
   types.flatMap(({ accept }) =>
-    !accept ? [] : [...Object.entries(accept)].map(([mime, dotExts]) => [mime, ...dotExts]).flat(),
+    accept ? [...Object.entries(accept)].flatMap(([mime, dotExts]) => [mime, ...dotExts]) : [],
   )
 export const extractDotExts = (...types: FileBackendPickerAccept[]): string[] =>
   extractMIMEs(...types).filter((s) => s.startsWith('.'))

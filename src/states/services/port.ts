@@ -26,7 +26,7 @@ export function collectPersist(): Persist {
   const prefStore = usePrefStore()
   const lines = cloneDeep(toRaw(coreStore.lyricLines))
   const metadata = cloneDeep(toRaw(coreStore.metadata))
-  if (prefStore.hideLineTiming) lines.forEach((line) => alignLineTime(line))
+  if (prefStore.hideLineTiming) for (const line of lines) alignLineTime(line)
   // if (prefStore.autoConnectLineTimes) connectLineTimes(lines, prefStore.autoConnectThresholdMs)
   for (const [prev, next] of pairwise(lines)) if (prev.connectNext) prev.endTime = next.startTime
   const outputData: Persist = { metadata, lines }

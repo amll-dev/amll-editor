@@ -63,8 +63,8 @@ export function deserializeClipboardData(data: SerializedClipboardData): Clipboa
     const obj = JSON.parse(root.innerHTML)
     if (typeof obj !== 'object' || obj?.meta !== 'AMLL_CLIPBOARD_DATA') return null
     return obj as ClipboardData
-  } catch (e) {
-    console.log(e)
+  } catch (error) {
+    console.log(error)
     return null
   }
 }

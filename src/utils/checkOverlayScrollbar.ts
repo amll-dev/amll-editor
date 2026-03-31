@@ -10,11 +10,11 @@ export function hasOverlayScrollbar() {
   div.style.position = 'absolute'
   div.style.top = '-9999px'
 
-  document.body.appendChild(div)
+  document.body.append(div)
 
   const scrollbarWidth = div.offsetWidth - div.clientWidth
 
-  document.body.removeChild(div)
+  div.remove()
 
   return scrollbarWidth === 0
 }

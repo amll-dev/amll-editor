@@ -52,10 +52,10 @@ const handleMouseMove = (e: MouseEvent) => {
   pointerY.value = e.pageY
 }
 onMounted(() => {
-  window.addEventListener('dragover', handleMouseMove)
+  globalThis.addEventListener('dragover', handleMouseMove)
 })
 onUnmounted(() => {
-  window.removeEventListener('dragover', handleMouseMove)
+  globalThis.removeEventListener('dragover', handleMouseMove)
 })
 </script>
 

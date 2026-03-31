@@ -34,8 +34,8 @@ export function stringifyTTML(ttmlLyric: Persist): string {
         return el
       }, el)
     if (content)
-      if (typeof content === 'string') el.appendChild(doc.createTextNode(content))
-      else content.forEach((child) => el.appendChild(child))
+      if (typeof content === 'string') el.append(doc.createTextNode(content))
+      else for (const child of content) el.append(child)
     return el
   }
 
@@ -140,17 +140,17 @@ export function stringifyTTML(ttmlLyric: Persist): string {
       let beginTime = Number.POSITIVE_INFINITY
       let endTime = 0
       for (const word of line.syllables) {
-        if (word.text.trim().length === 0) lineP.appendChild(doc.createTextNode(word.text))
+        if (word.text.trim().length === 0) lineP.append(doc.createTextNode(word.text))
         else {
           const span = makeWordSpan(word)
-          lineP.appendChild(span)
+          lineP.append(span)
           beginTime = Math.min(beginTime, word.startTime)
           endTime = Math.max(endTime, word.endTime)
         }
       }
     } else {
       const word = line.syllables[0]!
-      lineP.appendChild(doc.createTextNode(word.text))
+      lineP.append(doc.createTextNode(word.text))
       lineP.setAttribute('begin', ms2str(word.startTime))
       lineP.setAttribute('end', ms2str(word.endTime))
     }
@@ -173,7 +173,7 @@ export function stringifyTTML(ttmlLyric: Persist): string {
 
         for (const [sylIndex, word] of bgLine.syllables.entries()) {
           if (word.text.trim().length === 0) {
-            bgLineSpan.appendChild(doc.createTextNode(word.text))
+            bgLineSpan.append(doc.createTextNode(word.text))
           } else {
             const span = makeWordSpan(word)
 
@@ -184,7 +184,7 @@ export function stringifyTTML(ttmlLyric: Persist): string {
               span.firstChild.nodeValue = `${span.firstChild.nodeValue})`
             }
 
-            bgLineSpan.appendChild(span)
+            bgLineSpan.append(span)
             beginTime = Math.min(beginTime, word.startTime)
             endTime = Math.max(endTime, word.endTime)
           }
@@ -193,19 +193,19 @@ export function stringifyTTML(ttmlLyric: Persist): string {
         bgLineSpan.setAttribute('end', ms2str(endTime))
       } else {
         const word = bgLine.syllables[0]!
-        bgLineSpan.appendChild(doc.createTextNode(`(${word.text})`))
+        bgLineSpan.append(doc.createTextNode(`(${word.text})`))
         bgLineSpan.setAttribute('begin', ms2str(word.startTime))
         bgLineSpan.setAttribute('end', ms2str(word.endTime))
       }
 
-      if (bgLine.translation) bgLineSpan.appendChild(makeLineTransSpan(bgLine.translation))
-      if (bgLine.romanization) bgLineSpan.appendChild(makeLineRomanSpan(bgLine.romanization))
+      if (bgLine.translation) bgLineSpan.append(makeLineTransSpan(bgLine.translation))
+      if (bgLine.romanization) bgLineSpan.append(makeLineRomanSpan(bgLine.romanization))
 
-      lineP.appendChild(bgLineSpan)
+      lineP.append(bgLineSpan)
     }
 
-    if (line.translation) lineP.appendChild(makeLineTransSpan(line.translation))
-    if (line.romanization) lineP.appendChild(makeLineRomanSpan(line.romanization))
+    if (line.translation) lineP.append(makeLineTransSpan(line.translation))
+    if (line.romanization) lineP.append(makeLineRomanSpan(line.romanization))
 
     if (
       mainWords.some((w) => w.romanization && w.romanization.trim().length > 0) ||
@@ -218,7 +218,7 @@ export function stringifyTTML(ttmlLyric: Persist): string {
   }
 
   function makeItunesRomanMetadataEls(): Element[] {
-    if (!romanizationMap.size) return []
+    if (romanizationMap.size === 0) return []
     const itunesMeta = h('iTunesMetadata', {
       xmlns: 'http://music.apple.com/lyric-ttml-internal',
     })
@@ -231,9 +231,9 @@ export function stringifyTTML(ttmlLyric: Persist): string {
 
       for (const word of main)
         if (word.romanization && word.romanization.trim().length > 0)
-          textEl.appendChild(makeRomanizationSpan(word))
+          textEl.append(makeRomanizationSpan(word))
         else if (word.text.trim().length === 0 && textEl.hasChildNodes())
-          textEl.appendChild(doc.createTextNode(word.text))
+          textEl.append(doc.createTextNode(word.text))
 
       const hasBgRoman = bg.some((w) => w.romanization && w.romanization.trim().length > 0)
       if (hasBgRoman) {
@@ -250,26 +250,26 @@ export function stringifyTTML(ttmlLyric: Persist): string {
           if (sylIndex === romanBgWords.length - 1 && span.firstChild)
             span.firstChild.nodeValue = `${span.firstChild.nodeValue})`
 
-          bgSpan.appendChild(span)
+          bgSpan.append(span)
 
           const originalIndex = bg.indexOf(word)
-          if (originalIndex > -1 && originalIndex < bg.length - 1) {
+          if (originalIndex !== -1 && originalIndex < bg.length - 1) {
             const nextWord = bg[originalIndex + 1]!
             if (nextWord && nextWord.text.trim().length === 0)
-              bgSpan.appendChild(doc.createTextNode(nextWord.text))
+              bgSpan.append(doc.createTextNode(nextWord.text))
           }
         }
-        textEl.appendChild(bgSpan)
+        textEl.append(bgSpan)
       }
-      transliteration.appendChild(textEl)
+      transliteration.append(textEl)
     }
 
-    transliterations.appendChild(transliteration)
-    itunesMeta.appendChild(transliterations)
+    transliterations.append(transliteration)
+    itunesMeta.append(transliterations)
     return [itunesMeta]
   }
 
-  doc.appendChild(
+  doc.append(
     makeRootTT([
       h('head', [makeMetadataEl(makeItunesRomanMetadataEls())]),
       h('body', { dur: ms2str(docEndTime) }, [

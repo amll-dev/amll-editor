@@ -63,19 +63,19 @@ export const useCoreStore = defineStore('core', () => {
     lyricLines.push(...filtered)
     const runtimeStore = useRuntimeStore()
     runtimeStore.clearSylSelection()
-    lineSet.forEach((line) => runtimeStore.removeLineFromSelection(line))
+    for (const line of lineSet) runtimeStore.removeLineFromSelection(line)
   }
   function deleteSyllable(...syls: LyricSyllable[]) {
     const sylSet = new Set(syls)
     for (const line of lyricLines) _deleteSylSetFromLine(line, sylSet)
     const runtimeStore = useRuntimeStore()
-    sylSet.forEach((syl) => runtimeStore.removeSylFromSelectionWithoutApply(syl))
+    for (const syl of sylSet) runtimeStore.removeSylFromSelectionWithoutApply(syl)
   }
   function deleteSylFromLine(line: LyricLine, ...syls: LyricSyllable[]) {
     const sylSet = new Set(syls)
     _deleteSylSetFromLine(line, sylSet)
     const runtimeStore = useRuntimeStore()
-    sylSet.forEach((syl) => runtimeStore.removeSylFromSelectionWithoutApply(syl))
+    for (const syl of sylSet) runtimeStore.removeSylFromSelectionWithoutApply(syl)
   }
   function _deleteSylSetFromLine(line: LyricLine, sylSet: Set<LyricSyllable>) {
     const original = line.syllables

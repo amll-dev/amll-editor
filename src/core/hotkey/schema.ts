@@ -132,13 +132,25 @@ function k(...args: (symbol | string)[]) {
     shift = false,
     code = ''
   for (const arg of args) {
-    if (arg === Ctrl) ctrl = true
-    else if (arg === Alt) alt = true
-    else if (arg === Shift) shift = true
-    else if (typeof arg === 'string') {
-      if (arg.match(/^[a-zA-Z]$/)) code = 'Key' + arg.toUpperCase()
-      else if (arg.match(/^[0-9]$/)) code = 'Digit' + arg
+    switch (arg) {
+    case Ctrl: {
+    ctrl = true
+    break;
+    }
+    case Alt: {
+    alt = true
+    break;
+    }
+    case Shift: {
+    shift = true
+    break;
+    }
+    default: { if (typeof arg === 'string') {
+      if (/^[a-zA-Z]$/.test(arg)) code = 'Key' + arg.toUpperCase()
+      else if (/^[0-9]$/.test(arg)) code = 'Digit' + arg
       else code = arg
+    }
+    }
     }
   }
   return { code, ctrl, alt, shift }

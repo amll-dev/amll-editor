@@ -55,19 +55,19 @@ const bookmarkAdd = computed(
   () => actionDisabled.value || [...focusingSet.value].some((item) => !item.bookmarked),
 )
 function bookmarkClick() {
-  if (bookmarkAdd.value) focusingSet.value.forEach((item) => (item.bookmarked = true))
-  else focusingSet.value.forEach((item) => (item.bookmarked = false))
+  if (bookmarkAdd.value) for (const item of focusingSet.value) (item.bookmarked = true)
+  else for (const item of focusingSet.value) (item.bookmarked = false)
 }
 const actionDisabled = computed(
-  () => !runtimeStore.selectedLines.size && !runtimeStore.selectedSyllables.size,
+  () => runtimeStore.selectedLines.size === 0 && runtimeStore.selectedSyllables.size === 0,
 )
 useGlobalKeyboard('bookmark', () => bookmarkClick())
 
 const coreStore = useCoreStore()
 function removeAllMarks() {
-  coreStore.lyricLines.forEach((line) => {
+  for (const line of coreStore.lyricLines) {
     line.bookmarked = false
-    line.syllables.forEach((syl) => (syl.bookmarked = false))
-  })
+    for (const syl of line.syllables) (syl.bookmarked = false)
+  }
 }
 </script>

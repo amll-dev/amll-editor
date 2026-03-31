@@ -19,7 +19,7 @@ const redoable = computed(() => state.current < state.head)
 const undoable = computed(() => state.current > state.tail)
 let stopRecording = false
 
-const savedStatePointer = ref<number>(NaN)
+const savedStatePointer = ref<number>(Number.NaN)
 const isDirty = computed(() => savedStatePointer.value !== state.current)
 const markSaved = () => (savedStatePointer.value = state.current)
 
@@ -139,7 +139,7 @@ function wayback(snapshot: Readonly<Snapshot>, isRedo = false) {
   const selectedWords: LyricSyllable[] = []
   let lastTouchedLine: LyricLine | null = null
   let lastTouchedWord: LyricSyllable | null = null
-  let firstLineIndex: number | undefined = undefined
+  let firstLineIndex: number | undefined
   for (const [index, line] of coreStore.lyricLines.entries()) {
     // Use coreStore.lyricLines instead of snapshotCore.lyricLines:
     // the former is proxified, !== the latter
@@ -153,7 +153,7 @@ function wayback(snapshot: Readonly<Snapshot>, isRedo = false) {
       if (snapshotRuntime.lastTouchedWordId === syl.id) lastTouchedWord = syl
     }
   }
-  if (selectedWords.length) runtimeStore.selectSyllable(...selectedWords)
+  if (selectedWords.length > 0) runtimeStore.selectSyllable(...selectedWords)
   else runtimeStore.selectLine(...selectedLines)
   staticStore.lastTouchedLine = lastTouchedLine
   staticStore.lastTouchedSyl = lastTouchedWord

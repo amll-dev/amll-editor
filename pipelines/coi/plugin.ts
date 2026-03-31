@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { join } from 'node:path'
+import path from 'node:path'
 import { Plugin, normalizePath } from 'vite'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 
@@ -66,7 +66,7 @@ function coiServiceWorkerPlugin() {
   const staticCopyPlugins = viteStaticCopy({
     targets: [
       {
-        src: [normalizePath(join(__dirname, 'coi-serviceworker.min.js'))],
+        src: [normalizePath(path.join(__dirname, 'coi-serviceworker.min.js'))],
         dest: '.',
       },
     ],

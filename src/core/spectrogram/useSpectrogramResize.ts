@@ -27,21 +27,21 @@ export function useSpectrogramResize(options: UseSpectrogramResizeOptions) {
 
   const handleMouseUp = () => {
     isResizing.value = false
-    window.removeEventListener('mousemove', handleMouseMove)
-    window.removeEventListener('mouseup', handleMouseUp)
+    globalThis.removeEventListener('mousemove', handleMouseMove)
+    globalThis.removeEventListener('mouseup', handleMouseUp)
   }
 
   const handleMouseDown = (e: MouseEvent) => {
     isResizing.value = true
     startY = e.clientY
     startHeight = height.value
-    window.addEventListener('mousemove', handleMouseMove)
-    window.addEventListener('mouseup', handleMouseUp)
+    globalThis.addEventListener('mousemove', handleMouseMove)
+    globalThis.addEventListener('mouseup', handleMouseUp)
   }
 
   onUnmounted(() => {
-    window.removeEventListener('mousemove', handleMouseMove)
-    window.removeEventListener('mouseup', handleMouseUp)
+    globalThis.removeEventListener('mousemove', handleMouseMove)
+    globalThis.removeEventListener('mouseup', handleMouseUp)
   })
 
   return {

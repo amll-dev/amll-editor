@@ -16,7 +16,7 @@
         <div class="content">
           <div class="name">{{ item.name }}</div>
           <div class="description" v-if="item.description">{{ item.description }}</div>
-          <div class="links" v-if="item.referenceUrls && item.referenceUrls.length">
+          <div class="links" v-if="item.referenceUrls && item.referenceUrls.length > 0">
             <Button
               v-for="(link, urlIndex) in item.referenceUrls"
               :key="urlIndex"
@@ -82,7 +82,7 @@ const severityOrder = {
   warn: 1,
   danger: 2,
 } as const
-const list = [...compatibilityList].sort((a, b) => {
+const list = compatibilityList.toSorted((a, b) => {
   if (a.meet && !b.meet) return 1
   if (!a.meet && b.meet) return -1
   const sA = severityOrder[a.severity] ?? 0

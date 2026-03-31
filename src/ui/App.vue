@@ -82,17 +82,19 @@ const handleRootKeydown = (e: KeyboardEvent) => {
   const hotkey = parseKeyEvent(e)
   if (!hotkey) return
   if (e.target instanceof HTMLElement && e.target.closest('[disable-global-hotkeys]')) return
-  if (shouldEscapeInInput(hotkey)) {
-    if (e.target !== document.body && e.target instanceof HTMLInputElement) {
-      if (isInputEl(e.target)) return
-      // Special handling for checkbox: Enter to toggle,
-      // since space is taken by audio play/pause
-      if (e.code === 'Enter' && e.target.closest('input[type="checkbox"]')) {
-        const checkbox = e.target as HTMLInputElement
-        checkbox.click()
-        e.preventDefault()
-        return
-      }
+  if (
+    shouldEscapeInInput(hotkey) &&
+    e.target !== document.body &&
+    e.target instanceof HTMLInputElement
+  ) {
+    if (isInputEl(e.target)) return
+    // Special handling for checkbox: Enter to toggle,
+    // since space is taken by audio play/pause
+    if (e.code === 'Enter' && e.target.closest('input[type="checkbox"]')) {
+      const checkbox = e.target as HTMLInputElement
+      checkbox.click()
+      e.preventDefault()
+      return
     }
   }
   if (modalDialogActivated()) return
@@ -146,10 +148,10 @@ const handleRootKeydown = (e: KeyboardEvent) => {
 }
 
 onMounted(() => {
-  window.addEventListener('keydown', handleRootKeydown)
+  globalThis.addEventListener('keydown', handleRootKeydown)
 })
 onUnmounted(() => {
-  window.removeEventListener('keydown', handleRootKeydown)
+  globalThis.removeEventListener('keydown', handleRootKeydown)
 })
 
 const confirm = useConfirm()
@@ -183,15 +185,19 @@ onMounted(() => {
   document.documentElement.dataset.scrollbar = hasOverlay ? 'overlay' : 'normal'
 })
 
-window.addEventListener('load', () => {
-  const appEl = document.getElementById('app')
-  if (!appEl) return
-  appEl.style.removeProperty('opacity')
+window.addEventListener(
+  'load',
+  () => {
+    const appEl: HTMLElement | null = document.querySelector('#app')
+    if (!appEl) return
+    appEl.style.removeProperty('opacity')
 
-  const loadingEl = document.getElementById('loading')
-  if (!loadingEl) return
-  loadingEl.remove()
-})
+    const loadingEl = document.querySelector('#loading')
+    if (!loadingEl) return
+    loadingEl.remove()
+  },
+  { once: true },
+)
 </script>
 
 <style lang="scss">

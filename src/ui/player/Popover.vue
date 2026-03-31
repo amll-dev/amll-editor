@@ -86,7 +86,7 @@ const runtimeStore = useRuntimeStore()
 const tt = t.player
 
 const volumeInputRef = ref<number | undefined>(Math.round(volumeRef.value * 100))
-const rateInputRef = ref<number | undefined>(parseFloat(playbackRateRef.value.toFixed(2)))
+const rateInputRef = ref<number | undefined>(Number.parseFloat(playbackRateRef.value.toFixed(2)))
 
 const MAXRATE = 2
 const MINRATE = 0.25
@@ -113,10 +113,10 @@ watch(volumeInputRef, (value) => {
 })
 
 watch(playbackRateRef, (value) => {
-  rateInputRef.value = parseFloat(value.toFixed(2))
+  rateInputRef.value = Number.parseFloat(value.toFixed(2))
 })
 watch(rateInputRef, (value) => {
-  if (value === undefined) rateInputRef.value = 1.0
+  if (value === undefined) rateInputRef.value = 1
   else playbackRateRef.value = Math.min(Math.max(value, MINRATE), MAXRATE)
 })
 

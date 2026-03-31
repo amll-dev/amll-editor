@@ -46,13 +46,13 @@ export function parseLYS(lrc: string): Persist {
     .filter((l) => l.length > 0)
   const lyricLines: LyricLine[] = []
   const getSpaceSyl = () => coreCreate.newSyllable({ text: ' ' })
-  lines.forEach((lineStr) => {
+  for (const lineStr of lines) {
     const propMatch = lineStr.match(/^\[(\d+)\](.*)$/)
-    if (!propMatch) return
+    if (!propMatch) continue
     const [, propStr, content] = propMatch
     const syllables: LyricSyllable[] = []
     const props = parseProp(Number(propStr))
-    ;[...content!.matchAll(/(.*?)\((\d+),(\d+)\)/g)].forEach(([, word, startStr, durStr]) => {
+    ;for (const [, word, startStr, durStr] of content!.matchAll(/(.*?)\((\d+),(\d+)\)/g)) {
       const startTime = Number(startStr)
       const duration = Number(durStr)
       const endTime = startTime + duration
@@ -61,10 +61,10 @@ export function parseLYS(lrc: string): Persist {
       if (srcText.startsWith(' ') && syllables.at(-1)?.text !== ' ') syllables.push(getSpaceSyl())
       syllables.push(coreCreate.newSyllable({ text, startTime, endTime }))
       if (srcText.endsWith(' ')) syllables.push(getSpaceSyl())
-    })
+    }
     const lineStartTime = syllables[0]?.startTime ?? 0
     const lineEndTime = syllables.at(-1)?.endTime ?? 0
-    if (props.background && syllables.length) {
+    if (props.background && syllables.length > 0) {
       syllables[0]!.text = syllables[0]!.text.replace(/^\(/, '')
       syllables.at(-1)!.text = syllables.at(-1)!.text.replace(/\)$/, '')
     }
@@ -76,7 +76,7 @@ export function parseLYS(lrc: string): Persist {
         syllables,
       }),
     )
-  })
+  }
   return {
     metadata: {},
     lines: lyricLines,
@@ -100,12 +100,12 @@ export function stringifyLYS(data: Persist): string {
     .map((line) => {
       const prop = getProp(line)
       const printSyls: { startTime: number; duration: number; text: string }[] = []
-      line.syllables.forEach((s) => {
+      for (const s of line.syllables) {
         const text = s.text
-        if (text.trim() || !printSyls.length)
+        if (text.trim() || printSyls.length === 0)
           printSyls.push({ text, startTime: s.startTime, duration: s.endTime - s.startTime })
-        else printSyls[printSyls.length - 1]!.text += text // merge consecutive spaces into one syllable
-      })
+        else printSyls.at(-1)!.text += text // merge consecutive spaces into one syllable
+      }
       const syllablesStr = printSyls.map((s) => `${s.text}(${s.startTime},${s.duration})`).join('')
       return `[${prop}]${syllablesStr}`
     })

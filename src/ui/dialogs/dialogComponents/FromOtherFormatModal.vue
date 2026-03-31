@@ -120,8 +120,8 @@ async function handleImport() {
     const persist = selectedFormat.value.parser(inputText.value)
     await FS.importPersist(persist)
     visible.value = false
-  } catch (err) {
-    console.error(err)
+  } catch (error) {
+    console.error(error)
   }
 }
 function openUrl(url: string) {

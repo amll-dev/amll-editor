@@ -21,8 +21,7 @@ const TICK_INTERVALS = [0.1, 0.2, 0.5, 1, 2, 5, 10, 15, 30, 60, 120, 300, 600]
 function getTickInterval(zoom: number) {
   const minPxPerTick = 50
   const minSecondsPerTick = minPxPerTick / zoom
-  const majorInterval =
-    TICK_INTERVALS.find((i) => i >= minSecondsPerTick) || TICK_INTERVALS[TICK_INTERVALS.length - 1]!
+  const majorInterval = TICK_INTERVALS.find((i) => i >= minSecondsPerTick) || TICK_INTERVALS.at(-1)!
   const ratio = majorInterval > 2 ? 5 : 2
   return {
     major: majorInterval,
@@ -58,9 +57,7 @@ onMounted(async () => {
 
   const mq = matchMedia(`(resolution: ${devicePixelRatio}dppx)`)
   mq.addEventListener('change', drawRuler)
-  revokeListeners = () => {
-    mq.removeEventListener('change', drawRuler)
-  }
+  revokeListeners = () => mq.removeEventListener('change', drawRuler)
 })
 onUnmounted(() => revokeListeners?.())
 watch(

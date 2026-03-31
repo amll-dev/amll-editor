@@ -35,7 +35,7 @@ watch(
 watch(
   breakpoints,
   () => {
-    const indices = [...breakpoints].sort((a, b) => a - b)
+    const indices = [...breakpoints].toSorted((a, b) => a - b)
     model.value = indices
   },
   { immediate: true },

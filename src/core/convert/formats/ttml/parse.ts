@@ -59,25 +59,23 @@ function parseItunesTranslations(ttmlDoc: XMLDocument) {
     'iTunesMetadata > translations > translation > text[for]',
   )
 
-  translationTextElements.forEach((textEl) => {
+  for (const textEl of translationTextElements) {
     const key = textEl.getAttribute('for')
-    if (!key) return
+    if (!key) continue
 
     const mainStrs = new StringAccum()
     const bgStrs = new StringAccum()
 
-    textEl.childNodes.forEach((node) => {
+    for (const node of textEl.childNodes) {
       if (node.nodeType === Node.TEXT_NODE) mainStrs.append(node.textContent)
-      else if (node.nodeType === Node.ELEMENT_NODE)
-        if ((node as Element).getAttribute('ttm:role') === 'x-bg')
-          if (node.textContent) bgStrs.append(node.textContent)
-    })
+      else if (node.nodeType === Node.ELEMENT_NODE && (node as Element).getAttribute('ttm:role') === 'x-bg' && node.textContent) bgStrs.append(node.textContent)
+    }
 
     const main = mainStrs.toString().trim()
     const bg = trimBraces(bgStrs.toString())
 
     if (main || bg) itunesTranslations.set(key, { main, bg })
-  })
+  }
 
   return itunesTranslations
 }
@@ -96,9 +94,9 @@ function parseItunesRomanizations(ttmlDoc: XMLDocument) {
     text: trimTextBraces ? trimBraces(span.textContent) : span.textContent.trim(),
   })
 
-  romanizationTextElements.forEach((textEl) => {
+  for (const textEl of romanizationTextElements) {
     const key = textEl.getAttribute('for')
-    if (!key) return
+    if (!key) continue
 
     const mainWords: RomanWord[] = []
     const bgWords: RomanWord[] = []
@@ -106,25 +104,25 @@ function parseItunesRomanizations(ttmlDoc: XMLDocument) {
     const lineRomanBgStrs = new StringAccum()
     let isWordByWord = false
 
-    textEl.childNodes.forEach((node) => {
+    for (const node of textEl.childNodes) {
       if (node.nodeType === Node.TEXT_NODE) {
         lineRomanMainStrs.append(node.textContent)
-        return
+        continue
       }
-      if (node.nodeType !== Node.ELEMENT_NODE) return
+      if (node.nodeType !== Node.ELEMENT_NODE) continue
       const el = node as Element
       if (el.getAttribute('ttm:role') === 'x-bg') {
         const nestedSpans = el.querySelectorAll('span[begin][end]')
         if (nestedSpans.length === 0) lineRomanBgStrs.append(el.textContent)
         else {
           isWordByWord = true
-          nestedSpans.forEach((span) => bgWords.push(spanToRomanWord(span, true)))
+          for (const span of nestedSpans) bgWords.push(spanToRomanWord(span, true))
         }
       } else if (hasTimestamps(el)) {
         isWordByWord = true
         mainWords.push(spanToRomanWord(el))
       }
-    })
+    }
 
     if (isWordByWord) {
       itunesWordRomanizations.set(key, { main: mainWords, bg: bgWords })
@@ -139,26 +137,26 @@ function parseItunesRomanizations(ttmlDoc: XMLDocument) {
         bg: lineRomanBg,
       })
     }
-  })
+  }
 
   return { itunesLineRomanizations, itunesWordRomanizations }
 }
 
 function parseMetadata(ttmlDoc: XMLDocument): MetadataMap {
   const metadataMap = new Map<string, string[]>()
-  ttmlDoc.querySelectorAll('meta').forEach((meta) => {
-    if (meta.tagName !== 'amll:meta') return
+  for (const meta of ttmlDoc.querySelectorAll('meta')) {
+    if (meta.tagName !== 'amll:meta') continue
     const key = meta.getAttribute('key')
     const value = meta.getAttribute('value')
-    if (!key || !value) return
+    if (!key || !value) continue
     if (metadataMap.has(key)) metadataMap.get(key)!.push(value)
     else metadataMap.set(key, [value])
-  })
-  return Object.fromEntries([...metadataMap.entries()])
+  }
+  return Object.fromEntries(metadataMap.entries())
 }
 
 function findMainAgentId(ttmlDoc: XMLDocument): string {
-  for (const agent of ttmlDoc.querySelectorAll('ttm\\:agent')) {
+  for (const agent of ttmlDoc.querySelectorAll(String.raw`ttm\:agent`)) {
     if (agent.getAttribute('type') !== 'person') continue
     const id = agent.getAttribute('xml:id')
     if (id) return id
@@ -179,9 +177,9 @@ export function parseTTML(ttmlText: string): Persist {
 
   const lineArr: LyricLine[] = []
 
-  ttmlDoc.querySelectorAll('body p[begin][end]').forEach((lineEl) => {
+  for (const lineEl of ttmlDoc.querySelectorAll('body p[begin][end]')) {
     parseLineElement(lineEl, false, false, null)
-  })
+  }
 
   function parseLineElement(
     lineEl: Element,
@@ -218,7 +216,7 @@ export function parseTTML(ttmlText: string): Persist {
       line.romanization = itunesLineRomanizations.get(itunesKey)?.[metadataAttr] ?? ''
     }
 
-    lineEl.childNodes.forEach((sylNode) => {
+    for (const sylNode of lineEl.childNodes) {
       if (sylNode.nodeType === Node.TEXT_NODE) {
         const text = sylNode.textContent ?? ''
         line.syllables.push(
@@ -233,13 +231,24 @@ export function parseTTML(ttmlText: string): Persist {
         const role = sylEl.getAttribute('ttm:role')
 
         if (sylEl.nodeName === 'span' && role) {
-          if (role === 'x-bg') {
+          switch (role) {
+          case 'x-bg': {
             parseLineElement(sylEl, true, line.duet, itunesKey)
-          } else if (role === 'x-translation') {
+          
+          break;
+          }
+          case 'x-translation': {
             // Use inline translation only if there is no Apple Music style translation
             line.translation ||= sylEl.textContent.trim()
-          } else if (role === 'x-roman') {
+          
+          break;
+          }
+          case 'x-roman': {
             line.romanization ||= sylEl.textContent.trim()
+          
+          break;
+          }
+          // No default
           }
         } else if (hasTimestamps(sylEl)) {
           const sylStartTime = str2ms(sylEl.getAttribute('begin'))
@@ -269,7 +278,7 @@ export function parseTTML(ttmlText: string): Persist {
           line.syllables.push(syllable)
         }
       }
-    })
+    }
 
     if (!startTime && !endTime) alignLineTime(line)
 
