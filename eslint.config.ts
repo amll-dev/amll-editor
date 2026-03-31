@@ -1,5 +1,6 @@
 import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
 import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript'
+import pluginUnicorn from 'eslint-plugin-unicorn'
 import pluginVue from 'eslint-plugin-vue'
 import { globalIgnores } from 'eslint/config'
 
@@ -24,7 +25,8 @@ export default defineConfigWithVueTs(
     'src/i18n/i18n-*.ts',
   ]),
 
-  ...pluginVue.configs['flat/essential'],
+  pluginVue.configs['flat/essential'],
+  pluginUnicorn.configs['unopinionated'],
   vueTsConfigs.recommended,
 
   skipFormatting,
@@ -39,6 +41,7 @@ export default defineConfigWithVueTs(
       'vue/multi-word-component-names': 'off',
       'vue/no-mutating-props': 'off',
       'vue/require-v-for-key': 'off',
+      'unicorn/prevent-abbreviations': 'off',
       eqeqeq: ['error', 'always'],
     },
   },
