@@ -1,5 +1,5 @@
 import vue from '@vitejs/plugin-vue'
-import chalk, { ChalkInstance } from 'chalk'
+import chalk from 'chalk'
 import { Features } from 'lightningcss'
 import { URL, fileURLToPath } from 'node:url'
 import { visualizer } from 'rollup-plugin-visualizer'
