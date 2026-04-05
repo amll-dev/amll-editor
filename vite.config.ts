@@ -1,5 +1,6 @@
 import vue from '@vitejs/plugin-vue'
-import chalk from 'chalk'
+import chalk, { ChalkInstance } from 'chalk'
+import { Features } from 'lightningcss'
 import { URL, fileURLToPath } from 'node:url'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { simpleGit } from 'simple-git'
@@ -99,6 +100,12 @@ export default defineConfig(({ mode }) => ({
         'node:crypto',
         'node:child_process',
       ],
+    },
+  },
+  css: {
+    transformer: 'lightningcss',
+    lightningcss: {
+      exclude: Features.LightDark,
     },
   },
 }))

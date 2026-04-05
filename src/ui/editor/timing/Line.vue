@@ -151,7 +151,7 @@ function handleMouseDown() {
   gap: 0.5rem;
   padding-right: 0.5rem;
   border-right: 1px solid transparent;
-  --tline-head-background: color-mix(in srgb, var(--t-border-color), var(--global-background) 40%);
+  --tline-head-background: color-mix(in srgb, var(--t-border-color), transparent 40%);
   background-color: var(--tline-head-background);
   --p-button-text-secondary-color: color-mix(
     in srgb,

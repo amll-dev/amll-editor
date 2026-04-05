@@ -334,7 +334,7 @@ function handleRomanGenerate() {
 .cline-head {
   display: grid;
   grid-template-columns: auto auto;
-  --cline-head-background: color-mix(in srgb, var(--c-border-color), var(--global-background) 40%);
+  --cline-head-background: color-mix(in srgb, var(--c-border-color), transparent 40%);
   background-color: var(--cline-head-background);
   color: var(--p-button-secondary-color);
   cursor: move;
