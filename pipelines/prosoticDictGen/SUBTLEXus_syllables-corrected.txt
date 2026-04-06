@@ -1381,7 +1381,7 @@ anger: an-ger
 agency: a-gen-cy
 settled: set-tled
 escaped: es-caped
-suffering: suf-fering
+suffering: suf-fe-ring
 detail: de-tail
 supper: sup-per
 effort: ef-fort
@@ -21231,7 +21231,7 @@ negligible: ne-gli-gi-ble
 overriding: o-ver-ri-ding
 precarious: pre-ca-ri-ous
 prophesied: pro-phe-sied
-sufferings: suf-ferings
+sufferings: suf-fe-rings
 unlicensed: un-li-censed
 Centennial: Cen-ten-ni-al
 concoction: con-coc-tion
