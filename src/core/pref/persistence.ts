@@ -28,9 +28,10 @@ export function loadPreference(): PreferenceSchema {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return getDefaultPref()
     const parsed = JSON.parse(raw) as PersistedPref
-    if (parsed.prefVersion > PREF_VERSION)
+    const prefVersion = parsed.prefVersion ?? 0
+    if (prefVersion > PREF_VERSION)
       console.warn(
-        `Found preference version ${parsed.prefVersion}, newer than current version ${PREF_VERSION}.`,
+        `Found preference version ${prefVersion}, newer than current version ${PREF_VERSION}.`,
       )
     if (parsed.data.hotkeyMap) {
       const defaultHotkeyMap = getDefaultHotkeyMap()
@@ -39,6 +40,7 @@ export function loadPreference(): PreferenceSchema {
         ...omit(parsed.data.hotkeyMap, reservedHotkeyCommands),
       }
       if (
+        prefVersion < PREF_VERSION &&
         parsed.data.hotkeyMap.delayTestTap?.length === 1 &&
         isHotkeyMatch(parsed.data.hotkeyMap.delayTestTap[0], LEGACY_DELAY_TEST_TAP)
       ) {
