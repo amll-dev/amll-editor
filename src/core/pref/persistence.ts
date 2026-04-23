@@ -1,13 +1,21 @@
 import stableStringify from 'json-stable-stringify'
 import { omit } from 'lodash-es'
 
-import { getDefaultHotkeyMap } from '@core/hotkey'
+import { getDefaultHotkeyMap, isHotkeyMatch } from '@core/hotkey'
 import { reservedHotkeyCommands } from '@core/hotkey/schema'
+import type { HotKey } from '@core/hotkey/types'
 
 import { type PreferenceSchema, getDefaultPref } from './schema'
 
 const STORAGE_KEY = 'amll_editor:preference'
-const PREF_VERSION = 1
+const PREF_VERSION = 2
+
+const LEGACY_DELAY_TEST_TAP: HotKey.Key = {
+  code: 'Space',
+  ctrl: false,
+  alt: false,
+  shift: false,
+}
 
 interface PersistedPref {
   appVersion: string
@@ -24,11 +32,17 @@ export function loadPreference(): PreferenceSchema {
       console.warn(
         `Found preference version ${parsed.prefVersion}, newer than current version ${PREF_VERSION}.`,
       )
-    if (parsed.data.hotkeyMap)
-      parsed.data.hotkeyMap = {
-        ...getDefaultHotkeyMap(),
+    if (parsed.data.hotkeyMap) {
+      const defaultHotkeyMap = getDefaultHotkeyMap()
+      const hotkeyMap = {
+        ...defaultHotkeyMap,
         ...omit(parsed.data.hotkeyMap, reservedHotkeyCommands),
       }
+      if (parsed.data.hotkeyMap.delayTestTap?.some((binding) => isHotkeyMatch(binding, LEGACY_DELAY_TEST_TAP))) {
+        hotkeyMap.delayTestTap = defaultHotkeyMap.delayTestTap
+      }
+      parsed.data.hotkeyMap = hotkeyMap
+    }
     return {
       ...getDefaultPref(),
       ...parsed.data,
