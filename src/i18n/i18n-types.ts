@@ -832,14 +832,22 @@ type RootTranslation = {
 				 * 音​频​按​键​跳​转​步​长
 				 */
 				audioSeekingStepMs: string
-				/**
-				 * 按​键​快​进​或​快​退​时​跳​转​的​时​长​ ​(​毫​秒​)
-				 */
-				audioSeekingStepMsDesc: string
-				/**
-				 * 交​换​翻​译​与​音​译​框​位​置
-				 */
-				swapTranslateRoman: string
+			/**
+			 * 按​键​快​进​或​快​退​时​跳​转​的​时​长​ ​(​毫​秒​)
+			 */
+			audioSeekingStepMsDesc: string
+			/**
+			 * 延​迟​测​试​ ​B​P​M
+			 */
+			latencyTestBpm: string
+			/**
+			 * 延​迟​测​试​对​话​框​使​用​的​蜂​鸣​节​拍
+			 */
+			latencyTestBpmDesc: string
+			/**
+			 * 交​换​翻​译​与​音​译​框​位​置
+			 */
+			swapTranslateRoman: string
 				/**
 				 * 在​内​容​视​图​将​音​译​框​置​于​左​侧​，​并​影​响​查​找​顺​序
 				 */
@@ -3000,14 +3008,22 @@ export type TranslationFunctions = {
 				 * 音频按键跳转步长
 				 */
 				audioSeekingStepMs: () => LocalizedString
-				/**
-				 * 按键快进或快退时跳转的时长 (毫秒)
-				 */
-				audioSeekingStepMsDesc: () => LocalizedString
-				/**
-				 * 交换翻译与音译框位置
-				 */
-				swapTranslateRoman: () => LocalizedString
+			/**
+			 * 按键快进或快退时跳转的时长 (毫秒)
+			 */
+			audioSeekingStepMsDesc: () => LocalizedString
+			/**
+			 * 延迟测试 BPM
+			 */
+			latencyTestBpm: () => LocalizedString
+			/**
+			 * 延迟测试对话框使用的蜂鸣节拍
+			 */
+			latencyTestBpmDesc: () => LocalizedString
+			/**
+			 * 交换翻译与音译框位置
+			 */
+			swapTranslateRoman: () => LocalizedString
 				/**
 				 * 在内容视图将音译框置于左侧，并影响查找顺序
 				 */

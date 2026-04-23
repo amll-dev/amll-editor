@@ -288,6 +288,8 @@ const en = {
         macStyleShortcutsDesc: 'Display shortcuts using ⌘, ⌥ symbols etc.',
         audioSeekingStepMs: 'Seek step size',
         audioSeekingStepMsDesc: 'Time to jump when using hotkeys (ms)',
+        latencyTestBpm: 'Delay test BPM',
+        latencyTestBpmDesc: 'Beep rate used by the latency test dialog',
         swapTranslateRoman: 'Swap translation & romanization panels',
         swapTranslateRomanDesc: 'Place romanization panel on the left',
         hideTranslateRoman: 'Hide translation & romanization panels',

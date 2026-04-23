@@ -279,6 +279,8 @@ const zhHans = {
         macStyleShortcutsDesc: '使用 ⌘、⌥ 等符号展示组合键',
         audioSeekingStepMs: '音频按键跳转步长',
         audioSeekingStepMsDesc: '按键快进或快退时跳转的时长 (毫秒)',
+        latencyTestBpm: '延迟测试 BPM',
+        latencyTestBpmDesc: '延迟测试对话框使用的蜂鸣节拍',
         swapTranslateRoman: '交换翻译与音译框位置',
         swapTranslateRomanDesc: '在内容视图将音译框置于左侧，并影响查找顺序',
         hideTranslateRoman: '隐藏翻译音译框',
