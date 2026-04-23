@@ -38,7 +38,10 @@ export function loadPreference(): PreferenceSchema {
         ...defaultHotkeyMap,
         ...omit(parsed.data.hotkeyMap, reservedHotkeyCommands),
       }
-      if (parsed.data.hotkeyMap.delayTestTap?.some((binding) => isHotkeyMatch(binding, LEGACY_DELAY_TEST_TAP))) {
+      if (
+        parsed.data.hotkeyMap.delayTestTap?.length === 1 &&
+        isHotkeyMatch(parsed.data.hotkeyMap.delayTestTap[0], LEGACY_DELAY_TEST_TAP)
+      ) {
         hotkeyMap.delayTestTap = defaultHotkeyMap.delayTestTap
       }
       parsed.data.hotkeyMap = hotkeyMap
