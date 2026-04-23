@@ -92,7 +92,7 @@ import { t } from '@i18n'
 import { computed, onUnmounted, ref, shallowRef, watch } from 'vue'
 
 import type { HotKey } from '@core/hotkey'
-import { getHotkeyStr, isHotkeyMatch, matchHotkeyInMap, parseKeyEvent } from '@core/hotkey'
+import { getHotkeyStr, isHotkeyMatch, parseKeyEvent } from '@core/hotkey'
 import { usePrefStore } from '@states/stores'
 
 import { isInputEl } from '@utils/isInputEl'
@@ -144,6 +144,10 @@ let beatIntervalSec = 0
 let startBeatTime = 0
 let sessionStartedAt = 0
 const tapPressState = ref<{ hotkey: HotKey.Key; downAt: number } | null>(null)
+
+function isDelayTestTapHotkey(hotkey: HotKey.Key) {
+  return prefStore.hotkeyMap.delayTestTap.some((binding) => isHotkeyMatch(binding, hotkey))
+}
 
 function clampBpm(value: number) {
   return Math.min(320, Math.max(60, Math.round(value)))
@@ -319,7 +323,7 @@ function handleKeydown(e: KeyboardEvent) {
   if (e.target instanceof HTMLElement && isInputEl(e.target)) return
   const hotkey = parseKeyEvent(e)
   if (!hotkey) return
-  if (matchHotkeyInMap(hotkey, prefStore.hotkeyMap) !== 'delayTestTap') return
+  if (!isDelayTestTapHotkey(hotkey)) return
   e.preventDefault()
   tapPressState.value = { hotkey, downAt: performance.now() }
 }
@@ -329,7 +333,7 @@ function handleKeyup(e: KeyboardEvent) {
   if (e.target instanceof HTMLElement && isInputEl(e.target)) return
   const hotkey = parseKeyEvent(e)
   if (!hotkey) return
-  if (matchHotkeyInMap(hotkey, prefStore.hotkeyMap) !== 'delayTestTap') return
+  if (!isDelayTestTapHotkey(hotkey)) return
   e.preventDefault()
   const tapState = tapPressState.value
   if (!tapState || !isHotkeyMatch(tapState.hotkey, hotkey)) return

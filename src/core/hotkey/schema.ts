@@ -97,7 +97,7 @@ export const getDefaultHotkeyMap = () =>
     seekForward: k('ArrowRight'),
     volumeUp: k('ArrowUp'),
     volumeDown: k('ArrowDown'),
-    delayTestTap: k('Space'),
+    delayTestTap: k('g'),
     undo: k(Ctrl, 'z'),
     redo: [k(Ctrl, 'y'), k(Ctrl, Shift, 'z')],
     find: k(Ctrl, 'f'),
