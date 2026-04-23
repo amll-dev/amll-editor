@@ -368,6 +368,18 @@ onUnmounted(() => {
 
 <style lang="scss">
 .delay-test-dialog {
+  color: light-dark(var(--p-neutral-800), var(--p-neutral-100));
+  --delay-test-surface-soft: light-dark(var(--p-surface-50), var(--p-surface-900));
+  --delay-test-surface: light-dark(var(--p-surface-100), var(--p-surface-800));
+  --delay-test-surface-strong: light-dark(var(--p-surface-200), var(--p-surface-700));
+  --delay-test-border: light-dark(
+    color-mix(in srgb, var(--p-surface-300), transparent 20%),
+    color-mix(in srgb, var(--p-surface-600), transparent 35%)
+  );
+  --delay-test-text-muted: light-dark(var(--p-neutral-700), var(--p-neutral-200));
+  --delay-test-text-fast: light-dark(var(--p-green-700), var(--p-green-300));
+  --delay-test-text-slow: light-dark(var(--p-red-700), var(--p-red-300));
+
   .delay-test-content {
     display: flex;
     flex-direction: column;
@@ -379,7 +391,7 @@ onUnmounted(() => {
   .delay-test-footer,
   .delay-test-empty,
   .delay-test-stat-label {
-    opacity: 0.72;
+    color: var(--delay-test-text-muted);
     font-size: 0.92rem;
   }
 
@@ -392,7 +404,8 @@ onUnmounted(() => {
   .delay-test-key {
     padding: 0.1rem 0.45rem;
     border-radius: 0.35rem;
-    background: var(--p-surface-200);
+    background: var(--delay-test-surface-strong);
+    border: 1px solid var(--delay-test-border);
     font-family: var(--font-monospace);
   }
 
@@ -407,11 +420,12 @@ onUnmounted(() => {
     width: 0.9rem;
     height: 0.9rem;
     border-radius: 999px;
-    background: var(--p-surface-300);
+    background: var(--delay-test-surface-strong);
+    border: 1px solid var(--delay-test-border);
     transition: transform 0.12s, background 0.12s, box-shadow 0.12s;
 
     &.active {
-      background: var(--p-primary-color);
+      background: light-dark(var(--p-primary-500), var(--p-primary-400));
       box-shadow: 0 0 0 0.35rem color-mix(in srgb, var(--p-primary-color) 20%, transparent);
       transform: scale(1.1);
     }
@@ -429,24 +443,28 @@ onUnmounted(() => {
     gap: 0.15rem;
     padding: 0.6rem 0.75rem;
     border-radius: 0.5rem;
-    background: var(--p-surface-100);
+    background: var(--delay-test-surface);
+    border: 1px solid var(--delay-test-border);
+    box-shadow: inset 0 1px 0
+      light-dark(color-mix(in srgb, white 55%, transparent), color-mix(in srgb, black 35%, transparent));
   }
 
   .delay-test-value.fast {
-    color: var(--p-green-500);
+    color: var(--delay-test-text-fast);
   }
   .delay-test-value.slow {
-    color: var(--p-red-500);
+    color: var(--delay-test-text-slow);
   }
   .delay-test-value.neutral {
-    color: inherit;
+    color: var(--delay-test-text-muted);
   }
 
   .delay-test-chart {
     position: relative;
     height: 3rem;
     border-radius: 0.5rem;
-    background: var(--p-surface-100);
+    background: var(--delay-test-surface-soft);
+    border: 1px solid var(--delay-test-border);
     overflow: hidden;
   }
 
@@ -457,7 +475,7 @@ onUnmounted(() => {
     left: 50%;
     width: 2px;
     transform: translateX(-50%);
-    background: var(--p-primary-color);
+    background: light-dark(var(--p-primary-500), var(--p-primary-400));
     opacity: 0.65;
   }
 
@@ -470,11 +488,17 @@ onUnmounted(() => {
     border-radius: 999px;
 
     &.fast {
-      background: color-mix(in srgb, var(--p-green-500) 80%, white);
+      background: light-dark(
+        color-mix(in srgb, var(--p-green-600) 85%, white),
+        color-mix(in srgb, var(--p-green-300) 85%, black)
+      );
     }
 
     &.slow {
-      background: color-mix(in srgb, var(--p-red-500) 80%, white);
+      background: light-dark(
+        color-mix(in srgb, var(--p-red-600) 85%, white),
+        color-mix(in srgb, var(--p-red-300) 85%, black)
+      );
     }
   }
 
@@ -488,7 +512,7 @@ onUnmounted(() => {
 
   .delay-test-bpm-label {
     margin-top: -0.25rem;
-    opacity: 0.7;
+    color: var(--delay-test-text-muted);
     font-size: 0.92rem;
   }
 
