@@ -109,6 +109,7 @@ const groupedCmdList = [
       'playPauseAudio',
       'seekForward',
       'volumeDown',
+      'delayTestTap',
     ],
   },
 ] as const satisfies {

@@ -424,6 +424,10 @@ type RootTranslation = {
 			 */
 			delayTest: string
 			/**
+			 * 打​开​延​迟​测​试​对​话​框​，​测​量​按​键​与​蜂​鸣​之​间​的​延​迟​。
+			 */
+			delayTestDesc: string
+			/**
 			 * 延​迟
 			 */
 			delay: string
@@ -1768,6 +1772,10 @@ type RootTranslation = {
 			 * 减​小​音​量
 			 */
 			volumeDown: string
+			/**
+			 * 延​迟​测​试​按​键
+			 */
+			delayTestTap: string
 		}
 		keyNames: {
 			/**
@@ -2097,6 +2105,60 @@ type RootTranslation = {
 		 * 应​用​到​全​文
 		 */
 		applyToAll: string
+	}
+	delayTestDialog: {
+		/**
+		 * 延​迟​测​试
+		 */
+		header: string
+		/**
+		 * 在​每​次​蜂​鸣​时​按​下​配​置​的​按​键​，​以​测​量​输​入​延​迟​。
+		 */
+		description: string
+		/**
+		 * 按​下
+		 */
+		tapHint: string
+		/**
+		 * B​P​M
+		 */
+		bpmLabel: string
+		/**
+		 * 正​值​表​示​更​快​，​负​值​表​示​更​慢
+		 */
+		signHint: string
+		/**
+		 * 当​前
+		 */
+		current: string
+		/**
+		 * 最​快
+		 */
+		fastest: string
+		/**
+		 * 最​慢
+		 */
+		slowest: string
+		/**
+		 * 尚​无​按​键​记​录
+		 */
+		noSamples: string
+		/**
+		 * 开​始
+		 */
+		start: string
+		/**
+		 * 结​束
+		 */
+		stop: string
+		/**
+		 * 应​用​当​前​值
+		 */
+		applyCurrent: string
+		/**
+		 * 应​用​平​均​值
+		 */
+		applyAverage: string
 	}
 	/**
 	 * ╭​─​─​─​─​─​─​─​─​─​─​╮​ ​ ​ ​ ​ ​ ​ ​╶​╴​ ​ ​ ​ ​┌​─​╴​ ​ ​╶​─​┐​┌​─​┐​ ​ ​ ​ ​┌​─​┐​ ​ ​ ​ ​ ​ ​┌​─​─​─​─​─​┐​ ​ ​ ​ ​┌​─​┐​┌​─​┐​
@@ -2529,6 +2591,10 @@ export type TranslationFunctions = {
 			 * 延迟测试
 			 */
 			delayTest: () => LocalizedString
+			/**
+			 * 打开延迟测试对话框，测量按键与蜂鸣之间的延迟。
+			 */
+			delayTestDesc: () => LocalizedString
 			/**
 			 * 延迟
 			 */
@@ -3870,6 +3936,10 @@ export type TranslationFunctions = {
 			 * 减小音量
 			 */
 			volumeDown: () => LocalizedString
+			/**
+			 * 延迟测试按键
+			 */
+			delayTestTap: () => LocalizedString
 		}
 		keyNames: {
 			/**
@@ -4198,6 +4268,21 @@ export type TranslationFunctions = {
 		 * 应用到全文
 		 */
 		applyToAll: () => LocalizedString
+	}
+	delayTestDialog: {
+		header: () => LocalizedString
+		description: () => LocalizedString
+		tapHint: () => LocalizedString
+		bpmLabel: () => LocalizedString
+		signHint: () => LocalizedString
+		current: () => LocalizedString
+		fastest: () => LocalizedString
+		slowest: () => LocalizedString
+		noSamples: () => LocalizedString
+		start: () => LocalizedString
+		stop: () => LocalizedString
+		applyCurrent: () => LocalizedString
+		applyAverage: () => LocalizedString
 	}
 	/**
 	 * ╭──────────╮       ╶╴    ┌─╴  ╶─┐┌─┐    ┌─┐      ┌─────┐    ┌─┐┌─┐

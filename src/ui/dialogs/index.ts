@@ -3,6 +3,7 @@ import type { Component } from 'vue'
 import type { ValueOf } from '@utils/types'
 
 import AboutDialog from './dialogComponents/AboutDialog.vue'
+import DelayTestDialog from './dialogComponents/DelayTestDialog.vue'
 import BatchTimeShiftDialog from './dialogComponents/BatchTimeShiftDialog.vue'
 import CompatibilityDialog from './dialogComponents/CompatibilityDialog.vue'
 import FindReplaceDialog from './dialogComponents/FindReplaceDialog.vue'
@@ -11,6 +12,7 @@ import FromTextModal from './dialogComponents/FromTextModal.vue'
 import KeyBindingDialog from './dialogComponents/KeyBindingDialog.vue'
 
 export const DialogKey = {
+  DelayTest: 'delayTest',
   BatchTimeShift: 'batchTimeShift',
   FindReplace: 'findReplace',
   KeyBinding: 'keyBinding',
@@ -27,6 +29,7 @@ interface DialogReg {
 }
 
 export const dialogRegs: DialogReg[] = [
+  { key: DialogKey.DelayTest, component: DelayTestDialog },
   { key: DialogKey.BatchTimeShift, component: BatchTimeShiftDialog },
   { key: DialogKey.FindReplace, component: FindReplaceDialog },
   { key: DialogKey.KeyBinding, component: KeyBindingDialog },

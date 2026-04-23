@@ -156,6 +156,7 @@ const zhHans = {
     timeShift: {
       groupLabel: '时移',
       delayTest: '延迟测试',
+      delayTestDesc: '打开延迟测试对话框，测量按键与蜂鸣之间的延迟。',
       delay: '延迟',
       batchTimeShift: '批量时移',
       batchTimeShiftDesc: '打开批量时移对话框，调整多个音节或行的时间戳。',
@@ -591,6 +592,7 @@ const zhHans = {
       playPauseAudio: '播放/暂停音频',
       seekForward: '快进',
       volumeDown: '减小音量',
+      delayTestTap: '延迟测试按键',
     },
     keyNames: {
       space: '空格',
@@ -716,6 +718,21 @@ const zhHans = {
     applyToSyl: '应用到选定音节',
     applyToLine: '应用到选定行',
     applyToAll: '应用到全文',
+  },
+  delayTestDialog: {
+    header: '延迟测试',
+    description: '在每次蜂鸣时按下配置的按键，以测量输入延迟。',
+    tapHint: '按下',
+    bpmLabel: 'BPM',
+    signHint: '正值表示更快，负值表示更慢',
+    current: '当前',
+    fastest: '最快',
+    slowest: '最慢',
+    noSamples: '尚无按键记录',
+    start: '开始',
+    stop: '结束',
+    applyCurrent: '应用当前值',
+    applyAverage: '应用平均值',
   },
   consoleArt,
 } satisfies BaseTranslation
