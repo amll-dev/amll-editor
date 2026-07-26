@@ -1,3 +1,15 @@
+> [!warning]
+>
+> **停更声明**
+>
+> 上游组件库 [PrimeVue](https://primevue.dev/) 自 5.x 起已停止开源，若要迁移至其他组件库，工作量相当繁重。本项目用户数量较少，且维护与功能更新工作量大。考虑到已有编辑器 [AMLL TTML Tool](https://github.com/amll-dev/amll-ttml-tool)，此项目于 2026 年 7 月放弃维护与更新。
+>
+> 此项目的特色功能可能会逐步合并到 AMLL TTML Tool。
+>
+> 向本项目的所有贡献者与用户致以感谢与歉意，再会。
+
+---
+
 <img src="./favicons/normal/brand.svg" width="80px" />
 
 # AMLL Editor
@@ -22,8 +34,6 @@
 开发分支部署：<https://beta-editor.amll.dev/>
 
 我们在 [项目 wiki](https://github.com/amll-dev/amll-editor/wiki) 上提供了用户指南，欢迎查阅。
-
-~~主要开发者 Linho 想投米哈游实习喵，请点点 star 谢谢喵~~
 
 ## 部署
 
