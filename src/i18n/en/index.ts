@@ -160,6 +160,7 @@ const en = {
     timeShift: {
       groupLabel: 'Time Shift',
       delayTest: 'Delay Test',
+      delayTestDesc: 'Open the latency test dialog to measure tap timing against the beep track.',
       delay: 'Delay',
       batchTimeShift: 'Batch Shift',
       batchTimeShiftDesc:
@@ -287,6 +288,8 @@ const en = {
         macStyleShortcutsDesc: 'Display shortcuts using ⌘, ⌥ symbols etc.',
         audioSeekingStepMs: 'Seek step size',
         audioSeekingStepMsDesc: 'Time to jump when using hotkeys (ms)',
+        latencyTestBpm: 'Delay test BPM',
+        latencyTestBpmDesc: 'Beep rate used by the latency test dialog',
         swapTranslateRoman: 'Swap translation & romanization panels',
         swapTranslateRomanDesc: 'Place romanization panel on the left',
         hideTranslateRoman: 'Hide translation & romanization panels',
@@ -613,6 +616,7 @@ const en = {
       playPauseAudio: 'Play / Pause',
       seekForward: 'Seek Forward',
       volumeDown: 'Volume Down',
+      delayTestTap: 'Delay Test Tap',
     },
     keyNames: {
       space: 'Space',
@@ -740,6 +744,21 @@ const en = {
     applyToSyl: 'Apply to Selected Syllables',
     applyToLine: 'Apply to Selected Lines',
     applyToAll: 'Apply to All',
+  },
+  delayTestDialog: {
+    header: 'Delay Test',
+    description: 'Press the configured key on every beep to measure input latency.',
+    tapHint: 'Press',
+    bpmLabel: 'BPM',
+    signHint: 'Positive = early, negative = late',
+    current: 'Current',
+    fastest: 'Fastest',
+    slowest: 'Slowest',
+    noSamples: 'No taps yet',
+    start: 'Start',
+    stop: 'Stop',
+    applyCurrent: 'Apply Current',
+    applyAverage: 'Apply Average',
   },
   consoleArt,
 } as const satisfies Translations

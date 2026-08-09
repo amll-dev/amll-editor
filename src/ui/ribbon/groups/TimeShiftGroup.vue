@@ -4,8 +4,9 @@
       icon="mdi mdi-timer-music-outline"
       :label="tt.delayTest()"
       size="small"
-      severity="secondary"
-      disabled
+      :severity="runtimeStore.dialogShown.delayTest ? undefined : 'secondary'"
+      @click="runtimeStore.dialogShown.delayTest = !runtimeStore.dialogShown.delayTest"
+      v-tooltip="tipDesc(tt.delayTest(), tt.delayTestDesc(), 'delayTestTap')"
     />
     <div class="hflex" style="align-items: center; gap: 0.5rem">
       <span>{{ tt.delay() }}</span>

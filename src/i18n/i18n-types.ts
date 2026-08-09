@@ -424,6 +424,10 @@ type RootTranslation = {
 			 */
 			delayTest: string
 			/**
+			 * 打​开​延​迟​测​试​对​话​框​，​测​量​按​键​与​蜂​鸣​之​间​的​延​迟​。
+			 */
+			delayTestDesc: string
+			/**
 			 * 延​迟
 			 */
 			delay: string
@@ -832,6 +836,14 @@ type RootTranslation = {
 				 * 按​键​快​进​或​快​退​时​跳​转​的​时​长​ ​(​毫​秒​)
 				 */
 				audioSeekingStepMsDesc: string
+				/**
+				 * 延​迟​测​试​ ​B​P​M
+				 */
+				latencyTestBpm: string
+				/**
+				 * 延​迟​测​试​对​话​框​使​用​的​蜂​鸣​节​拍
+				 */
+				latencyTestBpmDesc: string
 				/**
 				 * 交​换​翻​译​与​音​译​框​位​置
 				 */
@@ -1768,6 +1780,10 @@ type RootTranslation = {
 			 * 减​小​音​量
 			 */
 			volumeDown: string
+			/**
+			 * 延​迟​测​试​按​键
+			 */
+			delayTestTap: string
 		}
 		keyNames: {
 			/**
@@ -2097,6 +2113,60 @@ type RootTranslation = {
 		 * 应​用​到​全​文
 		 */
 		applyToAll: string
+	}
+	delayTestDialog: {
+		/**
+		 * 延​迟​测​试
+		 */
+		header: string
+		/**
+		 * 在​每​次​蜂​鸣​时​按​下​配​置​的​按​键​，​以​测​量​输​入​延​迟​。
+		 */
+		description: string
+		/**
+		 * 按​下
+		 */
+		tapHint: string
+		/**
+		 * B​P​M
+		 */
+		bpmLabel: string
+		/**
+		 * 正​值​表​示​更​快​，​负​值​表​示​更​慢
+		 */
+		signHint: string
+		/**
+		 * 当​前
+		 */
+		current: string
+		/**
+		 * 最​快
+		 */
+		fastest: string
+		/**
+		 * 最​慢
+		 */
+		slowest: string
+		/**
+		 * 尚​无​按​键​记​录
+		 */
+		noSamples: string
+		/**
+		 * 开​始
+		 */
+		start: string
+		/**
+		 * 结​束
+		 */
+		stop: string
+		/**
+		 * 应​用​当​前​值
+		 */
+		applyCurrent: string
+		/**
+		 * 应​用​平​均​值
+		 */
+		applyAverage: string
 	}
 	/**
 	 * ╭​─​─​─​─​─​─​─​─​─​─​╮​ ​ ​ ​ ​ ​ ​ ​╶​╴​ ​ ​ ​ ​┌​─​╴​ ​ ​╶​─​┐​┌​─​┐​ ​ ​ ​ ​┌​─​┐​ ​ ​ ​ ​ ​ ​┌​─​─​─​─​─​┐​ ​ ​ ​ ​┌​─​┐​┌​─​┐​
@@ -2530,6 +2600,10 @@ export type TranslationFunctions = {
 			 */
 			delayTest: () => LocalizedString
 			/**
+			 * 打开延迟测试对话框，测量按键与蜂鸣之间的延迟。
+			 */
+			delayTestDesc: () => LocalizedString
+			/**
 			 * 延迟
 			 */
 			delay: () => LocalizedString
@@ -2938,6 +3012,14 @@ export type TranslationFunctions = {
 				 * 按键快进或快退时跳转的时长 (毫秒)
 				 */
 				audioSeekingStepMsDesc: () => LocalizedString
+				/**
+				 * 延迟测试 BPM
+				 */
+				latencyTestBpm: () => LocalizedString
+				/**
+				 * 延迟测试对话框使用的蜂鸣节拍
+				 */
+				latencyTestBpmDesc: () => LocalizedString
 				/**
 				 * 交换翻译与音译框位置
 				 */
@@ -3870,6 +3952,10 @@ export type TranslationFunctions = {
 			 * 减小音量
 			 */
 			volumeDown: () => LocalizedString
+			/**
+			 * 延迟测试按键
+			 */
+			delayTestTap: () => LocalizedString
 		}
 		keyNames: {
 			/**
@@ -4198,6 +4284,60 @@ export type TranslationFunctions = {
 		 * 应用到全文
 		 */
 		applyToAll: () => LocalizedString
+	}
+	delayTestDialog: {
+		/**
+		 * 延迟测试
+		 */
+		header: () => LocalizedString
+		/**
+		 * 在每次蜂鸣时按下配置的按键，以测量输入延迟。
+		 */
+		description: () => LocalizedString
+		/**
+		 * 按下
+		 */
+		tapHint: () => LocalizedString
+		/**
+		 * BPM
+		 */
+		bpmLabel: () => LocalizedString
+		/**
+		 * 正值表示更快，负值表示更慢
+		 */
+		signHint: () => LocalizedString
+		/**
+		 * 当前
+		 */
+		current: () => LocalizedString
+		/**
+		 * 最快
+		 */
+		fastest: () => LocalizedString
+		/**
+		 * 最慢
+		 */
+		slowest: () => LocalizedString
+		/**
+		 * 尚无按键记录
+		 */
+		noSamples: () => LocalizedString
+		/**
+		 * 开始
+		 */
+		start: () => LocalizedString
+		/**
+		 * 结束
+		 */
+		stop: () => LocalizedString
+		/**
+		 * 应用当前值
+		 */
+		applyCurrent: () => LocalizedString
+		/**
+		 * 应用平均值
+		 */
+		applyAverage: () => LocalizedString
 	}
 	/**
 	 * ╭──────────╮       ╶╴    ┌─╴  ╶─┐┌─┐    ┌─┐      ┌─────┐    ┌─┐┌─┐
